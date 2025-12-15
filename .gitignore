@@ -107,8 +107,6 @@ venv.bak/
 .mypy_cache/
 
 # cython generated cpp
-!data/dict
-/data
 .vscode
 .idea
 
@@ -147,4 +145,4 @@ outputs/
 tmp/
 .history/
 .dev/
-data/
+/data/
