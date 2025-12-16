@@ -91,7 +91,7 @@ optim_wrapper = dict(
     loss_scale='dynamic')
 
 # 数据集较大，验证过于频繁会明显拖慢训练；保持更合理的验证间隔
-train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=1200, val_interval=10)
+train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=1200, val_interval=3)
 
 # 配置权重保存策略：保留最新3个权重 + 保留最优权重
 default_hooks = dict(
