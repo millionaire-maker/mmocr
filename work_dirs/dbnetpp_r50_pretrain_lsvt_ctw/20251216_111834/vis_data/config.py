@@ -214,7 +214,7 @@ textdet_lsvt_train = dict(
     filter_cfg=dict(filter_empty_gt=True, min_size=32),
     pipeline=None,
     type='OCRDataset')
-train_cfg = dict(max_epochs=300, type='EpochBasedTrainLoop', val_interval=5)
+train_cfg = dict(max_epochs=1200, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=16,
     dataset=dict(
