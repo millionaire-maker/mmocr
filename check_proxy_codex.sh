@@ -16,6 +16,9 @@ set -euo pipefail
 : "${SHOW_LOG_TAIL:=1}"
 : "${LOG_TAIL_LINES:=80}"
 
+: "${SHOW_PROVIDER_INFO:=1}"    # 1=show proxy-provider url/path/proxy count
+: "${WARN_KEEPALIVE:=1}"        # 1=warn if keep-alive settings missing
+
 : "${AUTO_FIX:=1}"              # 1=try to start mihomo if down
 : "${AUTO_FIX_WAIT_SEC:=6}"     # wait for ports after starting
 
@@ -51,6 +54,58 @@ curl_code() {
   # prints http status code only
   local url="$1"; shift || true
   curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$@" "$url" 2>/dev/null || echo "000"
+}
+
+resolve_mihomo_path() {
+  local rel="${1:-}"
+  if [[ -z "$rel" ]]; then
+    return 1
+  fi
+  if [[ "$rel" == /* ]]; then
+    echo "$rel"
+    return 0
+  fi
+  # mihomo resolves relative paths from its -d directory
+  echo "$MIHOMO_DIR/${rel#./}"
+}
+
+count_proxies_in_provider_yaml() {
+  # Counts entries under top-level `proxies:` until next top-level key.
+  local f="${1:-}"
+  [[ -f "$f" ]] || { echo "0"; return 0; }
+  awk '
+    BEGIN { in_section=0; c=0 }
+    /^proxies:[[:space:]]*$/ { in_section=1; next }
+    in_section && /^[^[:space:]]/ { in_section=0 }
+    in_section && $0 ~ /^[[:space:]]*-[[:space:]]*\\{[[:space:]]*name:/ { c++ }
+    END { print c+0 }
+  ' "$f" 2>/dev/null || echo "0"
+}
+
+list_proxy_providers_from_config() {
+  local cfg="${1:-}"
+  [[ -f "$cfg" ]] || return 0
+  awk '
+    BEGIN { in=0; name=""; url=""; path="" }
+    /^proxy-providers:[[:space:]]*$/ { in=1; next }
+    in && /^[^[:space:]]/ { in=0 }
+    in && /^[[:space:]]{2}[^[:space:]]+:[[:space:]]*$/ {
+      name=$1; sub(/:$/, "", name); url=""; path=""; next
+    }
+    in && /^[[:space:]]{4}url:[[:space:]]*/ {
+      url=$0; sub(/^[[:space:]]{4}url:[[:space:]]*/, "", url)
+      gsub(/^"/, "", url); gsub(/"$/, "", url)
+      gsub(/^'\''/, "", url); gsub(/'\''$/, "", url)
+      next
+    }
+    in && /^[[:space:]]{4}path:[[:space:]]*/ {
+      path=$0; sub(/^[[:space:]]{4}path:[[:space:]]*/, "", path)
+      gsub(/^"/, "", path); gsub(/"$/, "", path)
+      gsub(/^'\''/, "", path); gsub(/'\''$/, "", path)
+      if (name != "") print name "\t" url "\t" path
+      next
+    }
+  ' "$cfg"
 }
 
 get_listener_pid() {
@@ -376,6 +431,40 @@ fi
 # Force/ensure a US node, then rotate if CF blocks
 ensure_us_select_node
 rotate_us_nodes_if_cf_blocked
+
+if [[ "$SHOW_PROVIDER_INFO" == "1" ]]; then
+  hr
+  echo "2.5) Proxy provider summary"
+  cfg="$MIHOMO_DIR/config.yaml"
+  if [[ -f "$cfg" ]]; then
+    ok "Config: $cfg"
+    while IFS=$'\t' read -r name url path; do
+      [[ -z "${name:-}" ]] && continue
+      echo "- provider: $name"
+      [[ -n "${url:-}" ]] && echo "  url:  $url"
+      [[ -n "${path:-}" ]] && echo "  path: $path"
+      if [[ -n "${path:-}" ]]; then
+        abs="$(resolve_mihomo_path "$path" || true)"
+        if [[ -n "${abs:-}" && -f "$abs" ]]; then
+          echo "  proxies_in_file: $(count_proxies_in_provider_yaml "$abs")"
+        else
+          warn "  provider file not found: ${abs:-$path}"
+        fi
+      fi
+    done < <(list_proxy_providers_from_config "$cfg" || true)
+
+    if [[ "$WARN_KEEPALIVE" == "1" ]]; then
+      if ! grep -qE '^keep-alive-idle:' "$cfg"; then
+        warn "keep-alive-idle not set in $cfg (streaming/SSE may drop on idle)."
+      fi
+      if ! grep -qE '^keep-alive-interval:' "$cfg"; then
+        warn "keep-alive-interval not set in $cfg (streaming/SSE may drop on idle)."
+      fi
+    fi
+  else
+    warn "Config not found: $cfg"
+  fi
+fi
 
 hr
 echo "3) Proxy connectivity tests"
