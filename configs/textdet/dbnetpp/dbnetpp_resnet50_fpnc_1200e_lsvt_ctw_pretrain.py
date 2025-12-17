@@ -97,7 +97,7 @@ train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=300, val_interval=5)
 default_hooks = dict(
     checkpoint=dict(
         type='CheckpointHook',
-        interval=10,  # 与val_interval对齐，减少I/O开销
+        interval=5,  # 与val_interval对齐，确保每次验证后都有权重
         max_keep_ckpts=3,  # 保留最新的3个权重
         save_best='icdar/hmean',  # 明确监控icdar/hmean指标
         rule='greater'  # hmean越大越好

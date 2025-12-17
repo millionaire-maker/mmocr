@@ -86,20 +86,20 @@ list_proxy_providers_from_config() {
   local cfg="${1:-}"
   [[ -f "$cfg" ]] || return 0
   awk '
-    BEGIN { in=0; name=""; url=""; path="" }
-    /^proxy-providers:[[:space:]]*$/ { in=1; next }
-    in && /^[^[:space:]]/ { in=0 }
-    in && /^[[:space:]]{2}[^[:space:]]+:[[:space:]]*$/ {
+    BEGIN { in_section=0; name=""; url=""; path="" }
+    /^proxy-providers:[[:space:]]*$/ { in_section=1; next }
+    in_section && /^[^[:space:]]/ { in_section=0 }
+    in_section && /^  [^[:space:]]+:[[:space:]]*$/ {
       name=$1; sub(/:$/, "", name); url=""; path=""; next
     }
-    in && /^[[:space:]]{4}url:[[:space:]]*/ {
-      url=$0; sub(/^[[:space:]]{4}url:[[:space:]]*/, "", url)
+    in_section && /^    url:[[:space:]]*/ {
+      url=$0; sub(/^    url:[[:space:]]*/, "", url)
       gsub(/^"/, "", url); gsub(/"$/, "", url)
       gsub(/^'\''/, "", url); gsub(/'\''$/, "", url)
       next
     }
-    in && /^[[:space:]]{4}path:[[:space:]]*/ {
-      path=$0; sub(/^[[:space:]]{4}path:[[:space:]]*/, "", path)
+    in_section && /^    path:[[:space:]]*/ {
+      path=$0; sub(/^    path:[[:space:]]*/, "", path)
       gsub(/^"/, "", path); gsub(/"$/, "", path)
       gsub(/^'\''/, "", path); gsub(/'\''$/, "", path)
       if (name != "") print name "\t" url "\t" path

@@ -253,7 +253,7 @@ class ScaleChannelSpatialAttention(BaseModule):
             bias=False,
             conv_cfg=None,
             norm_cfg=None,
-            act_cfg=dict(type='Sigmoid'),
+            act_cfg=None,
             inplace=False)
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
@@ -272,5 +272,6 @@ class ScaleChannelSpatialAttention(BaseModule):
         inputs = torch.mean(out, dim=1, keepdim=True)
         out = self.spatial_wise(inputs) + out
         out = self.attention_wise(out)
+        out = F.softmax(out, dim=1)
 
         return out

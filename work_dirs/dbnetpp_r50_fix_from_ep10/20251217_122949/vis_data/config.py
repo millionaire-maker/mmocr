@@ -25,7 +25,7 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'none'
-load_from = None
+load_from = 'work_dirs/dbnetpp_r50_pretrain_lsvt_ctw/epoch_10.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
 model = dict(
@@ -405,4 +405,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = 'work_dirs/dbnetpp_r50_pretrain_lsvt_ctw'
+work_dir = 'work_dirs/dbnetpp_r50_fix_from_ep10'
