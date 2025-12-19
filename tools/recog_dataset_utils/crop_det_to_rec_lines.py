@@ -211,8 +211,23 @@ DATASET_LOADERS = {
 }
 
 
+def _poly_len(polygon: List[float]) -> int:
+    try:
+        return int(np.array(polygon).size)
+    except Exception:
+        return 0
+
+
 def process_dataset(
-    dataset: str, root: str, split: str, out_root: str, max_samples: int, dry_run: bool
+    dataset: str,
+    root: str,
+    split: str,
+    out_root: str,
+    max_samples: int,
+    dry_run: bool,
+    curved_poly_len_thr: int,
+    meta_json: str,
+    only_curved: bool,
 ):
     if dataset not in DATASET_LOADERS:
         raise ValueError(f"Unsupported dataset {dataset}")
@@ -223,6 +238,7 @@ def process_dataset(
     saved = 0
     label_path = os.path.join(out_root, f"labels_{split}.txt")
     writer = None
+    meta_entries = [] if meta_json and not dry_run else None
     if not dry_run:
         os.makedirs(images_dir, exist_ok=True)
         writer = open(label_path, "w", encoding="utf-8")
@@ -232,6 +248,10 @@ def process_dataset(
             break
         label = normalize_label(sample.get("text", ""))
         if not label or label in {"###", "*"}:
+            continue
+        poly_len = _poly_len(sample.get("polygon", []))
+        curved = 1 if poly_len > curved_poly_len_thr else 0
+        if only_curved and not curved:
             continue
         img = cv2.imread(sample["img_path"])
         if img is None:
@@ -247,9 +267,27 @@ def process_dataset(
             fname = f"{dataset}_{split}_{saved:08d}.jpg"
             out_img_path = os.path.join(images_dir, fname)
             cv2.imwrite(out_img_path, crop)
-            writer.write(f"images/{fname}\t{label}\n")
+            img_relpath = f"images/{fname}"
+            writer.write(f"{img_relpath}\t{label}\n")
+            if meta_entries is not None:
+                meta_entries.append(
+                    dict(
+                        index=saved,
+                        curved=curved,
+                        text=label,
+                        text_len=len(label),
+                        source=dataset,
+                        split=split,
+                        img_relpath=img_relpath,
+                        poly_len=poly_len,
+                    )
+                )
     if writer:
         writer.close()
+    if meta_entries is not None:
+        os.makedirs(os.path.dirname(meta_json) or ".", exist_ok=True)
+        with open(meta_json, "w", encoding="utf-8") as f:
+            json.dump(meta_entries, f, ensure_ascii=True, indent=2)
     msg = (
         f"{dataset} split={split}: total instances={total}, saved={saved}"
         + (f", labels file={label_path}" if not dry_run else " (dry-run, not saved)")
@@ -273,6 +311,22 @@ def parse_args():
         help="Limit number of cropped instances for quick sanity check. 0 means all.",
     )
     parser.add_argument(
+        "--curved-poly-len-thr",
+        type=int,
+        default=8,
+        help="Curved polygon length threshold (flat coord length).",
+    )
+    parser.add_argument(
+        "--meta-json",
+        default="",
+        help="Optional path to save meta json (per-sample info).",
+    )
+    parser.add_argument(
+        "--only-curved",
+        action="store_true",
+        help="Only export samples with curved=1.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Do not save images/labels, only count usable instances.",
@@ -289,7 +343,15 @@ def main():
     args = parse_args()
     max_samples = args.max_samples if args.max_samples and args.max_samples > 0 else 0
     stats = process_dataset(
-        args.dataset, args.root, args.split, args.out_root, max_samples, args.dry_run
+        args.dataset,
+        args.root,
+        args.split,
+        args.out_root,
+        max_samples,
+        args.dry_run,
+        args.curved_poly_len_thr,
+        args.meta_json,
+        args.only_curved,
     )
     if args.stats_json:
         import json
