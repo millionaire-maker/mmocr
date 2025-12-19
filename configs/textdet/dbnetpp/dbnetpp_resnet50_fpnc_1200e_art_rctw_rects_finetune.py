@@ -8,9 +8,10 @@ _base_ = [
 # 指定work_dir便于在云服务器上统一管理训练产物，也方便 --resume
 work_dir = 'work_dirs/dbnetpp_r50_finetune_art_rctw_rects'
 
-# 微调阶段强烈建议从 LSVT+CTW 预训练权重开始（用命令行覆盖最方便）：
-#   --cfg-options load_from=work_dirs/dbnetpp_r50_pretrain_lsvt_ctw/best_*.pth
-load_from = None
+# 微调阶段强烈建议从 LSVT+CTW 预训练权重开始：
+# - 首次启动：直接用 load_from（只加载模型权重，不恢复优化器/调度器状态）
+# - 如需中断后继续：请使用 `--resume` 并确保 `load_from=None`，否则会从该权重“错误地resume”
+load_from = 'work_dirs/dbnetpp_r50_pretrain_lsvt_ctw/best_icdar_hmean_epoch_60.pth'
 
 # RTX 3090(24GB) + 固定训练分辨率(640x640)场景下，开启 cudnn benchmark 可显著提升吞吐
 env_cfg = dict(cudnn_benchmark=True)
@@ -73,8 +74,11 @@ train_list = [textdet_art_train, textdet_rctw_train, textdet_rects_train]
 test_list = [textdet_art_test, textdet_rctw_test, textdet_rects_test]
 
 train_dataloader = dict(
-    batch_size=16,
-    num_workers=12,
+    # 3090(24GB) 上在 640x640 训练分辨率下，batch=32 基本可跑满显存但仍留少量余量
+    # 若出现 OOM，可优先降到 28/24
+    batch_size=32,
+    # 该机器 CPU 核数较少（7c），num_workers 过大容易造成调度抖动；8 相对更稳
+    num_workers=8,
     persistent_workers=True,
     pin_memory=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -94,7 +98,7 @@ val_dataloader = dict(
 
 test_dataloader = val_dataloader
 
-auto_scale_lr = dict(enable=True, base_batch_size=16)
+auto_scale_lr = dict(enable=True, base_batch_size=32)
 
 # 微调优化器配置：降低学习率避免灾难性遗忘；同时启用 AMP 以提升吞吐并节省显存
 optim_wrapper = dict(
