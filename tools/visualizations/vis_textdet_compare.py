@@ -437,7 +437,9 @@ def main():
             prog.update()
             continue
 
-        gt_polys_raw = gt_instances.get('polygons', []) or []
+        gt_polys_raw = gt_instances.get('polygons', None)
+        if gt_polys_raw is None:
+            gt_polys_raw = []
         gt_valid_idx = _valid_poly_indices(gt_polys_raw)
         gt_polys = _as_float_polys(gt_polys_raw, gt_valid_idx)
         gt_ignore_raw = gt_instances.get('ignored', None)
@@ -445,8 +447,12 @@ def main():
         gt_ignore_flags = gt_ignore_flags[gt_valid_idx] if gt_valid_idx else np.zeros(
             (0, ), dtype=bool)
 
-        pred_polys_raw = pred_instances.get('polygons', []) or []
-        pred_scores_raw = pred_instances.get('scores', []) or []
+        pred_polys_raw = pred_instances.get('polygons', None)
+        if pred_polys_raw is None:
+            pred_polys_raw = []
+        pred_scores_raw = pred_instances.get('scores', None)
+        if pred_scores_raw is None:
+            pred_scores_raw = []
         if isinstance(pred_scores_raw, torch.Tensor):
             pred_scores_raw = pred_scores_raw.detach().cpu().numpy()
         pred_scores_raw = np.asarray(pred_scores_raw, dtype=np.float32)
