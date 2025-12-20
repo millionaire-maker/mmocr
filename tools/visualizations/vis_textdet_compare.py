@@ -4,8 +4,9 @@
 特点：
 - 自动从验证/测试 dataloader 跑推理（无需额外改 config）。
 - 以单张图的 hmean 排序，默认各挑一半“效果好/效果差”样本，总数约 50 张。
-- 左图：绿色=TP（正确检测），红色=FP（错检）+ FN（漏检，用 GT 位置标红并写 FN）。
+- 左图：只画预测框；绿色=TP（正确检测），红色=FP（错检）。为避免画面过于拥挤，左图不标记 FN。
 - 右图：绿色=命中 GT，红色=漏检 GT，灰色=ignored GT。
+- 额外输出：在 ``--out-dir`` 下生成 ``compare_instances.json``，保存对比图路径、预测坐标、GT 坐标。
 
 用法示例（直接跑推理）：
   /bin/bash -lc 'source /root/miniconda/etc/profile.d/conda.sh && conda activate openmmlab && \
@@ -352,6 +353,11 @@ def _safe_name(name: str) -> str:
     return name
 
 
+def _poly_to_list(poly: Union[np.ndarray, Sequence[float]]) -> List[float]:
+    arr = np.asarray(poly, dtype=np.float32).reshape(-1)
+    return [float(x) for x in arr.tolist()]
+
+
 def main():
     args = parse_args()
     register_all_modules()
@@ -532,6 +538,7 @@ def main():
             return None
 
     summary: Dict[str, List[dict]] = dict(good=[], bad=[])
+    export_items: List[dict] = []
 
     def _save_group(records: List[dict], group: str, out_subdir: str) -> None:
         for rank, rec in enumerate(records):
@@ -551,7 +558,7 @@ def main():
             color_err = (0, 0, 255)
             color_ign = (180, 180, 180)
 
-            # Pred panel: TP green, FP red
+            # Pred panel: only predictions (TP green, FP red)
             for item in rec['pred_items']:
                 poly = item['poly']
                 status = item['status']
@@ -564,17 +571,6 @@ def main():
                     cy = int(np.clip(pts[:, 1].mean(), 0, pred_img.shape[0] - 1))
                     _put_text(pred_img, f'{status.upper()} {score:.2f}',
                               (cx, cy), font_scale=0.5)
-
-            # Pred panel: mark missed GT as FN (red)
-            for item in rec['gt_items']:
-                if item['status'] != 'missed':
-                    continue
-                poly = item['poly']
-                _draw_poly(pred_img, poly, color=color_err, thickness=3)
-                pts = np.round(poly).astype(np.int32).reshape(-1, 2)
-                cx = int(np.clip(pts[:, 0].mean(), 0, pred_img.shape[1] - 1))
-                cy = int(np.clip(pts[:, 1].mean(), 0, pred_img.shape[0] - 1))
-                _put_text(pred_img, 'FN', (cx, cy), font_scale=0.6)
 
             # GT panel: matched green, missed red, ignored gray
             for item in rec['gt_items']:
@@ -615,6 +611,29 @@ def main():
                     dataset=dataset_name,
                     **stats,
                 ))
+            export_items.append(
+                dict(
+                    group=group,
+                    rank=rank,
+                    out_file=out_path,
+                    img_path=rec['img_path'],
+                    dataset=dataset_name,
+                    stats=stats,
+                    pred_instances=[
+                        dict(
+                            poly=_poly_to_list(item['poly']),
+                            score=float(item.get('score', 0.0)),
+                            status=str(item.get('status', '')),
+                        ) for item in rec['pred_items']
+                    ],
+                    gt_instances=[
+                        dict(
+                            poly=_poly_to_list(item['poly']),
+                            status=str(item.get('status', '')),
+                            ignored=(item.get('status', '') == 'ignored'),
+                        ) for item in rec['gt_items']
+                    ],
+                ))
 
     _save_group(best_records, 'good', out_good)
     _save_group(worst_records, 'bad', out_bad)
@@ -622,7 +641,31 @@ def main():
     with open(osp.join(out_dir, 'summary.json'), 'w', encoding='utf-8') as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
 
+    export_path = osp.join(out_dir, 'compare_instances.json')
+    with open(export_path, 'w', encoding='utf-8') as f:
+        json.dump(
+            dict(
+                meta=dict(
+                    config=args.config,
+                    checkpoint=args.checkpoint,
+                    pred_pkl=args.pred_pkl,
+                    split=args.split,
+                    num=args.num,
+                    pred_score_thr=args.pred_score_thr,
+                    match_iou_thr=args.match_iou_thr,
+                    ignore_precision_thr=args.ignore_precision_thr,
+                    strategy=args.strategy,
+                    dataset_prefixes=args.dataset_prefixes,
+                    only_datasets=args.only_datasets,
+                ),
+                items=export_items,
+            ),
+            f,
+            ensure_ascii=False,
+            indent=2)
+
     print(f'已生成对比图：{out_dir}')
+    print(f'已导出坐标文件：{export_path}')
 
 
 if __name__ == '__main__':
