@@ -106,6 +106,12 @@ def parse_args():
         help='Optional dataset name to path prefix mapping: '
         'e.g. art=data/art_mmocr rctw=data/rctw17_mmocr.')
     parser.add_argument(
+        '--only-datasets',
+        nargs='*',
+        default=None,
+        help='Only visualize selected datasets (names in --dataset-prefixes). '
+        'E.g. --only-datasets art. Requires --dataset-prefixes.')
+    parser.add_argument(
         '--cfg-options',
         nargs='+',
         action=DictAction,
@@ -399,6 +405,9 @@ def main():
     worst_heap: List[Tuple[float, int, dict]] = []  # store (-hmean, idx, rec)
 
     dataset_prefixes = _parse_dataset_prefixes(args.dataset_prefixes)
+    if args.only_datasets and not dataset_prefixes:
+        raise ValueError('使用 --only-datasets 需要同时提供 --dataset-prefixes。')
+    only_datasets = set(args.only_datasets) if args.only_datasets else None
 
     if outputs_iter is not None:
         total = len(outputs_iter)
@@ -433,6 +442,12 @@ def main():
             pred_instances = getattr(output, 'pred_instances', None)
 
         if gt_instances is None or pred_instances is None:
+            global_idx += 1
+            prog.update()
+            continue
+
+        dataset_name = _infer_dataset_name(img_path, dataset_prefixes)
+        if only_datasets is not None and dataset_name not in only_datasets:
             global_idx += 1
             prog.update()
             continue
@@ -478,7 +493,6 @@ def main():
             prog.update()
             continue
 
-        dataset_name = _infer_dataset_name(img_path, dataset_prefixes)
         record = dict(
             idx=global_idx,
             dataset=dataset_name,
