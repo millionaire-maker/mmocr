@@ -98,6 +98,16 @@ val_dataloader = dict(
 
 test_dataloader = val_dataloader
 
+# 分别输出 ART / RCTW / RECTS 的验证集指标（同时保留原始 icdar/hmean 作为总分）
+val_evaluator = dict(
+    type='MultiDatasetHmeanIOUMetric',
+    dataset_prefixes=dict(
+        art=textdet_art_data_root,
+        rctw=textdet_rctw_data_root,
+        rects=textdet_rects_data_root,
+    ))
+test_evaluator = val_evaluator
+
 auto_scale_lr = dict(enable=True, base_batch_size=32)
 
 # 微调优化器配置：降低学习率避免灾难性遗忘；同时启用 AMP 以提升吞吐并节省显存
