@@ -72,9 +72,13 @@ class MultiDatasetHmeanIOUMetric(HmeanIOUMetric):
 
         new_results = self.results[prev_len:]
         for result, data_sample in zip(new_results, data_samples):
-            metainfo = data_sample.get('metainfo', {})
-            img_path = metainfo.get('img_path', '') if isinstance(
-                metainfo, dict) else ''
+            img_path = ''
+            if hasattr(data_sample, 'get'):
+                img_path = data_sample.get('img_path', '')
+                if not img_path:
+                    metainfo = data_sample.get('metainfo', {})
+                    if isinstance(metainfo, dict):
+                        img_path = metainfo.get('img_path', '')
             dataset_name = self._infer_dataset_name(img_path)
             result['dataset_name'] = dataset_name
             result['img_path'] = img_path
