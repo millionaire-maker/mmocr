@@ -7,10 +7,12 @@ import os.path as osp
 from pathlib import Path
 from typing import Dict, Optional
 
-from mmengine.config import Config
+from mmengine.config import Config, DictAction
 from mmengine.fileio import dump, load
 from mmengine.runner import Runner
 from mmengine.structures import InstanceData
+import numpy as np
+import torch
 
 from mmocr.registry import METRICS
 from mmocr.utils import register_all_modules
@@ -24,6 +26,16 @@ def parse_args():
     parser.add_argument('--split', choices=['val', 'test'], default='val')
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--out-json', required=True, help='输出 metrics.json')
+    parser.add_argument(
+        '--cfg-options',
+        nargs='+',
+        action=DictAction,
+        help='覆盖 config 中的部分字段，格式同 tools/test.py 的 --cfg-options')
+    parser.add_argument(
+        '--max-images',
+        type=int,
+        default=0,
+        help='仅评测前 N 张（用于 smoke），0 表示全量')
     return parser.parse_args()
 
 
@@ -70,11 +82,33 @@ def _pick_metric_cfg(evaluator_cfg):
     raise TypeError('val_evaluator/test_evaluator 需为 dict 或 list[dict]')
 
 
+def _to_instance_data(pred_instances) -> InstanceData:
+    if isinstance(pred_instances, InstanceData):
+        return pred_instances
+    inst = InstanceData()
+    if isinstance(pred_instances, dict):
+        polys = pred_instances.get('polygons', [])
+        scores = pred_instances.get('scores', [])
+        inst.polygons = list(polys)
+        if isinstance(scores, torch.Tensor):
+            inst.scores = scores
+        else:
+            inst.scores = torch.tensor(
+                np.array(scores, dtype=np.float32), dtype=torch.float32)
+        return inst
+    # fallback empty
+    inst.polygons = []
+    inst.scores = torch.tensor([], dtype=torch.float32)
+    return inst
+
+
 def main():
     args = parse_args()
     register_all_modules()
 
     cfg = Config.fromfile(args.config)
+    if getattr(args, 'cfg_options', None):
+        cfg.merge_from_dict(args.cfg_options)
     if args.split == 'val':
         dataloader_cfg = cfg.val_dataloader
         evaluator_cfg = cfg.val_evaluator
@@ -93,18 +127,25 @@ def main():
     if not isinstance(preds, list):
         raise TypeError('pred pkl 期望为 list[DataSample]')
 
-    pred_map: Dict[str, object] = {}
+    pred_map: Dict[str, InstanceData] = {}
     for pred in preds:
         img_path = _get_img_path(pred)
         if not img_path:
             continue
         key = osp.abspath(osp.normpath(img_path))
+        pred_instances = None
         if hasattr(pred, 'get'):
-            pred_map[key] = pred.get('pred_instances')
+            pred_instances = pred.get('pred_instances')
+            if pred_instances is None:
+                pred_instances = pred.get('instances')
         elif isinstance(pred, dict):
-            pred_map[key] = pred.get('pred_instances')
+            pred_instances = pred.get('pred_instances')
+            if pred_instances is None:
+                pred_instances = pred.get('instances')
+        pred_map[key] = _to_instance_data(pred_instances)
 
     missing = 0
+    processed = 0
     for data_batch in dataloader:
         data_samples = data_batch.get('data_samples')
         if data_samples is None:
@@ -116,15 +157,19 @@ def main():
             pred_instances = pred_map.get(key, None)
             if pred_instances is None:
                 missing += 1
-                empty = InstanceData()
-                empty.polygons = []
-                empty.scores = []
-                ds.pred_instances = empty
+                ds.pred_instances = _to_instance_data(None)
             else:
                 ds.pred_instances = pred_instances
+            processed += 1
+            if args.max_images and processed >= args.max_images:
+                break
         metric.process(data_batch=data_batch, data_samples=data_samples)
+        if args.max_images and processed >= args.max_images:
+            break
 
-    metrics = metric.evaluate(len(dataloader.dataset))
+    total = processed if (args.max_images and processed > 0) else len(
+        dataloader.dataset)
+    metrics = metric.evaluate(total)
     out_json = Path(args.out_json)
     out_json.parent.mkdir(parents=True, exist_ok=True)
     dump(metrics, str(out_json))

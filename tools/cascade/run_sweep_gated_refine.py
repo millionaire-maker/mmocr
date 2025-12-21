@@ -22,6 +22,14 @@ STAGE1_FIXED_CFG_OPTIONS = [
 ]
 
 
+def _balanced_indices_cfg_options(per_dataset: int) -> List[str]:
+    opts: List[str] = []
+    for split_key in ['val_dataloader', 'test_dataloader']:
+        for i in range(3):
+            opts.append(f'{split_key}.dataset.datasets.{i}.indices={per_dataset}')
+    return opts
+
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description='refine_ratio sweep + trade-off 曲线产物（离线 gated refine）')
@@ -37,6 +45,11 @@ def parse_args():
         help='refine_ratio 列表')
     parser.add_argument('--out-dir', required=True)
     parser.add_argument('--max-images', type=int, default=0)
+    parser.add_argument(
+        '--per-dataset',
+        type=int,
+        default=0,
+        help='balanced 子采样：每个子数据集取前 N 张（ConcatDataset 顺序）')
     return parser.parse_args()
 
 
@@ -97,6 +110,8 @@ def _ensure_plots(out_dir: Path, ratios: List[float], metrics_rows: List[Dict],
 
 
 def _write_readme(out_dir: Path, args) -> None:
+    stage2_ckpt_note = args.stage2_ckpt if args.stage2_ckpt else '<path/to/fcenet_ckpt.pth>'
+    smoke_per_dataset = int(args.per_dataset) if getattr(args, 'per_dataset', 0) else 20
     readme = f"""# Cascade Refine (DBNet++ -> FCENet)
 
 本实验实现 **离线** coarse-to-fine gated refine：
@@ -104,6 +119,33 @@ def _write_readme(out_dir: Path, args) -> None:
 - Stage-1：DBNet++（coarse），由 `tools/test.py --save-preds` 生成预测 `pkl`
 - Stage-2：FCENet（fine），对 Stage-1 的部分实例裁 patch、推理、回映射、融合/NMS
 - 输出：refine_ratio sweep 的 **精度-速度 trade-off 曲线**（overall + art/rctw/rects）
+
+## 一行命令（可直接复制）
+
+说明：
+
+- 所有命令均使用 `conda run -n openmmlab ...`；每条命令都是**单行**（无反斜杠续行）
+- 建议固定 `CUDA_VISIBLE_DEVICES=0`
+
+1) baseline 生成 Stage-1 pkl（全量）：
+
+`cd /home/yzy/mmocr && CUDA_VISIBLE_DEVICES=0 conda run -n openmmlab python tools/test.py {args.stage1_config} {args.stage1_ckpt} --work-dir {out_dir}/stage1_preds --save-preds --cfg-options model.det_head.postprocessor.text_repr_type=poly model.det_head.postprocessor.unclip_ratio=1.8 model.det_head.postprocessor.epsilon_ratio=0.002`
+
+2) baseline 离线评测（全量）：
+
+`cd /home/yzy/mmocr && conda run -n openmmlab python tools/cascade/eval_saved_preds.py --config {args.stage1_config} --pred-pkl {out_dir}/stage1_preds/{Path(args.stage1_ckpt).name}_predictions.pkl --split val --device cpu --out-json {out_dir}/stage1_preds/baseline_metrics.json`
+
+3) refine smoke（max-images=20；默认 dry-run，不依赖 Stage-2 权重）：
+
+`cd /home/yzy/mmocr && CUDA_VISIBLE_DEVICES=0 conda run -n openmmlab python tools/cascade/gated_refine_fcenet.py --stage1-pred-pkl {out_dir}/stage1_preds/{Path(args.stage1_ckpt).name}_predictions.pkl --out-pkl {out_dir}/refine_smoke_ratio_0.1/refined_predictions.pkl --stage2-config {args.stage2_config} --device cuda:0 --gating-mode ratio --refine-ratio 0.1 --max-images 20 --dry-run-refine`
+
+4) sweep smoke（ratios=0/0.1，balanced subsample={smoke_per_dataset}；默认 dry-run）：
+
+`cd /home/yzy/mmocr && CUDA_VISIBLE_DEVICES=0 conda run -n openmmlab python tools/cascade/run_sweep_gated_refine.py --stage1-config {args.stage1_config} --stage1-ckpt {args.stage1_ckpt} --stage2-config {args.stage2_config} --ratios 0 0.1 --out-dir {out_dir} --per-dataset {smoke_per_dataset}`
+
+5) sweep full（ratios=0/0.1/0.3/0.5/1.0，全量；需要 Stage-2 权重才有真实提升）：
+
+`cd /home/yzy/mmocr && CUDA_VISIBLE_DEVICES=0 conda run -n openmmlab python tools/cascade/run_sweep_gated_refine.py --stage1-config {args.stage1_config} --stage1-ckpt {args.stage1_ckpt} --stage2-config {args.stage2_config} --stage2-ckpt {stage2_ckpt_note} --ratios 0 0.1 0.3 0.5 1.0 --out-dir {out_dir}`
 
 ## 实验依据（已验证结论）
 
@@ -142,6 +184,21 @@ def _write_readme(out_dir: Path, args) -> None:
 
 对整图 polygons 做 greedy NMS（基于 `mmocr.utils.poly_iou`），阈值 `nms-iou-thr`。
 
+## Debug Vis 快速验收（裁 patch / 回映射 / NMS / fallback）
+
+建议在少量样本上启用 `--save-debug-vis` 快速看对不对（脚本默认只保存前 20 张图，避免爆目录）：
+
+`cd /home/yzy/mmocr && CUDA_VISIBLE_DEVICES=0 conda run -n openmmlab python tools/cascade/gated_refine_fcenet.py --stage1-pred-pkl {out_dir}/stage1_preds/{Path(args.stage1_ckpt).name}_predictions.pkl --out-pkl {out_dir}/debug_vis/refined_predictions.pkl --stage2-config {args.stage2_config} --device cuda:0 --gating-mode ratio --refine-ratio 0.1 --save-debug-vis --max-images 20 --dry-run-refine`
+
+验收要点（建议顺序）：
+
+1) 看 `{out_dir}/debug_vis/vis/` 下的原图叠图：coarse（红） vs 最终（绿），确认绿框没有整体偏移/旋转错位（回映射正确）。
+2) 看 `{out_dir}/debug_vis/vis/patches/` 下的 patch：文本应该在 patch 内居中，polygons 不应被裁断（裁 patch 稳健）。
+3) 同一文本区域重复框应被抑制（NMS 生效）。
+4) `refine_summary.json` 中 `refine_fallback` 不应为 0（在真实 Stage-2 下常见），且失败时最终结果仍应保留 coarse（fallback 生效）。
+
+有 Stage-2 权重时：去掉 `--dry-run-refine` 并补上 `--stage2-ckpt {stage2_ckpt_note}`，即可验收“真实 refine”效果。
+
 ## 输出目录结构
 
 以本次 sweep 输出目录 `{out_dir}` 为例：
@@ -163,6 +220,13 @@ def _write_readme(out_dir: Path, args) -> None:
   plots/
     hmean_vs_ratio.png
     ms_per_img_vs_ratio.png
+  debug_vis/
+    refined_predictions.pkl
+    refine_summary.json
+    vis/
+      *.jpg
+      patches/
+        *.jpg
   README.md
 ```
 
@@ -173,13 +237,15 @@ def _write_readme(out_dir: Path, args) -> None:
 - refine 可用 `--dry-run-refine` 模式跑通裁剪/映射/NMS/fallback（但不会带来精度提升）
 - 需要真实 refine 时，请下载/准备 FCENet 权重文件并传给 `--stage2-ckpt`
 
-可参考 `configs/textdet/fcenet/README.md` 中的官方权重下载链接（OpenMMLab download）。
+可参考 `/home/yzy/mmocr/configs/textdet/fcenet/README.md` 中的官方权重下载链接（OpenMMLab download）。
 """
     (out_dir / 'README.md').write_text(readme, encoding='utf-8')
 
 
 def main():
     args = parse_args()
+    if args.per_dataset and args.per_dataset > 0 and args.max_images and args.max_images > 0:
+        raise ValueError('请不要同时使用 --per-dataset 与 --max-images（会导致评测/预测不一致）')
 
     repo_root = Path(__file__).resolve().parents[2]
     out_dir = Path(args.out_dir)
@@ -190,11 +256,14 @@ def main():
 
     stage1_pkl = stage1_dir / f'{Path(args.stage1_ckpt).name}_predictions.pkl'
     if not stage1_pkl.exists():
+        extra_cfg_opts: List[str] = []
+        if args.per_dataset and args.per_dataset > 0:
+            extra_cfg_opts = _balanced_indices_cfg_options(args.per_dataset)
         cmd = [
             sys.executable, 'tools/test.py', args.stage1_config,
             args.stage1_ckpt, '--work-dir',
             str(stage1_dir), '--save-preds', '--cfg-options'
-        ] + STAGE1_FIXED_CFG_OPTIONS
+        ] + STAGE1_FIXED_CFG_OPTIONS + extra_cfg_opts
         _run(cmd, cwd=str(repo_root))
         if not stage1_pkl.exists():
             raise FileNotFoundError(
@@ -208,6 +277,11 @@ def main():
             str(stage1_pkl), '--split', 'val', '--device', 'cpu', '--out-json',
             str(baseline_metrics)
         ]
+        if args.per_dataset and args.per_dataset > 0:
+            cmd += ['--cfg-options'] + _balanced_indices_cfg_options(
+                args.per_dataset)
+        elif args.max_images and args.max_images > 0:
+            cmd += ['--max-images', str(args.max_images)]
         _run(cmd, cwd=str(repo_root))
 
     ratios = [float(r) for r in args.ratios]
@@ -269,6 +343,11 @@ def main():
                 str(refined_pkl), '--split', 'val', '--device', 'cpu',
                 '--out-json', str(metrics_json)
             ]
+            if args.per_dataset and args.per_dataset > 0:
+                cmd += ['--cfg-options'] + _balanced_indices_cfg_options(
+                    args.per_dataset)
+            elif args.max_images and args.max_images > 0:
+                cmd += ['--max-images', str(args.max_images)]
             _run(cmd, cwd=str(repo_root))
 
         m = _read_metric_json(metrics_json)
@@ -303,6 +382,7 @@ def main():
     results_json = {
         'stage1_pred_pkl': str(stage1_pkl),
         'baseline_metrics_json': str(baseline_metrics),
+        'per_dataset': int(args.per_dataset),
         'ratios': ratios,
         'results': results_rows,
         'speed': speed_rows,

@@ -393,9 +393,14 @@ def main():
     out_dir = out_pkl_path.parent
 
     if (not args.dry_run_refine) and (not args.stage2_ckpt):
-        raise ValueError('未提供 --stage2-ckpt，且未开启 --dry-run-refine')
+        raise ValueError(
+            '未提供 --stage2-ckpt 且未开启 --dry-run-refine。'
+            '请先在 configs/textdet/fcenet/README.md 中下载/准备 FCENet 权重，'
+            '再通过 --stage2-ckpt 指定。')
     if (not args.dry_run_refine) and (not osp.isfile(args.stage2_ckpt)):
-        raise FileNotFoundError(f'未找到 stage2 ckpt: {args.stage2_ckpt}')
+        raise FileNotFoundError(
+            f'未找到 stage2 ckpt: {args.stage2_ckpt}。'
+            '请检查路径，或参考 configs/textdet/fcenet/README.md 的官方下载链接。')
 
     preds = load(args.stage1_pred_pkl)
     if not isinstance(preds, list):
@@ -424,8 +429,10 @@ def main():
 
     save_vis_max = 20
     vis_dir = out_dir / 'vis'
+    patch_vis_dir = vis_dir / 'patches'
     if args.save_debug_vis:
         vis_dir.mkdir(parents=True, exist_ok=True)
+        patch_vis_dir.mkdir(parents=True, exist_ok=True)
 
     for img_idx, data_sample in enumerate(preds):
         t0 = time.perf_counter()
@@ -509,6 +516,18 @@ def main():
                 refine_fallback += 1
                 continue
 
+            if args.save_debug_vis and img_idx < save_vis_max:
+                patch_base = patch.copy()
+                patch_pred_vis = _draw_polys(
+                    patch_base, patch_polys, color=(0, 255, 0))
+                mmcv.imwrite(
+                    patch, str(patch_vis_dir /
+                               f'{img_idx:04d}_sel{i:03d}_patch.jpg'))
+                mmcv.imwrite(
+                    patch_pred_vis,
+                    str(patch_vis_dir /
+                        f'{img_idx:04d}_sel{i:03d}_patch_pred.jpg'))
+
             mapped_polys = _transform_polygons(patch_polys, mat_p2o)
             if not mapped_polys:
                 refine_fallback += 1
@@ -566,18 +585,27 @@ def main():
         keep_polys, keep_scores = _greedy_poly_nms(merged_polys, merged_scores,
                                                    args.nms_iou_thr)
 
-        out_sample = copy.deepcopy(data_sample)
-        out_sample.pred_instances.polygons = [
-            p.astype(np.float32) for p in keep_polys
-        ]
-        out_sample.pred_instances.scores = torch.tensor(
-            keep_scores, dtype=torch.float32)
+        if isinstance(data_sample, dict):
+            out_sample = copy.deepcopy(data_sample)
+            out_sample['pred_instances'] = dict(
+                polygons=[p.astype(np.float32) for p in keep_polys],
+                scores=torch.tensor(keep_scores, dtype=torch.float32))
+        else:
+            out_sample = copy.deepcopy(data_sample)
+            out_sample.pred_instances.polygons = [
+                p.astype(np.float32) for p in keep_polys
+            ]
+            out_sample.pred_instances.scores = torch.tensor(
+                keep_scores, dtype=torch.float32)
         refined_outputs.append(out_sample)
 
         if args.save_debug_vis and img_idx < save_vis_max:
-            coarse_vis = _draw_polys(img, polys, color=(0, 0, 255))
-            refined_vis = _draw_polys(coarse_vis, keep_polys, color=(0, 255, 0))
-            mmcv.imwrite(refined_vis, str(vis_dir / f'{img_idx:04d}.jpg'))
+            overlay = img.copy()
+            overlay = _draw_polys(overlay, polys, color=(0, 0, 255))
+            selected_polys = [polys[i] for i in selected] if selected else []
+            overlay = _draw_polys(overlay, selected_polys, color=(0, 255, 255))
+            overlay = _draw_polys(overlay, keep_polys, color=(0, 255, 0))
+            mmcv.imwrite(overlay, str(vis_dir / f'{img_idx:04d}.jpg'))
 
         total_time_s += (time.perf_counter() - t0)
 
@@ -632,4 +660,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
