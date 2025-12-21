@@ -145,5 +145,24 @@ custom_hooks = [
         patience=12,  # 连续12次验证无提升则停止（避免因短期波动过早停止）
         min_delta=0.001,  # 改善幅度>0.1%即视为有效提升
         rule='greater'  # hmean越大越好
-    )
+    ),
+    # 每次验证/测试都会自动输出对比可视化（左预测/右GT）+ 坐标文件
+    dict(
+        type='TextDetCompareVisualizationHook',
+        enable=True,
+        out_dir='vis_compare_auto',
+        num_images=50,
+        good_ratio=0.5,
+        pred_score_thr=0.3,
+        match_iou_thr=0.5,
+        ignore_precision_thr=0.5,
+        strategy='vanilla',
+        dataset_prefixes=dict(
+            art=textdet_art_data_root,
+            rctw=textdet_rctw_data_root,
+            rects=textdet_rects_data_root,
+        ),
+        # 如只想看某个数据集，可打开下面一行：
+        # only_datasets=['art'],
+    ),
 ]
