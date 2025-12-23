@@ -66,7 +66,7 @@ test_list = [textdet_lsvt_test, textdet_ctw_test]
 
 train_dataloader = dict(
     _delete_=True,
-    batch_size=8,
+    batch_size=12,
     num_workers=6,
     persistent_workers=True,
     pin_memory=True,
@@ -99,7 +99,7 @@ val_evaluator = dict(
     ))
 test_evaluator = val_evaluator
 
-auto_scale_lr = dict(enable=True, base_batch_size=8)
+auto_scale_lr = dict(enable=True, base_batch_size=12)
 
 # 数据集较大，验证过于频繁会明显拖慢训练；保持更合理的验证间隔
 train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=5)

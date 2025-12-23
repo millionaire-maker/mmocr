@@ -82,7 +82,7 @@ test_list = [textdet_art_test, textdet_rctw_test, textdet_rects_test]
 
 train_dataloader = dict(
     _delete_=True,
-    batch_size=8,
+    batch_size=12,
     num_workers=6,
     persistent_workers=True,
     pin_memory=True,
@@ -116,7 +116,7 @@ val_evaluator = dict(
     ))
 test_evaluator = val_evaluator
 
-auto_scale_lr = dict(enable=True, base_batch_size=8)
+auto_scale_lr = dict(enable=True, base_batch_size=12)
 
 # 修改验证间隔为每3个epoch验证一次
 train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=3)
