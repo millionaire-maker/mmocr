@@ -9,6 +9,52 @@ optim_wrapper = dict(optimizer=dict(lr=1e-3, weight_decay=5e-4))
 train_cfg = dict(max_epochs=1500)
 param_scheduler = [dict(type='PolyLR', power=0.9, eta_min=1e-7, end=1500)]
 
+# 使用当前服务器上已有的数据目录
+textdet_art_data_root = 'data/art_mmocr'
+textdet_rctw_data_root = 'data/rctw17_mmocr'
+textdet_rects_data_root = 'data/rects_mmocr'
+
+textdet_art_train = dict(
+    type='OCRDataset',
+    data_root=textdet_art_data_root,
+    ann_file='instances_train.json',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None)
+textdet_rctw_train = dict(
+    type='OCRDataset',
+    data_root=textdet_rctw_data_root,
+    ann_file='instances_train.json',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None)
+textdet_rects_train = dict(
+    type='OCRDataset',
+    data_root=textdet_rects_data_root,
+    ann_file='instances_train.json',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None)
+
+textdet_art_test = dict(
+    type='OCRDataset',
+    data_root=textdet_art_data_root,
+    ann_file='instances_val.json',
+    test_mode=True,
+    pipeline=None)
+textdet_rctw_test = dict(
+    type='OCRDataset',
+    data_root=textdet_rctw_data_root,
+    ann_file='instances_val.json',
+    test_mode=True,
+    pipeline=None)
+textdet_rects_test = dict(
+    type='OCRDataset',
+    data_root=textdet_rects_data_root,
+    ann_file='instances_val.json',
+    test_mode=True,
+    pipeline=None)
+
+train_list = [textdet_art_train, textdet_rctw_train, textdet_rects_train]
+test_list = [textdet_art_test, textdet_rctw_test, textdet_rects_test]
+
 train_dataloader = dict(
     _delete_=True,
     batch_size=4,
@@ -16,10 +62,8 @@ train_dataloader = dict(
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
-        type='OCRDataset',
-        data_root='data/textdet_finetune_art_rctw_rects',
-        ann_file='instances_train.json',
-        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        type='ConcatDataset',
+        datasets=train_list,
         pipeline=_base_.train_pipeline))
 
 val_dataloader = dict(
@@ -29,10 +73,8 @@ val_dataloader = dict(
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
-        type='OCRDataset',
-        data_root='data/textdet_finetune_art_rctw_rects',
-        ann_file='instances_val.json',
-        test_mode=True,
+        type='ConcatDataset',
+        datasets=test_list,
         pipeline=_base_.test_pipeline))
 
 test_dataloader = val_dataloader
