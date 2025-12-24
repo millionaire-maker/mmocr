@@ -32,7 +32,7 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'none'
-load_from = 'work_dirs/dbnetpp_r50_pretrain_lsvt_ctw/best_icdar_hmean_epoch_60.pth'
+load_from = 'work_dirs/dbnetpp_r50_finetune_art_rctw_rects/epoch_72.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
 model = dict(
@@ -99,7 +99,7 @@ param_scheduler = [
         type='PolyLR'),
 ]
 randomness = dict(seed=None)
-resume = False
+resume = True
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
