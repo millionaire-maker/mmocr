@@ -13,7 +13,7 @@ load_from = None
 # 固定输入分辨率/尺度增强场景下，开启 cudnn benchmark 可提升吞吐
 env_cfg = dict(cudnn_benchmark=True)
 
-max_epochs = 200
+max_epochs = 100
 
 # AMP + 梯度裁剪：提升吞吐、降低显存并增强训练稳定性
 optim_wrapper = dict(

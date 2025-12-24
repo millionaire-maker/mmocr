@@ -12,7 +12,7 @@ load_from = None
 
 env_cfg = dict(cudnn_benchmark=True)
 
-max_epochs = 200
+max_epochs = 60
 
 optim_wrapper = dict(
     type='AmpOptimWrapper',
@@ -120,7 +120,7 @@ custom_hooks = [
     dict(
         type='EarlyStoppingHook',
         monitor='icdar/hmean',  # 监控icdar/hmean指标
-        patience=20,  # 连续20次验证无提升则停止（val_interval=5，对应100个epoch窗口）
+        patience=6,  # 连续6次验证无提升则停止（val_interval=5，对应30个epoch窗口）
         min_delta=0.001,  # 改善幅度>0.1%即视为有效提升
         rule='greater'  # hmean越大越好
     )
