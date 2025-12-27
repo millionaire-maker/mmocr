@@ -36,6 +36,8 @@ cd "$REPO_ROOT"
 INTERVAL="${SYNC_INTERVAL:-1800}"
 ONCE="${SYNC_ONCE:-0}"
 
+UNSET_PROXY_ENV="${SYNC_UNSET_PROXY_ENV:-1}"
+
 REMOTE_HOST="${SYNC_REMOTE_HOST:-link.lanyun.net}"
 REMOTE_USER="${SYNC_REMOTE_USER:-root}"
 REMOTE_PORT="${SYNC_REMOTE_PORT:-44165}"
@@ -52,6 +54,11 @@ DRY_RUN="${SYNC_DRY_RUN:-0}"
 LOCK_FILE="${SYNC_LOCK_FILE:-/tmp/mmocr_auto_sync_remote.lock}"
 
 SSH_IDENTITY_FILE="${SYNC_SSH_IDENTITY_FILE:-}"
+SSH_BATCH_MODE="${SYNC_SSH_BATCH_MODE:-1}"
+SSH_PROXYCOMMAND="${SYNC_SSH_PROXYCOMMAND:-}"
+SOCKS5_PROXY_HOST="${SYNC_SOCKS5_PROXY_HOST:-}"
+SOCKS5_PROXY_PORT="${SYNC_SOCKS5_PROXY_PORT:-}"
+SOCKS5_PROXY_PYTHON="${SYNC_SOCKS5_PROXY_PYTHON:-/root/miniconda/envs/openmmlab/bin/python}"
 SSH_CONNECT_TIMEOUT="${SYNC_SSH_CONNECT_TIMEOUT:-15}"
 REMOTE_CMD_TIMEOUT="${SYNC_REMOTE_CMD_TIMEOUT:-120}"
 RSYNC_TIMEOUT="${SYNC_RSYNC_TIMEOUT:-7200}"
@@ -65,11 +72,15 @@ if ! flock -n 9; then
   exit 0
 fi
 
+if [ "$UNSET_PROXY_ENV" = "1" ]; then
+  unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy NO_PROXY no_proxy
+fi
+
 remote_target="${REMOTE_USER}@${REMOTE_HOST}"
 
 ssh_base=(
   ssh -p "$REMOTE_PORT"
-  -o BatchMode=yes
+  -o "BatchMode=$( [ "$SSH_BATCH_MODE" = "1" ] && echo yes || echo no )"
   -o StrictHostKeyChecking=accept-new
   -o ConnectTimeout="$SSH_CONNECT_TIMEOUT"
   -o ServerAliveInterval=30
@@ -80,14 +91,24 @@ if [ -n "$SSH_IDENTITY_FILE" ]; then
   ssh_base+=(-i "$SSH_IDENTITY_FILE")
 fi
 
+if [ -z "$SSH_PROXYCOMMAND" ] && [ -n "$SOCKS5_PROXY_HOST" ] && [ -n "$SOCKS5_PROXY_PORT" ]; then
+  SSH_PROXYCOMMAND="${SOCKS5_PROXY_PYTHON} ${REPO_ROOT}/scripts/socks5_proxycommand.py ${SOCKS5_PROXY_HOST} ${SOCKS5_PROXY_PORT} %h %p"
+fi
+if [ -n "$SSH_PROXYCOMMAND" ]; then
+  ssh_base+=(-o "ProxyCommand=${SSH_PROXYCOMMAND}")
+fi
+
 remote_exec() {
   local cmd="$1"
   timeout "$REMOTE_CMD_TIMEOUT" "${ssh_base[@]}" "$remote_target" /bin/bash -lc "$cmd"
 }
 
-rsync_rsh="ssh -p ${REMOTE_PORT} -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=${SSH_CONNECT_TIMEOUT} -o ServerAliveInterval=30 -o ServerAliveCountMax=6"
+rsync_rsh="ssh -p ${REMOTE_PORT} -o BatchMode=$( [ \"$SSH_BATCH_MODE\" = \"1\" ] && echo yes || echo no ) -o StrictHostKeyChecking=accept-new -o ConnectTimeout=${SSH_CONNECT_TIMEOUT} -o ServerAliveInterval=30 -o ServerAliveCountMax=6"
 if [ -n "$SSH_IDENTITY_FILE" ]; then
   rsync_rsh="${rsync_rsh} -i ${SSH_IDENTITY_FILE}"
+fi
+if [ -n "$SSH_PROXYCOMMAND" ]; then
+  rsync_rsh="${rsync_rsh} -o ProxyCommand='${SSH_PROXYCOMMAND}'"
 fi
 
 rsync_base=(
