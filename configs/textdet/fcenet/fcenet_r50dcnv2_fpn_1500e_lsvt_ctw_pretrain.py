@@ -66,7 +66,7 @@ test_list = [textdet_lsvt_test, textdet_ctw_test]
 
 train_dataloader = dict(
     _delete_=True,
-    batch_size=12,
+    batch_size=32,
     num_workers=6,
     persistent_workers=True,
     pin_memory=True,

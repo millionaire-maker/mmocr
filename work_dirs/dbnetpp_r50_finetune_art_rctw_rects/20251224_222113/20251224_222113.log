@@ -13762,3 +13762,42 @@ The value is the same before and after calling `init_weights` of DBNet
 2025/12/25 19:14:59 - mmengine - INFO - Epoch(val) [102][3240/3363]    eta: 0:00:14  time: 0.1553  data_time: 0.0009  memory: 1959  
 2025/12/25 19:15:00 - mmengine - INFO - Epoch(val) [102][3245/3363]    eta: 0:00:13  time: 0.1793  data_time: 0.0009  memory: 2457  
 2025/12/25 19:15:01 - mmengine - INFO - Epoch(val) [102][3250/3363]    eta: 0:00:13  time: 0.1872  data_time: 0.0007  memory: 2390  
+2025/12/25 19:15:01 - mmengine - INFO - Epoch(val) [102][3255/3363]    eta: 0:00:12  time: 0.1638  data_time: 0.0007  memory: 1667  
+2025/12/25 19:15:02 - mmengine - INFO - Epoch(val) [102][3260/3363]    eta: 0:00:12  time: 0.1288  data_time: 0.0006  memory: 2340  
+2025/12/25 19:15:03 - mmengine - INFO - Epoch(val) [102][3265/3363]    eta: 0:00:11  time: 0.1459  data_time: 0.0006  memory: 2306  
+2025/12/25 19:15:04 - mmengine - INFO - Epoch(val) [102][3270/3363]    eta: 0:00:10  time: 0.1475  data_time: 0.0006  memory: 2423  
+2025/12/25 19:15:04 - mmengine - INFO - Epoch(val) [102][3275/3363]    eta: 0:00:10  time: 0.1223  data_time: 0.0006  memory: 1835  
+2025/12/25 19:15:05 - mmengine - INFO - Epoch(val) [102][3280/3363]    eta: 0:00:09  time: 0.1174  data_time: 0.0006  memory: 1919  
+2025/12/25 19:15:05 - mmengine - INFO - Epoch(val) [102][3285/3363]    eta: 0:00:09  time: 0.1181  data_time: 0.0006  memory: 1617  
+2025/12/25 19:15:06 - mmengine - INFO - Epoch(val) [102][3290/3363]    eta: 0:00:08  time: 0.1074  data_time: 0.0006  memory: 2189  
+2025/12/25 19:15:06 - mmengine - INFO - Epoch(val) [102][3295/3363]    eta: 0:00:07  time: 0.1041  data_time: 0.0005  memory: 2020  
+2025/12/25 19:15:07 - mmengine - INFO - Epoch(val) [102][3300/3363]    eta: 0:00:07  time: 0.1429  data_time: 0.0006  memory: 2104  
+2025/12/25 19:15:08 - mmengine - INFO - Epoch(val) [102][3305/3363]    eta: 0:00:06  time: 0.1546  data_time: 0.0006  memory: 1972  
+2025/12/25 19:15:08 - mmengine - INFO - Epoch(val) [102][3310/3363]    eta: 0:00:06  time: 0.1128  data_time: 0.0006  memory: 1533  
+2025/12/25 19:15:09 - mmengine - INFO - Epoch(val) [102][3315/3363]    eta: 0:00:05  time: 0.1019  data_time: 0.0006  memory: 2457  
+2025/12/25 19:15:10 - mmengine - INFO - Epoch(val) [102][3320/3363]    eta: 0:00:05  time: 0.1166  data_time: 0.0006  memory: 2189  
+2025/12/25 19:15:10 - mmengine - INFO - Epoch(val) [102][3325/3363]    eta: 0:00:04  time: 0.1192  data_time: 0.0005  memory: 1600  
+2025/12/25 19:15:11 - mmengine - INFO - Epoch(val) [102][3330/3363]    eta: 0:00:03  time: 0.1390  data_time: 0.0006  memory: 2037  
+2025/12/25 19:15:12 - mmengine - INFO - Epoch(val) [102][3335/3363]    eta: 0:00:03  time: 0.1364  data_time: 0.0005  memory: 1516  
+2025/12/25 19:15:12 - mmengine - INFO - Epoch(val) [102][3340/3363]    eta: 0:00:02  time: 0.1156  data_time: 0.0006  memory: 1583  
+2025/12/25 19:15:13 - mmengine - INFO - Epoch(val) [102][3345/3363]    eta: 0:00:02  time: 0.1473  data_time: 0.0006  memory: 1885  
+2025/12/25 19:15:14 - mmengine - INFO - Epoch(val) [102][3350/3363]    eta: 0:00:01  time: 0.1784  data_time: 0.0007  memory: 2121  
+2025/12/25 19:15:15 - mmengine - INFO - Epoch(val) [102][3355/3363]    eta: 0:00:00  time: 0.1901  data_time: 0.0007  memory: 2037  
+2025/12/25 19:15:16 - mmengine - INFO - Epoch(val) [102][3360/3363]    eta: 0:00:00  time: 0.1967  data_time: 0.0007  memory: 2457  
+2025/12/25 19:15:16 - mmengine - INFO - Evaluating hmean-iou...
+2025/12/25 19:15:17 - mmengine - INFO - prediction score threshold: 0.30, recall: 0.7452, precision: 0.3225, hmean: 0.4502
+
+2025/12/25 19:15:17 - mmengine - INFO - prediction score threshold: 0.40, recall: 0.7444, precision: 0.6726, hmean: 0.7067
+
+2025/12/25 19:15:17 - mmengine - INFO - prediction score threshold: 0.50, recall: 0.7367, precision: 0.7144, hmean: 0.7254
+
+2025/12/25 19:15:17 - mmengine - INFO - prediction score threshold: 0.60, recall: 0.7181, precision: 0.7411, hmean: 0.7294
+
+2025/12/25 19:15:17 - mmengine - INFO - prediction score threshold: 0.70, recall: 0.6469, precision: 0.7687, hmean: 0.7026
+
+2025/12/25 19:15:17 - mmengine - INFO - prediction score threshold: 0.80, recall: 0.4120, precision: 0.7919, hmean: 0.5420
+
+2025/12/25 19:15:17 - mmengine - INFO - prediction score threshold: 0.90, recall: 0.0482, precision: 0.9540, hmean: 0.0917
+
+2025/12/25 19:15:17 - mmengine - INFO - Epoch(val) [102][3363/3363]    icdar/precision: 0.7411  icdar/recall: 0.7181  icdar/hmean: 0.7294  data_time: 0.0006  time: 0.1177
+2025/12/25 19:15:41 - mmengine - INFO - Epoch(train) [103][  5/947]  lr: 7.9285e-04  eta: 2 days, 16:08:07  time: 3.2357  data_time: 0.9399  memory: 17790  grad_norm: 9.1913  loss: 1.1348  loss_prob: 0.6621  loss_thr: 0.3603  loss_db: 0.1124

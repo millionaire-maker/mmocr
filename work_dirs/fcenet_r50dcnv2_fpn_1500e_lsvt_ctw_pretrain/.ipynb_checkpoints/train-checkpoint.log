@@ -1,0 +1,5 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "tools/train.py", line 11, in <module>
+    from mmocr.utils import register_all_modules
+ModuleNotFoundError: No module named 'mmocr'

@@ -75,7 +75,14 @@ class MaskedBalancedBCEWithLogitsLoss(nn.Module):
                 int(negative.sum()), int(positive_count * self.negative_ratio))
 
         assert gt.max() <= 1 and gt.min() >= 0
-        loss = self.loss(pred, gt)
+        # NOTE: torch.nn.BCELoss / F.binary_cross_entropy is banned under AMP
+        # autocast. For BCELoss-based subclasses, temporarily disable autocast
+        # and compute in float32.
+        if isinstance(self.loss, nn.BCELoss):
+            with torch.autocast(pred.device.type, enabled=False):
+                loss = self.loss(pred.float(), gt.float())
+        else:
+            loss = self.loss(pred, gt)
         positive_loss = loss * positive
         negative_loss = loss * negative
 
@@ -183,7 +190,14 @@ class MaskedBCEWithLogitsLoss(nn.Module):
         assert mask.size() == gt.size()
 
         assert gt.max() <= 1 and gt.min() >= 0
-        loss = self.loss(pred, gt)
+        # NOTE: torch.nn.BCELoss / F.binary_cross_entropy is banned under AMP
+        # autocast. For BCELoss-based subclasses, temporarily disable autocast
+        # and compute in float32.
+        if isinstance(self.loss, nn.BCELoss):
+            with torch.autocast(pred.device.type, enabled=False):
+                loss = self.loss(pred.float(), gt.float())
+        else:
+            loss = self.loss(pred, gt)
 
         return (loss * mask).sum() / (mask.sum() + self.eps)
 

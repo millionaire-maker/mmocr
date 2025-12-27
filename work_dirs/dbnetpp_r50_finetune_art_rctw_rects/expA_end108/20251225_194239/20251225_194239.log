@@ -1,0 +1,1312 @@
+2025/12/25 19:42:40 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+    CUDA available: True
+    MUSA available: False
+    numpy_random_seed: 1355967738
+    GPU 0: NVIDIA GeForce RTX 3090
+    CUDA_HOME: /usr/local/cuda
+    NVCC: Cuda compilation tools, release 11.1, V11.1.105
+    GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+    PyTorch: 1.10.2+cu111
+    PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.2.3 (Git Hash 7336ca9f055cf1bfa13efb658fe15dc9b41f0740)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.0.5
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.1, CUDNN_VERSION=8.0.5, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.10.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+    TorchVision: 0.11.3+cu111
+    OpenCV: 4.12.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: True
+    dist_cfg: {'backend': 'nccl'}
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    seed: 1355967738
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2025/12/25 19:42:40 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=32, enable=True)
+custom_hooks = [
+    dict(
+        min_delta=0.001,
+        monitor='icdar/hmean',
+        patience=12,
+        rule='greater',
+        type='EarlyStoppingHook'),
+]
+default_hooks = dict(
+    checkpoint=dict(
+        interval=3,
+        max_keep_ckpts=3,
+        rule='greater',
+        save_best='icdar/hmean',
+        type='CheckpointHook'),
+    logger=dict(interval=5, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    sync_buffer=dict(type='SyncBuffersHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(
+        draw_gt=False,
+        draw_pred=False,
+        enable=False,
+        interval=1,
+        show=False,
+        type='VisualizationHook'))
+default_scope = 'mmocr'
+env_cfg = dict(
+    cudnn_benchmark=True,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'none'
+load_from = 'work_dirs/dbnetpp_r50_finetune_art_rctw_rects/epoch_102.pth'
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
+model = dict(
+    backbone=dict(
+        depth=50,
+        frozen_stages=-1,
+        init_cfg=dict(checkpoint='torchvision://resnet50', type='Pretrained'),
+        norm_cfg=dict(requires_grad=True, type='BN'),
+        norm_eval=True,
+        num_stages=4,
+        out_indices=(
+            0,
+            1,
+            2,
+            3,
+        ),
+        style='pytorch',
+        type='mmdet.ResNet'),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+        ],
+        pad_size_divisor=32,
+        std=[
+            58.395,
+            57.12,
+            57.375,
+        ],
+        type='TextDetDataPreprocessor'),
+    det_head=dict(
+        in_channels=256,
+        module_loss=dict(type='DBModuleLoss'),
+        postprocessor=dict(
+            epsilon_ratio=0.002, text_repr_type='quad',
+            type='DBPostprocessor'),
+        type='DBHead'),
+    neck=dict(
+        asf_cfg=dict(attention_type='ScaleChannelSpatial'),
+        in_channels=[
+            256,
+            512,
+            1024,
+            2048,
+        ],
+        lateral_channels=256,
+        type='FPNC'),
+    type='DBNet')
+optim_wrapper = dict(
+    clip_grad=dict(max_norm=5, norm_type=2),
+    loss_scale='dynamic',
+    optimizer=dict(lr=0.0015, momentum=0.9, type='SGD', weight_decay=0.0001),
+    type='AmpOptimWrapper')
+param_schedluler = dict({'1': dict(end=108)})
+param_scheduler = [
+    dict(begin=0, by_epoch=True, end=2, start_factor=0.1, type='LinearLR'),
+    dict(
+        begin=2,
+        by_epoch=True,
+        end=200,
+        eta_min=1e-07,
+        power=0.9,
+        type='PolyLR'),
+]
+randomness = dict(seed=None)
+resume = True
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/art_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/rctw17_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/rects_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                4068,
+                1024,
+            ), type='Resize'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                    'instances',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=4,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(type='HmeanIOUMetric')
+test_list = [
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/art_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/rctw17_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/rects_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+]
+test_pipeline = [
+    dict(color_type='color_ignore_orientation', type='LoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        4068,
+        1024,
+    ), type='Resize'),
+    dict(
+        type='LoadOCRAnnotations',
+        with_bbox=True,
+        with_label=True,
+        with_polygon=True),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'scale_factor',
+            'instances',
+        ),
+        type='PackTextDetInputs'),
+]
+textdet_art_data_root = 'data/art_mmocr'
+textdet_art_rctw_rects_data_root = 'data/textdet_finetune_art_rctw_rects'
+textdet_art_rctw_rects_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/textdet_finetune_art_rctw_rects',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_art_rctw_rects_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/textdet_finetune_art_rctw_rects',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+textdet_art_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/art_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_art_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/art_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+textdet_rctw_data_root = 'data/rctw17_mmocr'
+textdet_rctw_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/rctw17_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_rctw_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/rctw17_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+textdet_rects_data_root = 'data/rects_mmocr'
+textdet_rects_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/rects_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_rects_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/rects_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+train_cfg = dict(max_epochs=108, type='EpochBasedTrainLoop', val_interval=3)
+train_dataloader = dict(
+    batch_size=32,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/art_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/rctw17_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/rects_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(
+                brightness=0.12549019607843137,
+                op='ColorJitter',
+                saturation=0.5,
+                type='TorchVisionWrapper'),
+            dict(
+                args=[
+                    [
+                        'Fliplr',
+                        0.5,
+                    ],
+                    dict(cls='Affine', rotate=[
+                        -10,
+                        10,
+                    ]),
+                    [
+                        'Resize',
+                        [
+                            0.5,
+                            3.0,
+                        ],
+                    ],
+                ],
+                type='ImgAugWrapper'),
+            dict(min_side_ratio=0.1, type='RandomCrop'),
+            dict(keep_ratio=True, scale=(
+                640,
+                640,
+            ), type='Resize'),
+            dict(size=(
+                640,
+                640,
+            ), type='Pad'),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_list = [
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/art_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/rctw17_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/rects_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+]
+train_pipeline = [
+    dict(color_type='color_ignore_orientation', type='LoadImageFromFile'),
+    dict(
+        type='LoadOCRAnnotations',
+        with_bbox=True,
+        with_label=True,
+        with_polygon=True),
+    dict(
+        brightness=0.12549019607843137,
+        op='ColorJitter',
+        saturation=0.5,
+        type='TorchVisionWrapper'),
+    dict(
+        args=[
+            [
+                'Fliplr',
+                0.5,
+            ],
+            dict(cls='Affine', rotate=[
+                -10,
+                10,
+            ]),
+            [
+                'Resize',
+                [
+                    0.5,
+                    3.0,
+                ],
+            ],
+        ],
+        type='ImgAugWrapper'),
+    dict(min_side_ratio=0.1, type='RandomCrop'),
+    dict(keep_ratio=True, scale=(
+        640,
+        640,
+    ), type='Resize'),
+    dict(size=(
+        640,
+        640,
+    ), type='Pad'),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+        ),
+        type='PackTextDetInputs'),
+]
+val_cfg = dict(type='ValLoop')
+val_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/art_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/rctw17_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/rects_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                4068,
+                1024,
+            ), type='Resize'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                    'instances',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=4,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(type='HmeanIOUMetric')
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    name='visualizer',
+    type='TextDetLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'work_dirs/dbnetpp_r50_finetune_art_rctw_rects/expA_end108'
+
+2025/12/25 19:42:47 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2025/12/25 19:42:47 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+(LOWEST      ) EarlyStoppingHook                  
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+(LOWEST      ) EarlyStoppingHook                  
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2025/12/25 19:42:50 - mmengine - INFO - LR is set based on batch size of 32 and the current batch size is 32. Scaling the original LR by 1.0.
+2025/12/25 19:42:52 - mmengine - INFO - load model from: torchvision://resnet50
+2025/12/25 19:42:52 - mmengine - INFO - Loads checkpoint by torchvision backend from path: torchvision://resnet50
+2025/12/25 19:42:52 - mmengine - WARNING - The model and loaded state dict do not match exactly
+
+unexpected key in source state_dict: fc.weight, fc.bias
+
+Name of parameter - Initialization information
+
+backbone.conv1.weight - torch.Size([64, 3, 7, 7]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.bn1.weight - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.bn1.bias - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.conv1.weight - torch.Size([64, 64, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.bn1.weight - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.bn1.bias - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.conv2.weight - torch.Size([64, 64, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.bn2.weight - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.bn2.bias - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.conv3.weight - torch.Size([256, 64, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.bn3.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.bn3.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.downsample.0.weight - torch.Size([256, 64, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.downsample.1.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.0.downsample.1.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.conv1.weight - torch.Size([64, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.bn1.weight - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.bn1.bias - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.conv2.weight - torch.Size([64, 64, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.bn2.weight - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.bn2.bias - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.conv3.weight - torch.Size([256, 64, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.bn3.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.1.bn3.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.conv1.weight - torch.Size([64, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.bn1.weight - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.bn1.bias - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.conv2.weight - torch.Size([64, 64, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.bn2.weight - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.bn2.bias - torch.Size([64]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.conv3.weight - torch.Size([256, 64, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.bn3.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer1.2.bn3.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.conv1.weight - torch.Size([128, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.bn1.weight - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.bn1.bias - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.conv2.weight - torch.Size([128, 128, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.bn2.weight - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.bn2.bias - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.conv3.weight - torch.Size([512, 128, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.bn3.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.bn3.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.downsample.0.weight - torch.Size([512, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.downsample.1.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.0.downsample.1.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.conv1.weight - torch.Size([128, 512, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.bn1.weight - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.bn1.bias - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.conv2.weight - torch.Size([128, 128, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.bn2.weight - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.bn2.bias - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.conv3.weight - torch.Size([512, 128, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.bn3.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.1.bn3.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.conv1.weight - torch.Size([128, 512, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.bn1.weight - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.bn1.bias - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.conv2.weight - torch.Size([128, 128, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.bn2.weight - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.bn2.bias - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.conv3.weight - torch.Size([512, 128, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.bn3.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.2.bn3.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.conv1.weight - torch.Size([128, 512, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.bn1.weight - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.bn1.bias - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.conv2.weight - torch.Size([128, 128, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.bn2.weight - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.bn2.bias - torch.Size([128]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.conv3.weight - torch.Size([512, 128, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.bn3.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer2.3.bn3.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.conv1.weight - torch.Size([256, 512, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.downsample.0.weight - torch.Size([1024, 512, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.downsample.1.weight - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.0.downsample.1.bias - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.1.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.2.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.3.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.4.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.conv1.weight - torch.Size([256, 1024, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.bn1.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.bn1.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.conv2.weight - torch.Size([256, 256, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.bn2.weight - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.bn2.bias - torch.Size([256]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.conv3.weight - torch.Size([1024, 256, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.bn3.weight - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer3.5.bn3.bias - torch.Size([1024]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.conv1.weight - torch.Size([512, 1024, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.bn1.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.bn1.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.conv2.weight - torch.Size([512, 512, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.bn2.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.bn2.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.conv3.weight - torch.Size([2048, 512, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.bn3.weight - torch.Size([2048]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.bn3.bias - torch.Size([2048]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.downsample.0.weight - torch.Size([2048, 1024, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.downsample.1.weight - torch.Size([2048]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.0.downsample.1.bias - torch.Size([2048]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.conv1.weight - torch.Size([512, 2048, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.bn1.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.bn1.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.conv2.weight - torch.Size([512, 512, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.bn2.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.bn2.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.conv3.weight - torch.Size([2048, 512, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.bn3.weight - torch.Size([2048]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.1.bn3.bias - torch.Size([2048]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.conv1.weight - torch.Size([512, 2048, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.bn1.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.bn1.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.conv2.weight - torch.Size([512, 512, 3, 3]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.bn2.weight - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.bn2.bias - torch.Size([512]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.conv3.weight - torch.Size([2048, 512, 1, 1]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.bn3.weight - torch.Size([2048]): 
+PretrainedInit: load from torchvision://resnet50 
+
+backbone.layer4.2.bn3.bias - torch.Size([2048]): 
+PretrainedInit: load from torchvision://resnet50 
+
+neck.lateral_convs.0.conv.weight - torch.Size([256, 256, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.lateral_convs.1.conv.weight - torch.Size([256, 512, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.lateral_convs.2.conv.weight - torch.Size([256, 1024, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.lateral_convs.3.conv.weight - torch.Size([256, 2048, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.smooth_convs.0.conv.weight - torch.Size([64, 256, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.smooth_convs.1.conv.weight - torch.Size([64, 256, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.smooth_convs.2.conv.weight - torch.Size([64, 256, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.smooth_convs.3.conv.weight - torch.Size([64, 256, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.asf_conv.conv.weight - torch.Size([256, 256, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.asf_conv.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+neck.asf_attn.channel_wise.0.conv.weight - torch.Size([64, 256, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.asf_attn.channel_wise.1.conv.weight - torch.Size([256, 64, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.asf_attn.spatial_wise.0.conv.weight - torch.Size([1, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.asf_attn.spatial_wise.1.conv.weight - torch.Size([1, 1, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+neck.asf_attn.attention_wise.conv.weight - torch.Size([4, 256, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+det_head.binarize.0.weight - torch.Size([64, 256, 3, 3]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.binarize.1.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.binarize.1.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.binarize.3.weight - torch.Size([64, 64, 2, 2]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.binarize.3.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.binarize.4.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.binarize.4.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.binarize.6.weight - torch.Size([64, 1, 2, 2]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.binarize.6.bias - torch.Size([1]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.0.weight - torch.Size([64, 256, 3, 3]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.1.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.1.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.3.weight - torch.Size([64, 64, 2, 2]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.3.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.4.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.4.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.6.weight - torch.Size([64, 1, 2, 2]): 
+The value is the same before and after calling `init_weights` of DBNet  
+
+det_head.threshold.6.bias - torch.Size([1]): 
+The value is the same before and after calling `init_weights` of DBNet  
+2025/12/25 19:42:52 - mmengine - INFO - Load checkpoint from work_dirs/dbnetpp_r50_finetune_art_rctw_rects/epoch_102.pth
+2025/12/25 19:42:52 - mmengine - INFO - resumed epoch: 102, iter: 96594
+2025/12/25 19:42:52 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2025/12/25 19:42:52 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2025/12/25 19:42:52 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/dbnetpp_r50_finetune_art_rctw_rects/expA_end108.
+2025/12/25 19:43:22 - mmengine - INFO - Epoch(train) [103][  5/947]  lr: 7.9285e-04  eta: 9:19:09  time: 3.8574  data_time: 1.1699  memory: 18095  grad_norm: 8.9929  loss: 1.1214  loss_prob: 0.6495  loss_thr: 0.3621  loss_db: 0.1099
+2025/12/25 19:43:33 - mmengine - INFO - Epoch(train) [103][ 10/947]  lr: 7.9285e-04  eta: 6:29:41  time: 4.1223  data_time: 1.1703  memory: 17791  grad_norm: 7.1236  loss: 1.0877  loss_prob: 0.6253  loss_thr: 0.3567  loss_db: 0.1056
+2025/12/25 19:43:47 - mmengine - INFO - Epoch(train) [103][ 15/947]  lr: 7.9285e-04  eta: 5:44:37  time: 2.5184  data_time: 0.0028  memory: 17791  grad_norm: 10.9143  loss: 1.1232  loss_prob: 0.6537  loss_thr: 0.3594  loss_db: 0.1102
+2025/12/25 19:43:59 - mmengine - INFO - Epoch(train) [103][ 20/947]  lr: 7.9285e-04  eta: 5:15:16  time: 2.5596  data_time: 0.0033  memory: 17791  grad_norm: 10.1839  loss: 1.1653  loss_prob: 0.6742  loss_thr: 0.3777  loss_db: 0.1134
+2025/12/25 19:44:11 - mmengine - INFO - Epoch(train) [103][ 25/947]  lr: 7.9285e-04  eta: 4:56:12  time: 2.3810  data_time: 0.0028  memory: 17791  grad_norm: 6.4125  loss: 1.1402  loss_prob: 0.6533  loss_thr: 0.3756  loss_db: 0.1114
+2025/12/25 19:44:24 - mmengine - INFO - Epoch(train) [103][ 30/947]  lr: 7.9285e-04  eta: 4:48:23  time: 2.5024  data_time: 0.0024  memory: 17791  grad_norm: 7.0969  loss: 1.1791  loss_prob: 0.6847  loss_thr: 0.3811  loss_db: 0.1134
+2025/12/25 19:44:36 - mmengine - INFO - Epoch(train) [103][ 35/947]  lr: 7.9285e-04  eta: 4:39:18  time: 2.5326  data_time: 0.0032  memory: 17791  grad_norm: 9.1870  loss: 1.2168  loss_prob: 0.7182  loss_thr: 0.3819  loss_db: 0.1167
+2025/12/25 19:44:48 - mmengine - INFO - Epoch(train) [103][ 40/947]  lr: 7.9285e-04  eta: 4:32:12  time: 2.3947  data_time: 0.0031  memory: 17791  grad_norm: 10.1921  loss: 1.1470  loss_prob: 0.6733  loss_thr: 0.3613  loss_db: 0.1124
+2025/12/25 19:45:00 - mmengine - INFO - Epoch(train) [103][ 45/947]  lr: 7.9285e-04  eta: 4:27:03  time: 2.4045  data_time: 0.0024  memory: 17791  grad_norm: 8.7111  loss: 1.1311  loss_prob: 0.6610  loss_thr: 0.3602  loss_db: 0.1099
+2025/12/25 19:45:14 - mmengine - INFO - Epoch(train) [103][ 50/947]  lr: 7.9285e-04  eta: 4:25:43  time: 2.5750  data_time: 0.0029  memory: 17791  grad_norm: 7.3479  loss: 1.1437  loss_prob: 0.6659  loss_thr: 0.3672  loss_db: 0.1106
+2025/12/25 19:45:25 - mmengine - INFO - Epoch(train) [103][ 55/947]  lr: 7.9285e-04  eta: 4:20:17  time: 2.4736  data_time: 0.0028  memory: 17791  grad_norm: 7.5277  loss: 1.1780  loss_prob: 0.6814  loss_thr: 0.3822  loss_db: 0.1144
+2025/12/25 19:45:38 - mmengine - INFO - Epoch(train) [103][ 60/947]  lr: 7.9285e-04  eta: 4:18:50  time: 2.4203  data_time: 0.0023  memory: 17791  grad_norm: 7.1571  loss: 1.1745  loss_prob: 0.6826  loss_thr: 0.3769  loss_db: 0.1150
+2025/12/25 19:45:57 - mmengine - INFO - Epoch(train) [103][ 65/947]  lr: 7.9285e-04  eta: 4:26:31  time: 3.2407  data_time: 0.0032  memory: 17791  grad_norm: 6.9546  loss: 1.1473  loss_prob: 0.6630  loss_thr: 0.3726  loss_db: 0.1117
+2025/12/25 19:46:09 - mmengine - INFO - Epoch(train) [103][ 70/947]  lr: 7.9285e-04  eta: 4:23:38  time: 3.1569  data_time: 0.0036  memory: 17791  grad_norm: 8.1115  loss: 1.2323  loss_prob: 0.7198  loss_thr: 0.3917  loss_db: 0.1208
+2025/12/25 19:46:23 - mmengine - INFO - Epoch(train) [103][ 75/947]  lr: 7.9285e-04  eta: 4:22:35  time: 2.5692  data_time: 0.0036  memory: 17791  grad_norm: 7.0142  loss: 1.1581  loss_prob: 0.6744  loss_thr: 0.3691  loss_db: 0.1146
+2025/12/25 19:46:34 - mmengine - INFO - Epoch(train) [103][ 80/947]  lr: 7.9285e-04  eta: 4:19:11  time: 2.4770  data_time: 0.0033  memory: 17791  grad_norm: 7.0579  loss: 1.1070  loss_prob: 0.6349  loss_thr: 0.3625  loss_db: 0.1096
+2025/12/25 19:46:46 - mmengine - INFO - Epoch(train) [103][ 85/947]  lr: 7.9285e-04  eta: 4:16:51  time: 2.3302  data_time: 0.0024  memory: 17791  grad_norm: 11.0120  loss: 1.2737  loss_prob: 0.7647  loss_thr: 0.3862  loss_db: 0.1228
+2025/12/25 19:46:59 - mmengine - INFO - Epoch(train) [103][ 90/947]  lr: 7.9285e-04  eta: 4:16:15  time: 2.5375  data_time: 0.0028  memory: 17791  grad_norm: 10.0793  loss: 1.2739  loss_prob: 0.7702  loss_thr: 0.3821  loss_db: 0.1216
+2025/12/25 19:47:10 - mmengine - INFO - Epoch(train) [103][ 95/947]  lr: 7.9285e-04  eta: 4:13:05  time: 2.4164  data_time: 0.0028  memory: 17791  grad_norm: 7.3265  loss: 1.1670  loss_prob: 0.6825  loss_thr: 0.3699  loss_db: 0.1147
+2025/12/25 19:47:22 - mmengine - INFO - Epoch(train) [103][100/947]  lr: 7.9285e-04  eta: 4:10:57  time: 2.2299  data_time: 0.0026  memory: 17791  grad_norm: 7.0412  loss: 1.1004  loss_prob: 0.6395  loss_thr: 0.3533  loss_db: 0.1076
+2025/12/25 19:47:34 - mmengine - INFO - Epoch(train) [103][105/947]  lr: 7.9285e-04  eta: 4:09:33  time: 2.3706  data_time: 0.0026  memory: 17791  grad_norm: 6.6590  loss: 1.0907  loss_prob: 0.6325  loss_thr: 0.3517  loss_db: 0.1064
+2025/12/25 19:47:46 - mmengine - INFO - Epoch(train) [103][110/947]  lr: 7.9285e-04  eta: 4:08:20  time: 2.4405  data_time: 0.0034  memory: 17791  grad_norm: 6.8489  loss: 1.0760  loss_prob: 0.6215  loss_thr: 0.3495  loss_db: 0.1050
+2025/12/25 19:47:58 - mmengine - INFO - Epoch(train) [103][115/947]  lr: 7.9285e-04  eta: 4:07:11  time: 2.4460  data_time: 0.0035  memory: 17791  grad_norm: 7.0073  loss: 1.0592  loss_prob: 0.6104  loss_thr: 0.3457  loss_db: 0.1032
+2025/12/25 19:48:11 - mmengine - INFO - Epoch(train) [103][120/947]  lr: 7.9285e-04  eta: 4:06:30  time: 2.4935  data_time: 0.0029  memory: 17791  grad_norm: 7.3484  loss: 1.1011  loss_prob: 0.6352  loss_thr: 0.3589  loss_db: 0.1071
+2025/12/25 19:48:26 - mmengine - INFO - Epoch(train) [103][125/947]  lr: 7.9285e-04  eta: 4:07:08  time: 2.7169  data_time: 0.0034  memory: 17791  grad_norm: 8.9659  loss: 1.1312  loss_prob: 0.6581  loss_thr: 0.3623  loss_db: 0.1109
+2025/12/25 19:48:37 - mmengine - INFO - Epoch(train) [103][130/947]  lr: 7.9285e-04  eta: 4:05:49  time: 2.6252  data_time: 0.0031  memory: 17791  grad_norm: 9.2709  loss: 1.1530  loss_prob: 0.6747  loss_thr: 0.3645  loss_db: 0.1138
+2025/12/25 19:48:49 - mmengine - INFO - Epoch(train) [103][135/947]  lr: 7.9285e-04  eta: 4:04:28  time: 2.3451  data_time: 0.0028  memory: 17791  grad_norm: 7.9961  loss: 1.1882  loss_prob: 0.7013  loss_thr: 0.3719  loss_db: 0.1150
+2025/12/25 19:49:04 - mmengine - INFO - Epoch(train) [103][140/947]  lr: 7.9285e-04  eta: 4:05:15  time: 2.6392  data_time: 0.0034  memory: 17791  grad_norm: 8.7435  loss: 1.2264  loss_prob: 0.7218  loss_thr: 0.3847  loss_db: 0.1199
+2025/12/25 19:49:15 - mmengine - INFO - Epoch(train) [103][145/947]  lr: 7.9285e-04  eta: 4:03:50  time: 2.6124  data_time: 0.0032  memory: 17791  grad_norm: 8.7447  loss: 1.2015  loss_prob: 0.6961  loss_thr: 0.3869  loss_db: 0.1184
+2025/12/25 19:49:27 - mmengine - INFO - Epoch(train) [103][150/947]  lr: 7.9285e-04  eta: 4:02:33  time: 2.2870  data_time: 0.0027  memory: 17791  grad_norm: 7.2633  loss: 1.0917  loss_prob: 0.6234  loss_thr: 0.3629  loss_db: 0.1054
+2025/12/25 19:49:43 - mmengine - INFO - Epoch(train) [103][155/947]  lr: 7.9285e-04  eta: 4:04:24  time: 2.8129  data_time: 0.0039  memory: 17791  grad_norm: 6.7691  loss: 1.0919  loss_prob: 0.6263  loss_thr: 0.3617  loss_db: 0.1038
+2025/12/25 19:49:58 - mmengine - INFO - Epoch(train) [103][160/947]  lr: 7.9285e-04  eta: 4:05:08  time: 3.1558  data_time: 0.0054  memory: 17791  grad_norm: 6.8175  loss: 1.1604  loss_prob: 0.6722  loss_thr: 0.3771  loss_db: 0.1111
+2025/12/25 19:50:11 - mmengine - INFO - Epoch(train) [103][165/947]  lr: 7.9285e-04  eta: 4:04:46  time: 2.7991  data_time: 0.0052  memory: 17791  grad_norm: 6.8905  loss: 1.1751  loss_prob: 0.6795  loss_thr: 0.3803  loss_db: 0.1153
+2025/12/25 19:50:26 - mmengine - INFO - Epoch(train) [103][170/947]  lr: 7.9285e-04  eta: 4:05:02  time: 2.7275  data_time: 0.0041  memory: 17791  grad_norm: 7.0033  loss: 1.1391  loss_prob: 0.6551  loss_thr: 0.3717  loss_db: 0.1123
+2025/12/25 19:50:40 - mmengine - INFO - Epoch(train) [103][175/947]  lr: 7.9285e-04  eta: 4:05:29  time: 2.8843  data_time: 0.0047  memory: 17791  grad_norm: 8.4897  loss: 1.1477  loss_prob: 0.6707  loss_thr: 0.3634  loss_db: 0.1136
+2025/12/25 19:50:51 - mmengine - INFO - Epoch(train) [103][180/947]  lr: 7.9285e-04  eta: 4:04:04  time: 2.5662  data_time: 0.0042  memory: 17791  grad_norm: 8.3467  loss: 1.1422  loss_prob: 0.6707  loss_thr: 0.3587  loss_db: 0.1129
+2025/12/25 19:51:03 - mmengine - INFO - Epoch(train) [103][185/947]  lr: 7.9285e-04  eta: 4:02:58  time: 2.2549  data_time: 0.0026  memory: 17791  grad_norm: 7.6199  loss: 1.0870  loss_prob: 0.6232  loss_thr: 0.3581  loss_db: 0.1058
+2025/12/25 19:51:19 - mmengine - INFO - Epoch(train) [103][190/947]  lr: 7.9285e-04  eta: 4:03:59  time: 2.7358  data_time: 0.0033  memory: 17791  grad_norm: 8.1145  loss: 1.0976  loss_prob: 0.6300  loss_thr: 0.3611  loss_db: 0.1065
+2025/12/25 19:51:31 - mmengine - INFO - Epoch(train) [103][195/947]  lr: 7.9285e-04  eta: 4:03:11  time: 2.7926  data_time: 0.0033  memory: 17791  grad_norm: 7.6720  loss: 1.1235  loss_prob: 0.6468  loss_thr: 0.3668  loss_db: 0.1099
+2025/12/25 19:51:42 - mmengine - INFO - Epoch(train) [103][200/947]  lr: 7.9285e-04  eta: 4:02:05  time: 2.3454  data_time: 0.0029  memory: 17791  grad_norm: 8.4530  loss: 1.1462  loss_prob: 0.6604  loss_thr: 0.3731  loss_db: 0.1127
+2025/12/25 19:51:53 - mmengine - INFO - Epoch(train) [103][205/947]  lr: 7.9285e-04  eta: 4:01:02  time: 2.2750  data_time: 0.0030  memory: 17791  grad_norm: 8.8663  loss: 1.1362  loss_prob: 0.6585  loss_thr: 0.3678  loss_db: 0.1099
+2025/12/25 19:52:06 - mmengine - INFO - Epoch(train) [103][210/947]  lr: 7.9285e-04  eta: 4:00:39  time: 2.4237  data_time: 0.0033  memory: 17791  grad_norm: 9.1294  loss: 1.1324  loss_prob: 0.6581  loss_thr: 0.3649  loss_db: 0.1094
+2025/12/25 19:52:19 - mmengine - INFO - Epoch(train) [103][215/947]  lr: 7.9285e-04  eta: 4:00:13  time: 2.5519  data_time: 0.0035  memory: 17791  grad_norm: 8.1822  loss: 1.1459  loss_prob: 0.6607  loss_thr: 0.3719  loss_db: 0.1134
+2025/12/25 19:52:30 - mmengine - INFO - Epoch(train) [103][220/947]  lr: 7.9285e-04  eta: 3:59:11  time: 2.3903  data_time: 0.0029  memory: 17791  grad_norm: 6.8016  loss: 1.1746  loss_prob: 0.6770  loss_thr: 0.3823  loss_db: 0.1152
+2025/12/25 19:52:43 - mmengine - INFO - Epoch(train) [103][225/947]  lr: 7.9285e-04  eta: 3:58:42  time: 2.3691  data_time: 0.0028  memory: 17791  grad_norm: 7.7908  loss: 1.1801  loss_prob: 0.6882  loss_thr: 0.3788  loss_db: 0.1130
+2025/12/25 19:52:54 - mmengine - INFO - Epoch(train) [103][230/947]  lr: 7.9285e-04  eta: 3:57:51  time: 2.4013  data_time: 0.0028  memory: 17791  grad_norm: 7.3120  loss: 1.1168  loss_prob: 0.6512  loss_thr: 0.3562  loss_db: 0.1093
+2025/12/25 19:53:06 - mmengine - INFO - Epoch(train) [103][235/947]  lr: 7.9285e-04  eta: 3:57:11  time: 2.3464  data_time: 0.0028  memory: 17791  grad_norm: 7.7887  loss: 1.1709  loss_prob: 0.6864  loss_thr: 0.3682  loss_db: 0.1164
+2025/12/25 19:53:19 - mmengine - INFO - Epoch(train) [103][240/947]  lr: 7.9285e-04  eta: 3:57:06  time: 2.5320  data_time: 0.0027  memory: 17791  grad_norm: 9.1458  loss: 1.2479  loss_prob: 0.7355  loss_thr: 0.3912  loss_db: 0.1212
+2025/12/25 19:53:32 - mmengine - INFO - Epoch(train) [103][245/947]  lr: 7.9285e-04  eta: 3:56:30  time: 2.5448  data_time: 0.0030  memory: 17791  grad_norm: inf  loss: 1.1676  loss_prob: 0.6807  loss_thr: 0.3734  loss_db: 0.1135
+2025/12/25 19:53:43 - mmengine - INFO - Epoch(train) [103][250/947]  lr: 7.9285e-04  eta: 3:55:42  time: 2.3505  data_time: 0.0032  memory: 17791  grad_norm: inf  loss: 1.1413  loss_prob: 0.6651  loss_thr: 0.3633  loss_db: 0.1129
+2025/12/25 19:53:55 - mmengine - INFO - Epoch(train) [103][255/947]  lr: 7.9285e-04  eta: 3:55:09  time: 2.3533  data_time: 0.0041  memory: 17791  grad_norm: 6.4844  loss: 1.1290  loss_prob: 0.6560  loss_thr: 0.3619  loss_db: 0.1112
+2025/12/25 19:54:08 - mmengine - INFO - Epoch(train) [103][260/947]  lr: 7.9285e-04  eta: 3:54:55  time: 2.5000  data_time: 0.0036  memory: 17791  grad_norm: 7.6038  loss: 1.1266  loss_prob: 0.6498  loss_thr: 0.3668  loss_db: 0.1100
+2025/12/25 19:54:20 - mmengine - INFO - Epoch(train) [103][265/947]  lr: 7.9285e-04  eta: 3:54:24  time: 2.5074  data_time: 0.0022  memory: 17791  grad_norm: 8.2050  loss: 1.1161  loss_prob: 0.6432  loss_thr: 0.3655  loss_db: 0.1075
+2025/12/25 19:54:32 - mmengine - INFO - Epoch(train) [103][270/947]  lr: 7.9285e-04  eta: 3:53:50  time: 2.4077  data_time: 0.0024  memory: 17791  grad_norm: 6.8007  loss: 1.1118  loss_prob: 0.6373  loss_thr: 0.3676  loss_db: 0.1069
+2025/12/25 19:54:44 - mmengine - INFO - Epoch(train) [103][275/947]  lr: 7.9285e-04  eta: 3:53:10  time: 2.3535  data_time: 0.0025  memory: 17791  grad_norm: 6.7033  loss: 1.1129  loss_prob: 0.6365  loss_thr: 0.3673  loss_db: 0.1091
+2025/12/25 19:54:55 - mmengine - INFO - Epoch(train) [103][280/947]  lr: 7.9285e-04  eta: 3:52:24  time: 2.2828  data_time: 0.0025  memory: 17791  grad_norm: 7.9838  loss: 1.1507  loss_prob: 0.6664  loss_thr: 0.3700  loss_db: 0.1143
+2025/12/25 19:55:07 - mmengine - INFO - Epoch(train) [103][285/947]  lr: 7.9285e-04  eta: 3:51:58  time: 2.3417  data_time: 0.0024  memory: 17791  grad_norm: 8.4801  loss: 1.1984  loss_prob: 0.7034  loss_thr: 0.3762  loss_db: 0.1188
+2025/12/25 19:55:19 - mmengine - INFO - Epoch(train) [103][290/947]  lr: 7.9285e-04  eta: 3:51:27  time: 2.4116  data_time: 0.0026  memory: 17791  grad_norm: 8.7965  loss: 1.1706  loss_prob: 0.6860  loss_thr: 0.3699  loss_db: 0.1146
+2025/12/25 19:55:31 - mmengine - INFO - Epoch(train) [103][295/947]  lr: 7.9285e-04  eta: 3:50:54  time: 2.3708  data_time: 0.0025  memory: 17791  grad_norm: 8.5066  loss: 1.1637  loss_prob: 0.6737  loss_thr: 0.3756  loss_db: 0.1144
+2025/12/25 19:55:42 - mmengine - INFO - Epoch(train) [103][300/947]  lr: 7.9285e-04  eta: 3:50:13  time: 2.3064  data_time: 0.0026  memory: 17791  grad_norm: 6.5346  loss: 1.1489  loss_prob: 0.6654  loss_thr: 0.3707  loss_db: 0.1128
+2025/12/25 19:55:54 - mmengine - INFO - Epoch(train) [103][305/947]  lr: 7.9285e-04  eta: 3:49:48  time: 2.3400  data_time: 0.0029  memory: 17791  grad_norm: 6.3364  loss: 1.1589  loss_prob: 0.6814  loss_thr: 0.3641  loss_db: 0.1134
+2025/12/25 19:56:08 - mmengine - INFO - Epoch(train) [103][310/947]  lr: 7.9285e-04  eta: 3:49:43  time: 2.5426  data_time: 0.0029  memory: 17791  grad_norm: 7.5581  loss: 1.1568  loss_prob: 0.6765  loss_thr: 0.3680  loss_db: 0.1123
+2025/12/25 19:56:19 - mmengine - INFO - Epoch(train) [103][315/947]  lr: 7.9285e-04  eta: 3:49:15  time: 2.5230  data_time: 0.0029  memory: 17791  grad_norm: 7.7920  loss: 1.1244  loss_prob: 0.6511  loss_thr: 0.3643  loss_db: 0.1090
+2025/12/25 19:56:31 - mmengine - INFO - Epoch(train) [103][320/947]  lr: 7.9285e-04  eta: 3:48:37  time: 2.3257  data_time: 0.0027  memory: 17791  grad_norm: 7.4106  loss: 1.1218  loss_prob: 0.6515  loss_thr: 0.3603  loss_db: 0.1101
+2025/12/25 19:56:44 - mmengine - INFO - Epoch(train) [103][325/947]  lr: 7.9285e-04  eta: 3:48:28  time: 2.4328  data_time: 0.0027  memory: 17791  grad_norm: 7.5171  loss: 1.1778  loss_prob: 0.6868  loss_thr: 0.3757  loss_db: 0.1153
+2025/12/25 19:56:57 - mmengine - INFO - Epoch(train) [103][330/947]  lr: 7.9285e-04  eta: 3:48:22  time: 2.6234  data_time: 0.0027  memory: 17791  grad_norm: 11.3354  loss: 1.2471  loss_prob: 0.7322  loss_thr: 0.3935  loss_db: 0.1213
+2025/12/25 19:57:08 - mmengine - INFO - Epoch(train) [103][335/947]  lr: 7.9285e-04  eta: 3:47:46  time: 2.4566  data_time: 0.0026  memory: 17791  grad_norm: 10.8395  loss: 1.2056  loss_prob: 0.7097  loss_thr: 0.3789  loss_db: 0.1170
+2025/12/25 19:57:22 - mmengine - INFO - Epoch(train) [103][340/947]  lr: 7.9285e-04  eta: 3:47:44  time: 2.4829  data_time: 0.0027  memory: 17791  grad_norm: 6.8108  loss: 1.1397  loss_prob: 0.6655  loss_thr: 0.3621  loss_db: 0.1121
+2025/12/25 19:57:34 - mmengine - INFO - Epoch(train) [103][345/947]  lr: 7.9285e-04  eta: 3:47:19  time: 2.5464  data_time: 0.0025  memory: 17791  grad_norm: 7.1637  loss: 1.1689  loss_prob: 0.6813  loss_thr: 0.3713  loss_db: 0.1163
+2025/12/25 19:57:47 - mmengine - INFO - Epoch(train) [103][350/947]  lr: 7.9285e-04  eta: 3:47:16  time: 2.5387  data_time: 0.0025  memory: 17791  grad_norm: 6.8328  loss: 1.1348  loss_prob: 0.6613  loss_thr: 0.3623  loss_db: 0.1112
+2025/12/25 19:58:00 - mmengine - INFO - Epoch(train) [103][355/947]  lr: 7.9285e-04  eta: 3:46:59  time: 2.5928  data_time: 0.0024  memory: 17791  grad_norm: 8.2219  loss: 1.1673  loss_prob: 0.6764  loss_thr: 0.3777  loss_db: 0.1131
+2025/12/25 19:58:12 - mmengine - INFO - Epoch(train) [103][360/947]  lr: 7.9285e-04  eta: 3:46:36  time: 2.4637  data_time: 0.0024  memory: 17791  grad_norm: 9.4067  loss: 1.1928  loss_prob: 0.6902  loss_thr: 0.3852  loss_db: 0.1174
+2025/12/25 19:58:25 - mmengine - INFO - Epoch(train) [103][365/947]  lr: 7.9285e-04  eta: 3:46:31  time: 2.5402  data_time: 0.0026  memory: 17791  grad_norm: 8.0515  loss: 1.1334  loss_prob: 0.6542  loss_thr: 0.3666  loss_db: 0.1127
+2025/12/25 19:58:38 - mmengine - INFO - Epoch(train) [103][370/947]  lr: 7.9285e-04  eta: 3:46:18  time: 2.6057  data_time: 0.0025  memory: 17791  grad_norm: 7.4257  loss: 1.1344  loss_prob: 0.6560  loss_thr: 0.3666  loss_db: 0.1117
+2025/12/25 19:58:50 - mmengine - INFO - Epoch(train) [103][375/947]  lr: 7.9285e-04  eta: 3:45:55  time: 2.4832  data_time: 0.0024  memory: 17791  grad_norm: 7.0931  loss: 1.1180  loss_prob: 0.6488  loss_thr: 0.3602  loss_db: 0.1090
+2025/12/25 19:59:02 - mmengine - INFO - Epoch(train) [103][380/947]  lr: 7.9285e-04  eta: 3:45:26  time: 2.3656  data_time: 0.0024  memory: 17791  grad_norm: 7.4998  loss: 1.1466  loss_prob: 0.6654  loss_thr: 0.3698  loss_db: 0.1115
+2025/12/25 19:59:14 - mmengine - INFO - Epoch(train) [103][385/947]  lr: 7.9285e-04  eta: 3:45:06  time: 2.3827  data_time: 0.0025  memory: 17791  grad_norm: 7.9126  loss: 1.1717  loss_prob: 0.6811  loss_thr: 0.3751  loss_db: 0.1156
+2025/12/25 19:59:26 - mmengine - INFO - Epoch(train) [103][390/947]  lr: 7.9285e-04  eta: 3:44:51  time: 2.4777  data_time: 0.0027  memory: 17791  grad_norm: 7.2858  loss: 1.1411  loss_prob: 0.6642  loss_thr: 0.3642  loss_db: 0.1128
+2025/12/25 19:59:39 - mmengine - INFO - Epoch(train) [103][395/947]  lr: 7.9285e-04  eta: 3:44:37  time: 2.5275  data_time: 0.0026  memory: 17791  grad_norm: 7.8196  loss: 1.1243  loss_prob: 0.6508  loss_thr: 0.3642  loss_db: 0.1094
+2025/12/25 19:59:51 - mmengine - INFO - Epoch(train) [103][400/947]  lr: 7.9285e-04  eta: 3:44:20  time: 2.5082  data_time: 0.0025  memory: 17791  grad_norm: 9.0477  loss: 1.1288  loss_prob: 0.6509  loss_thr: 0.3678  loss_db: 0.1101
+2025/12/25 20:00:05 - mmengine - INFO - Epoch(train) [103][405/947]  lr: 7.9285e-04  eta: 3:44:21  time: 2.6170  data_time: 0.0029  memory: 17791  grad_norm: 8.2406  loss: 1.1206  loss_prob: 0.6461  loss_thr: 0.3644  loss_db: 0.1101
+2025/12/25 20:00:08 - mmengine - INFO - Exp name: dbnetpp_resnet50_fpnc_1200e_art_rctw_rects_finetune_20251225_194239
+2025/12/25 20:00:18 - mmengine - INFO - Epoch(train) [103][410/947]  lr: 7.9285e-04  eta: 3:44:04  time: 2.6266  data_time: 0.0028  memory: 17791  grad_norm: 6.7546  loss: 1.1137  loss_prob: 0.6407  loss_thr: 0.3635  loss_db: 0.1095
+2025/12/25 20:00:30 - mmengine - INFO - Epoch(train) [103][415/947]  lr: 7.9285e-04  eta: 3:43:51  time: 2.5183  data_time: 0.0025  memory: 17791  grad_norm: 8.5913  loss: 1.1620  loss_prob: 0.6751  loss_thr: 0.3734  loss_db: 0.1135
+2025/12/25 20:00:43 - mmengine - INFO - Epoch(train) [103][420/947]  lr: 7.9285e-04  eta: 3:43:37  time: 2.5360  data_time: 0.0025  memory: 17791  grad_norm: 8.7032  loss: 1.1766  loss_prob: 0.6864  loss_thr: 0.3744  loss_db: 0.1157
+2025/12/25 20:00:54 - mmengine - INFO - Epoch(train) [103][425/947]  lr: 7.9285e-04  eta: 3:43:06  time: 2.3901  data_time: 0.0024  memory: 17791  grad_norm: 7.0978  loss: 1.1386  loss_prob: 0.6610  loss_thr: 0.3643  loss_db: 0.1134
+2025/12/25 20:01:05 - mmengine - INFO - Epoch(train) [103][430/947]  lr: 7.9285e-04  eta: 3:42:32  time: 2.2262  data_time: 0.0022  memory: 17791  grad_norm: 7.6414  loss: 1.1074  loss_prob: 0.6427  loss_thr: 0.3565  loss_db: 0.1083
+2025/12/25 20:01:18 - mmengine - INFO - Epoch(train) [103][435/947]  lr: 7.9285e-04  eta: 3:42:21  time: 2.3903  data_time: 0.0022  memory: 17791  grad_norm: 7.3775  loss: 1.1536  loss_prob: 0.6749  loss_thr: 0.3679  loss_db: 0.1109
+2025/12/25 20:01:31 - mmengine - INFO - Epoch(train) [103][440/947]  lr: 7.9285e-04  eta: 3:42:10  time: 2.5731  data_time: 0.0023  memory: 17791  grad_norm: 7.1430  loss: 1.2036  loss_prob: 0.7030  loss_thr: 0.3837  loss_db: 0.1169
+2025/12/25 20:01:42 - mmengine - INFO - Epoch(train) [103][445/947]  lr: 7.9285e-04  eta: 3:41:40  time: 2.4095  data_time: 0.0023  memory: 17791  grad_norm: 6.4980  loss: 1.1835  loss_prob: 0.6888  loss_thr: 0.3783  loss_db: 0.1164
+2025/12/25 20:01:55 - mmengine - INFO - Epoch(train) [103][450/947]  lr: 7.9285e-04  eta: 3:41:25  time: 2.3719  data_time: 0.0026  memory: 17791  grad_norm: 6.3907  loss: 1.1648  loss_prob: 0.6774  loss_thr: 0.3739  loss_db: 0.1134
+2025/12/25 20:02:07 - mmengine - INFO - Epoch(train) [103][455/947]  lr: 7.9285e-04  eta: 3:41:05  time: 2.4490  data_time: 0.0026  memory: 17791  grad_norm: 8.5344  loss: 1.1933  loss_prob: 0.6946  loss_thr: 0.3835  loss_db: 0.1152
+2025/12/25 20:02:19 - mmengine - INFO - Epoch(train) [103][460/947]  lr: 7.9285e-04  eta: 3:40:47  time: 2.4264  data_time: 0.0027  memory: 17791  grad_norm: 8.6043  loss: 1.1813  loss_prob: 0.6895  loss_thr: 0.3767  loss_db: 0.1152
+2025/12/25 20:02:31 - mmengine - INFO - Epoch(train) [103][465/947]  lr: 7.9285e-04  eta: 3:40:28  time: 2.4341  data_time: 0.0033  memory: 17791  grad_norm: 8.7757  loss: 1.1508  loss_prob: 0.6718  loss_thr: 0.3648  loss_db: 0.1142
+2025/12/25 20:02:44 - mmengine - INFO - Epoch(train) [103][470/947]  lr: 7.9285e-04  eta: 3:40:17  time: 2.4956  data_time: 0.0035  memory: 17791  grad_norm: 8.7870  loss: 1.1538  loss_prob: 0.6716  loss_thr: 0.3678  loss_db: 0.1144
+2025/12/25 20:02:56 - mmengine - INFO - Epoch(train) [103][475/947]  lr: 7.9285e-04  eta: 3:39:59  time: 2.5054  data_time: 0.0031  memory: 17791  grad_norm: 8.5901  loss: 1.1581  loss_prob: 0.6735  loss_thr: 0.3702  loss_db: 0.1145
+2025/12/25 20:03:08 - mmengine - INFO - Epoch(train) [103][480/947]  lr: 7.9285e-04  eta: 3:39:41  time: 2.4386  data_time: 0.0028  memory: 17791  grad_norm: 9.5212  loss: 1.1807  loss_prob: 0.6914  loss_thr: 0.3724  loss_db: 0.1169
+2025/12/25 20:03:21 - mmengine - INFO - Epoch(train) [103][485/947]  lr: 7.9285e-04  eta: 3:39:26  time: 2.4687  data_time: 0.0027  memory: 17791  grad_norm: 8.3064  loss: 1.1379  loss_prob: 0.6605  loss_thr: 0.3655  loss_db: 0.1119
+2025/12/25 20:03:33 - mmengine - INFO - Epoch(train) [103][490/947]  lr: 7.9285e-04  eta: 3:39:08  time: 2.4602  data_time: 0.0028  memory: 17791  grad_norm: 7.6716  loss: 1.1159  loss_prob: 0.6463  loss_thr: 0.3589  loss_db: 0.1107
+2025/12/25 20:03:47 - mmengine - INFO - Epoch(train) [103][495/947]  lr: 7.9285e-04  eta: 3:39:06  time: 2.5795  data_time: 0.0031  memory: 17791  grad_norm: 13.2121  loss: 1.1540  loss_prob: 0.6776  loss_thr: 0.3617  loss_db: 0.1147
+2025/12/25 20:04:00 - mmengine - INFO - Epoch(train) [103][500/947]  lr: 7.9285e-04  eta: 3:38:55  time: 2.6516  data_time: 0.0033  memory: 17791  grad_norm: 13.7884  loss: 1.1831  loss_prob: 0.6949  loss_thr: 0.3718  loss_db: 0.1164
+2025/12/25 20:04:12 - mmengine - INFO - Epoch(train) [103][505/947]  lr: 7.9285e-04  eta: 3:38:39  time: 2.5241  data_time: 0.0030  memory: 17791  grad_norm: 9.4557  loss: 1.1923  loss_prob: 0.6995  loss_thr: 0.3765  loss_db: 0.1164
+2025/12/25 20:04:24 - mmengine - INFO - Epoch(train) [103][510/947]  lr: 7.9285e-04  eta: 3:38:24  time: 2.4797  data_time: 0.0030  memory: 17791  grad_norm: 8.9142  loss: 1.1269  loss_prob: 0.6552  loss_thr: 0.3617  loss_db: 0.1100
+2025/12/25 20:04:37 - mmengine - INFO - Epoch(train) [103][515/947]  lr: 7.9285e-04  eta: 3:38:12  time: 2.5111  data_time: 0.0029  memory: 17791  grad_norm: 8.5148  loss: 1.1138  loss_prob: 0.6349  loss_thr: 0.3698  loss_db: 0.1091
+2025/12/25 20:04:49 - mmengine - INFO - Epoch(train) [103][520/947]  lr: 7.9285e-04  eta: 3:37:49  time: 2.4440  data_time: 0.0025  memory: 17791  grad_norm: 8.2739  loss: 1.1980  loss_prob: 0.6893  loss_thr: 0.3912  loss_db: 0.1175
+2025/12/25 20:05:00 - mmengine - INFO - Epoch(train) [103][525/947]  lr: 7.9285e-04  eta: 3:37:27  time: 2.3368  data_time: 0.0029  memory: 17791  grad_norm: 8.1248  loss: 1.1975  loss_prob: 0.6952  loss_thr: 0.3840  loss_db: 0.1184
+2025/12/25 20:05:13 - mmengine - INFO - Epoch(train) [103][530/947]  lr: 7.9285e-04  eta: 3:37:14  time: 2.4271  data_time: 0.0031  memory: 17791  grad_norm: 8.6044  loss: 1.1985  loss_prob: 0.6937  loss_thr: 0.3867  loss_db: 0.1181
+2025/12/25 20:05:26 - mmengine - INFO - Epoch(train) [103][535/947]  lr: 7.9285e-04  eta: 3:37:03  time: 2.5416  data_time: 0.0030  memory: 17791  grad_norm: 7.9949  loss: 1.2107  loss_prob: 0.7040  loss_thr: 0.3866  loss_db: 0.1201
+2025/12/25 20:05:38 - mmengine - INFO - Epoch(train) [103][540/947]  lr: 7.9285e-04  eta: 3:36:40  time: 2.4440  data_time: 0.0028  memory: 17791  grad_norm: 7.2532  loss: 1.1446  loss_prob: 0.6608  loss_thr: 0.3708  loss_db: 0.1130
+2025/12/25 20:05:51 - mmengine - INFO - Epoch(train) [103][545/947]  lr: 7.9285e-04  eta: 3:36:31  time: 2.4637  data_time: 0.0027  memory: 17791  grad_norm: 7.0045  loss: 1.1382  loss_prob: 0.6601  loss_thr: 0.3684  loss_db: 0.1097
+2025/12/25 20:06:04 - mmengine - INFO - Epoch(train) [103][550/947]  lr: 7.9285e-04  eta: 3:36:26  time: 2.6435  data_time: 0.0029  memory: 17791  grad_norm: 7.8302  loss: 1.1479  loss_prob: 0.6761  loss_thr: 0.3589  loss_db: 0.1129
+2025/12/25 20:06:16 - mmengine - INFO - Epoch(train) [103][555/947]  lr: 7.9285e-04  eta: 3:36:09  time: 2.5636  data_time: 0.0028  memory: 17791  grad_norm: 7.8367  loss: 1.1260  loss_prob: 0.6591  loss_thr: 0.3545  loss_db: 0.1123
+2025/12/25 20:06:29 - mmengine - INFO - Epoch(train) [103][560/947]  lr: 7.9285e-04  eta: 3:35:57  time: 2.4939  data_time: 0.0028  memory: 17791  grad_norm: 7.7934  loss: 1.1719  loss_prob: 0.6851  loss_thr: 0.3720  loss_db: 0.1149
+2025/12/25 20:06:42 - mmengine - INFO - Epoch(train) [103][565/947]  lr: 7.9285e-04  eta: 3:35:47  time: 2.5634  data_time: 0.0026  memory: 17791  grad_norm: 8.9399  loss: 1.2322  loss_prob: 0.7250  loss_thr: 0.3858  loss_db: 0.1214
+2025/12/25 20:06:54 - mmengine - INFO - Epoch(train) [103][570/947]  lr: 7.9285e-04  eta: 3:35:30  time: 2.5064  data_time: 0.0024  memory: 17791  grad_norm: 8.6112  loss: 1.2239  loss_prob: 0.7181  loss_thr: 0.3845  loss_db: 0.1213
+2025/12/25 20:07:06 - mmengine - INFO - Epoch(train) [103][575/947]  lr: 7.9285e-04  eta: 3:35:09  time: 2.3912  data_time: 0.0024  memory: 17791  grad_norm: 7.7434  loss: 1.1638  loss_prob: 0.6793  loss_thr: 0.3694  loss_db: 0.1151
+2025/12/25 20:07:18 - mmengine - INFO - Epoch(train) [103][580/947]  lr: 7.9285e-04  eta: 3:34:51  time: 2.3716  data_time: 0.0023  memory: 17791  grad_norm: 7.8275  loss: 1.1310  loss_prob: 0.6586  loss_thr: 0.3608  loss_db: 0.1115
+2025/12/25 20:07:37 - mmengine - INFO - Epoch(train) [103][585/947]  lr: 7.9285e-04  eta: 3:35:37  time: 3.1386  data_time: 0.0025  memory: 17791  grad_norm: 7.8109  loss: 1.1298  loss_prob: 0.6587  loss_thr: 0.3613  loss_db: 0.1099
+2025/12/25 20:07:53 - mmengine - INFO - Epoch(train) [103][590/947]  lr: 7.9285e-04  eta: 3:35:48  time: 3.4859  data_time: 0.0031  memory: 17791  grad_norm: 6.7284  loss: 1.1101  loss_prob: 0.6476  loss_thr: 0.3553  loss_db: 0.1073
+2025/12/25 20:08:05 - mmengine - INFO - Epoch(train) [103][595/947]  lr: 7.9285e-04  eta: 3:35:32  time: 2.7736  data_time: 0.0036  memory: 17791  grad_norm: 8.3019  loss: 1.1443  loss_prob: 0.6768  loss_thr: 0.3548  loss_db: 0.1127
+2025/12/25 20:08:17 - mmengine - INFO - Epoch(train) [103][600/947]  lr: 7.9285e-04  eta: 3:35:15  time: 2.4498  data_time: 0.0032  memory: 17791  grad_norm: 9.5199  loss: 1.1663  loss_prob: 0.6845  loss_thr: 0.3669  loss_db: 0.1149
+2025/12/25 20:08:29 - mmengine - INFO - Epoch(train) [103][605/947]  lr: 7.9285e-04  eta: 3:34:56  time: 2.4131  data_time: 0.0032  memory: 17791  grad_norm: 7.8033  loss: 1.1340  loss_prob: 0.6529  loss_thr: 0.3708  loss_db: 0.1103
+2025/12/25 20:08:40 - mmengine - INFO - Epoch(train) [103][610/947]  lr: 7.9285e-04  eta: 3:34:31  time: 2.3167  data_time: 0.0030  memory: 17791  grad_norm: 7.2161  loss: 1.1213  loss_prob: 0.6507  loss_thr: 0.3608  loss_db: 0.1099
+2025/12/25 20:08:54 - mmengine - INFO - Epoch(train) [103][615/947]  lr: 7.9285e-04  eta: 3:34:23  time: 2.4568  data_time: 0.0026  memory: 17791  grad_norm: 7.4177  loss: 1.1135  loss_prob: 0.6434  loss_thr: 0.3614  loss_db: 0.1087
+2025/12/25 20:09:05 - mmengine - INFO - Epoch(train) [103][620/947]  lr: 7.9285e-04  eta: 3:34:01  time: 2.4784  data_time: 0.0025  memory: 17791  grad_norm: 6.8886  loss: 1.1415  loss_prob: 0.6608  loss_thr: 0.3707  loss_db: 0.1100
+2025/12/25 20:09:17 - mmengine - INFO - Epoch(train) [103][625/947]  lr: 7.9285e-04  eta: 3:33:44  time: 2.3657  data_time: 0.0025  memory: 17791  grad_norm: 6.2994  loss: 1.1631  loss_prob: 0.6799  loss_thr: 0.3713  loss_db: 0.1119
+2025/12/25 20:09:29 - mmengine - INFO - Epoch(train) [103][630/947]  lr: 7.9285e-04  eta: 3:33:23  time: 2.3853  data_time: 0.0026  memory: 17791  grad_norm: 6.2609  loss: 1.1089  loss_prob: 0.6467  loss_thr: 0.3552  loss_db: 0.1069
+2025/12/25 20:09:41 - mmengine - INFO - Epoch(train) [103][635/947]  lr: 7.9285e-04  eta: 3:33:05  time: 2.3574  data_time: 0.0027  memory: 17791  grad_norm: 6.9767  loss: 1.1175  loss_prob: 0.6532  loss_thr: 0.3552  loss_db: 0.1091
+2025/12/25 20:09:52 - mmengine - INFO - Epoch(train) [103][640/947]  lr: 7.9285e-04  eta: 3:32:44  time: 2.3576  data_time: 0.0025  memory: 17791  grad_norm: 8.1962  loss: 1.2019  loss_prob: 0.7054  loss_thr: 0.3770  loss_db: 0.1195
+2025/12/25 20:10:05 - mmengine - INFO - Epoch(train) [103][645/947]  lr: 7.9285e-04  eta: 3:32:27  time: 2.3824  data_time: 0.0027  memory: 17791  grad_norm: 7.7303  loss: 1.1807  loss_prob: 0.6896  loss_thr: 0.3743  loss_db: 0.1168
+2025/12/25 20:10:17 - mmengine - INFO - Epoch(train) [103][650/947]  lr: 7.9285e-04  eta: 3:32:12  time: 2.4440  data_time: 0.0028  memory: 17791  grad_norm: 6.7204  loss: 1.0941  loss_prob: 0.6293  loss_thr: 0.3579  loss_db: 0.1069
