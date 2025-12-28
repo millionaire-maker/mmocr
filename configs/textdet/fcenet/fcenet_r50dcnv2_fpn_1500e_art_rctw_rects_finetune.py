@@ -80,9 +80,79 @@ textdet_rects_test = dict(
 train_list = [textdet_art_train, textdet_rctw_train, textdet_rects_train]
 test_list = [textdet_art_test, textdet_rctw_test, textdet_rects_test]
 
+train_pipeline = [
+    dict(type='LoadImageFromFile', color_type='color_ignore_orientation'),
+    dict(
+        type='LoadOCRAnnotations',
+        with_polygon=True,
+        with_bbox=True,
+        with_label=True,
+    ),
+    # ReCTS 数据中存在少量退化/非法 polygon（如全为 -1），需先过滤避免 FCENet 生成 target 时崩溃
+    dict(type='FixInvalidPolygon', fix_from_bbox=False),
+    dict(
+        type='RandomResize',
+        scale=(800, 800),
+        ratio_range=(0.75, 2.5),
+        keep_ratio=True),
+    dict(
+        type='TextDetRandomCropFlip',
+        crop_ratio=0.5,
+        iter_num=1,
+        min_area_ratio=0.2),
+    dict(
+        type='RandomApply',
+        transforms=[dict(type='RandomCrop', min_side_ratio=0.3)],
+        prob=0.8),
+    dict(
+        type='RandomApply',
+        transforms=[
+            dict(
+                type='RandomRotate',
+                max_angle=30,
+                pad_with_fixed_color=False,
+                use_canvas=True)
+        ],
+        prob=0.5),
+    dict(
+        type='RandomChoice',
+        transforms=[[
+            dict(type='Resize', scale=800, keep_ratio=True),
+            dict(type='SourceImagePad', target_scale=800)
+        ],
+                    dict(type='Resize', scale=800, keep_ratio=False)],
+        prob=[0.6, 0.4]),
+    dict(type='RandomFlip', prob=0.5, direction='horizontal'),
+    dict(
+        type='TorchVisionWrapper',
+        op='ColorJitter',
+        brightness=32.0 / 255,
+        saturation=0.5,
+        contrast=0.5),
+    dict(
+        type='PackTextDetInputs',
+        meta_keys=('img_path', 'ori_shape', 'img_shape', 'scale_factor'))
+]
+
+test_pipeline = [
+    dict(type='LoadImageFromFile', color_type='color_ignore_orientation'),
+    dict(type='Resize', scale=(2260, 2260), keep_ratio=True),
+    # add loading annotation after ``Resize`` because ground truth
+    # does not need to do resize data transform
+    dict(
+        type='LoadOCRAnnotations',
+        with_polygon=True,
+        with_bbox=True,
+        with_label=True),
+    dict(type='FixInvalidPolygon', fix_from_bbox=False),
+    dict(
+        type='PackTextDetInputs',
+        meta_keys=('img_path', 'ori_shape', 'img_shape', 'scale_factor'))
+]
+
 train_dataloader = dict(
     _delete_=True,
-    batch_size=12,
+    batch_size=32,
     num_workers=6,
     persistent_workers=True,
     pin_memory=True,
@@ -90,7 +160,7 @@ train_dataloader = dict(
     dataset=dict(
         type='ConcatDataset',
         datasets=train_list,
-        pipeline=_base_.train_pipeline))
+        pipeline=train_pipeline))
 
 val_dataloader = dict(
     _delete_=True,
@@ -102,7 +172,7 @@ val_dataloader = dict(
     dataset=dict(
         type='ConcatDataset',
         datasets=test_list,
-        pipeline=_base_.test_pipeline))
+        pipeline=test_pipeline))
 
 test_dataloader = val_dataloader
 
@@ -116,7 +186,7 @@ val_evaluator = dict(
     ))
 test_evaluator = val_evaluator
 
-auto_scale_lr = dict(enable=True, base_batch_size=12)
+auto_scale_lr = dict(enable=True, base_batch_size=32)
 
 # 修改验证间隔为每3个epoch验证一次
 train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=3)
