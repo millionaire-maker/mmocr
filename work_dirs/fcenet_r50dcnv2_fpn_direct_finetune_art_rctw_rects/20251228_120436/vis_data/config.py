@@ -1,7 +1,6 @@
-auto_scale_lr = dict(base_batch_size=12, enable=True)
+auto_scale_lr = dict(base_batch_size=4, enable=True)
 custom_hooks = [
     dict(
-        min_delta=0.001,
         monitor='icdar/hmean',
         patience=6,
         rule='greater',
@@ -9,7 +8,7 @@ custom_hooks = [
 ]
 default_hooks = dict(
     checkpoint=dict(
-        interval=5,
+        interval=3,
         max_keep_ckpts=3,
         rule='greater',
         save_best='icdar/hmean',
@@ -32,12 +31,13 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'none'
-load_from = 'work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw/epoch_20.pth'
+load_from = 'work_dirs/fcenet_r50dcnv2_fpn_direct_finetune_art_rctw_rects/epoch_15.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
-max_epochs = 60
+max_epochs = 100
 model = dict(
     backbone=dict(
+        attention_type='se',
         dcn=dict(deform_groups=2, fallback_on_stride=False, type='DCNv2'),
         depth=50,
         frozen_stages=-1,
@@ -57,7 +57,7 @@ model = dict(
             True,
         ),
         style='pytorch',
-        type='mmdet.ResNet'),
+        type='ResNetWithAttention'),
     data_preprocessor=dict(
         bgr_to_rgb=True,
         mean=[
@@ -128,7 +128,7 @@ param_scheduler = [
     dict(
         begin=2,
         by_epoch=True,
-        end=60,
+        end=100,
         eta_min=1e-07,
         power=0.9,
         type='PolyLR'),
@@ -142,13 +142,19 @@ test_dataloader = dict(
         datasets=[
             dict(
                 ann_file='instances_val.json',
-                data_root='data/lsvt_mmocr',
+                data_root='data/art_mmocr',
                 pipeline=None,
                 test_mode=True,
                 type='OCRDataset'),
             dict(
                 ann_file='instances_val.json',
-                data_root='data/ctw_mmocr',
+                data_root='data/rctw17_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/rects_mmocr',
                 pipeline=None,
                 test_mode=True,
                 type='OCRDataset'),
@@ -166,6 +172,7 @@ test_dataloader = dict(
                 with_bbox=True,
                 with_label=True,
                 with_polygon=True),
+            dict(fix_from_bbox=False, type='FixInvalidPolygon'),
             dict(
                 meta_keys=(
                     'img_path',
@@ -181,18 +188,27 @@ test_dataloader = dict(
     pin_memory=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
-    dataset_prefixes=dict(ctw='data/ctw_mmocr', lsvt='data/lsvt_mmocr'),
+    dataset_prefixes=dict(
+        art='data/art_mmocr',
+        rctw='data/rctw17_mmocr',
+        rects='data/rects_mmocr'),
     type='MultiDatasetHmeanIOUMetric')
 test_list = [
     dict(
         ann_file='instances_val.json',
-        data_root='data/lsvt_mmocr',
+        data_root='data/art_mmocr',
         pipeline=None,
         test_mode=True,
         type='OCRDataset'),
     dict(
         ann_file='instances_val.json',
-        data_root='data/ctw_mmocr',
+        data_root='data/rctw17_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/rects_mmocr',
         pipeline=None,
         test_mode=True,
         type='OCRDataset'),
@@ -208,6 +224,7 @@ test_pipeline = [
         with_bbox=True,
         with_label=True,
         with_polygon=True),
+    dict(fix_from_bbox=False, type='FixInvalidPolygon'),
     dict(
         meta_keys=(
             'img_path',
@@ -217,59 +234,78 @@ test_pipeline = [
         ),
         type='PackTextDetInputs'),
 ]
-textdet_ctw_data_root = 'data/ctw_mmocr'
-textdet_ctw_test = dict(
+textdet_art_data_root = 'data/art_mmocr'
+textdet_art_rctw_rects_data_root = 'data/textdet_finetune_art_rctw_rects'
+textdet_art_rctw_rects_test = dict(
     ann_file='instances_val.json',
-    data_root='data/ctw_mmocr',
+    data_root='data/textdet_finetune_art_rctw_rects',
     pipeline=None,
     test_mode=True,
     type='OCRDataset')
-textdet_ctw_train = dict(
+textdet_art_rctw_rects_train = dict(
     ann_file='instances_train.json',
-    data_root='data/ctw_mmocr',
+    data_root='data/textdet_finetune_art_rctw_rects',
     filter_cfg=dict(filter_empty_gt=True, min_size=32),
     pipeline=None,
     type='OCRDataset')
-textdet_lsvt_ctw_data_root = 'data/textdet_pretrain_lsvt_ctw'
-textdet_lsvt_ctw_test = dict(
+textdet_art_test = dict(
     ann_file='instances_val.json',
-    data_root='data/textdet_pretrain_lsvt_ctw',
+    data_root='data/art_mmocr',
     pipeline=None,
     test_mode=True,
     type='OCRDataset')
-textdet_lsvt_ctw_train = dict(
+textdet_art_train = dict(
     ann_file='instances_train.json',
-    data_root='data/textdet_pretrain_lsvt_ctw',
+    data_root='data/art_mmocr',
     filter_cfg=dict(filter_empty_gt=True, min_size=32),
     pipeline=None,
     type='OCRDataset')
-textdet_lsvt_data_root = 'data/lsvt_mmocr'
-textdet_lsvt_test = dict(
+textdet_rctw_data_root = 'data/rctw17_mmocr'
+textdet_rctw_test = dict(
     ann_file='instances_val.json',
-    data_root='data/lsvt_mmocr',
+    data_root='data/rctw17_mmocr',
     pipeline=None,
     test_mode=True,
     type='OCRDataset')
-textdet_lsvt_train = dict(
+textdet_rctw_train = dict(
     ann_file='instances_train.json',
-    data_root='data/lsvt_mmocr',
+    data_root='data/rctw17_mmocr',
     filter_cfg=dict(filter_empty_gt=True, min_size=32),
     pipeline=None,
     type='OCRDataset')
-train_cfg = dict(max_epochs=60, type='EpochBasedTrainLoop', val_interval=5)
+textdet_rects_data_root = 'data/rects_mmocr'
+textdet_rects_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/rects_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_rects_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/rects_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+train_cfg = dict(max_epochs=1500, type='EpochBasedTrainLoop', val_interval=3)
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=4,
     dataset=dict(
         datasets=[
             dict(
                 ann_file='instances_train.json',
-                data_root='data/lsvt_mmocr',
+                data_root='data/art_mmocr',
                 filter_cfg=dict(filter_empty_gt=True, min_size=32),
                 pipeline=None,
                 type='OCRDataset'),
             dict(
                 ann_file='instances_train.json',
-                data_root='data/ctw_mmocr',
+                data_root='data/rctw17_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/rects_mmocr',
                 filter_cfg=dict(filter_empty_gt=True, min_size=32),
                 pipeline=None,
                 type='OCRDataset'),
@@ -283,6 +319,7 @@ train_dataloader = dict(
                 with_bbox=True,
                 with_label=True,
                 with_polygon=True),
+            dict(fix_from_bbox=False, type='FixInvalidPolygon'),
             dict(
                 keep_ratio=True,
                 ratio_range=(
@@ -352,13 +389,19 @@ train_dataloader = dict(
 train_list = [
     dict(
         ann_file='instances_train.json',
-        data_root='data/lsvt_mmocr',
+        data_root='data/art_mmocr',
         filter_cfg=dict(filter_empty_gt=True, min_size=32),
         pipeline=None,
         type='OCRDataset'),
     dict(
         ann_file='instances_train.json',
-        data_root='data/ctw_mmocr',
+        data_root='data/rctw17_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/rects_mmocr',
         filter_cfg=dict(filter_empty_gt=True, min_size=32),
         pipeline=None,
         type='OCRDataset'),
@@ -370,6 +413,7 @@ train_pipeline = [
         with_bbox=True,
         with_label=True,
         with_polygon=True),
+    dict(fix_from_bbox=False, type='FixInvalidPolygon'),
     dict(
         keep_ratio=True,
         ratio_range=(
@@ -438,13 +482,19 @@ val_dataloader = dict(
         datasets=[
             dict(
                 ann_file='instances_val.json',
-                data_root='data/lsvt_mmocr',
+                data_root='data/art_mmocr',
                 pipeline=None,
                 test_mode=True,
                 type='OCRDataset'),
             dict(
                 ann_file='instances_val.json',
-                data_root='data/ctw_mmocr',
+                data_root='data/rctw17_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/rects_mmocr',
                 pipeline=None,
                 test_mode=True,
                 type='OCRDataset'),
@@ -462,6 +512,7 @@ val_dataloader = dict(
                 with_bbox=True,
                 with_label=True,
                 with_polygon=True),
+            dict(fix_from_bbox=False, type='FixInvalidPolygon'),
             dict(
                 meta_keys=(
                     'img_path',
@@ -477,7 +528,10 @@ val_dataloader = dict(
     pin_memory=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(
-    dataset_prefixes=dict(ctw='data/ctw_mmocr', lsvt='data/lsvt_mmocr'),
+    dataset_prefixes=dict(
+        art='data/art_mmocr',
+        rctw='data/rctw17_mmocr',
+        rects='data/rects_mmocr'),
     type='MultiDatasetHmeanIOUMetric')
 vis_backends = [
     dict(type='LocalVisBackend'),
@@ -488,4 +542,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = 'work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw'
+work_dir = 'work_dirs/fcenet_r50dcnv2_fpn_direct_finetune_art_rctw_rects'

@@ -1,0 +1,717 @@
+nohup: ignoring input
+12/28 11:51:22 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+    CUDA available: True
+    MUSA available: False
+    numpy_random_seed: 1965830317
+    GPU 0: NVIDIA GeForce RTX 3090
+    CUDA_HOME: /usr/local/cuda
+    NVCC: Cuda compilation tools, release 11.1, V11.1.105
+    GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+    PyTorch: 1.10.2+cu111
+    PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.2.3 (Git Hash 7336ca9f055cf1bfa13efb658fe15dc9b41f0740)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.0.5
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.1, CUDNN_VERSION=8.0.5, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.10.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+    TorchVision: 0.11.3+cu111
+    OpenCV: 4.12.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: True
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 1965830317
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+12/28 11:51:22 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=12, enable=True)
+custom_hooks = [
+    dict(
+        min_delta=0.001,
+        monitor='icdar/hmean',
+        patience=6,
+        rule='greater',
+        type='EarlyStoppingHook'),
+]
+default_hooks = dict(
+    checkpoint=dict(
+        interval=5,
+        max_keep_ckpts=3,
+        rule='greater',
+        save_best='icdar/hmean',
+        type='CheckpointHook'),
+    logger=dict(interval=5, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    sync_buffer=dict(type='SyncBuffersHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(
+        draw_gt=False,
+        draw_pred=False,
+        enable=False,
+        interval=1,
+        show=False,
+        type='VisualizationHook'))
+default_scope = 'mmocr'
+env_cfg = dict(
+    cudnn_benchmark=True,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'none'
+load_from = 'work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw/epoch_20.pth'
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
+max_epochs = 60
+model = dict(
+    backbone=dict(
+        dcn=dict(deform_groups=2, fallback_on_stride=False, type='DCNv2'),
+        depth=50,
+        frozen_stages=-1,
+        init_cfg=dict(checkpoint='torchvision://resnet50', type='Pretrained'),
+        norm_cfg=dict(requires_grad=True, type='BN'),
+        norm_eval=True,
+        num_stages=4,
+        out_indices=(
+            1,
+            2,
+            3,
+        ),
+        stage_with_dcn=(
+            False,
+            True,
+            True,
+            True,
+        ),
+        style='pytorch',
+        type='mmdet.ResNet'),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+        ],
+        pad_size_divisor=32,
+        std=[
+            58.395,
+            57.12,
+            57.375,
+        ],
+        type='TextDetDataPreprocessor'),
+    det_head=dict(
+        fourier_degree=5,
+        in_channels=256,
+        module_loss=dict(
+            level_proportion_range=(
+                (
+                    0,
+                    0.25,
+                ),
+                (
+                    0.2,
+                    0.65,
+                ),
+                (
+                    0.55,
+                    1.0,
+                ),
+            ),
+            num_sample=50,
+            type='FCEModuleLoss'),
+        postprocessor=dict(
+            alpha=1.0,
+            beta=2.0,
+            num_reconstr_points=50,
+            scales=(
+                8,
+                16,
+                32,
+            ),
+            score_thr=0.3,
+            text_repr_type='poly',
+            type='FCEPostprocessor'),
+        type='FCEHead'),
+    neck=dict(
+        act_cfg=None,
+        add_extra_convs='on_output',
+        in_channels=[
+            512,
+            1024,
+            2048,
+        ],
+        num_outs=3,
+        out_channels=256,
+        relu_before_extra_convs=True,
+        type='mmdet.FPN'),
+    type='FCENet')
+optim_wrapper = dict(
+    clip_grad=dict(max_norm=5, norm_type=2),
+    loss_scale='dynamic',
+    optimizer=dict(lr=0.001, momentum=0.9, type='SGD', weight_decay=0.0005),
+    type='AmpOptimWrapper')
+param_scheduler = [
+    dict(begin=0, by_epoch=True, end=2, start_factor=0.1, type='LinearLR'),
+    dict(
+        begin=2,
+        by_epoch=True,
+        end=60,
+        eta_min=1e-07,
+        power=0.9,
+        type='PolyLR'),
+]
+randomness = dict(seed=None)
+resume = True
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/lsvt_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/ctw_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                2260,
+                2260,
+            ), type='Resize'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=2,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(
+    dataset_prefixes=dict(ctw='data/ctw_mmocr', lsvt='data/lsvt_mmocr'),
+    type='MultiDatasetHmeanIOUMetric')
+test_list = [
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/lsvt_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/ctw_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+]
+test_pipeline = [
+    dict(color_type='color_ignore_orientation', type='LoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        2260,
+        2260,
+    ), type='Resize'),
+    dict(
+        type='LoadOCRAnnotations',
+        with_bbox=True,
+        with_label=True,
+        with_polygon=True),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'scale_factor',
+        ),
+        type='PackTextDetInputs'),
+]
+textdet_ctw_data_root = 'data/ctw_mmocr'
+textdet_ctw_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/ctw_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_ctw_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/ctw_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+textdet_lsvt_ctw_data_root = 'data/textdet_pretrain_lsvt_ctw'
+textdet_lsvt_ctw_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/textdet_pretrain_lsvt_ctw',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_lsvt_ctw_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/textdet_pretrain_lsvt_ctw',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+textdet_lsvt_data_root = 'data/lsvt_mmocr'
+textdet_lsvt_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/lsvt_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_lsvt_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/lsvt_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+train_cfg = dict(max_epochs=60, type='EpochBasedTrainLoop', val_interval=5)
+train_dataloader = dict(
+    batch_size=32,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/lsvt_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/ctw_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(
+                keep_ratio=True,
+                ratio_range=(
+                    0.75,
+                    2.5,
+                ),
+                scale=(
+                    800,
+                    800,
+                ),
+                type='RandomResize'),
+            dict(
+                crop_ratio=0.5,
+                iter_num=1,
+                min_area_ratio=0.2,
+                type='TextDetRandomCropFlip'),
+            dict(
+                prob=0.8,
+                transforms=[
+                    dict(min_side_ratio=0.3, type='RandomCrop'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.5,
+                transforms=[
+                    dict(
+                        max_angle=30,
+                        pad_with_fixed_color=False,
+                        type='RandomRotate',
+                        use_canvas=True),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=[
+                    0.6,
+                    0.4,
+                ],
+                transforms=[
+                    [
+                        dict(keep_ratio=True, scale=800, type='Resize'),
+                        dict(target_scale=800, type='SourceImagePad'),
+                    ],
+                    dict(keep_ratio=False, scale=800, type='Resize'),
+                ],
+                type='RandomChoice'),
+            dict(direction='horizontal', prob=0.5, type='RandomFlip'),
+            dict(
+                brightness=0.12549019607843137,
+                contrast=0.5,
+                op='ColorJitter',
+                saturation=0.5,
+                type='TorchVisionWrapper'),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=6,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_list = [
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/lsvt_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/ctw_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+]
+train_pipeline = [
+    dict(color_type='color_ignore_orientation', type='LoadImageFromFile'),
+    dict(
+        type='LoadOCRAnnotations',
+        with_bbox=True,
+        with_label=True,
+        with_polygon=True),
+    dict(
+        keep_ratio=True,
+        ratio_range=(
+            0.75,
+            2.5,
+        ),
+        scale=(
+            800,
+            800,
+        ),
+        type='RandomResize'),
+    dict(
+        crop_ratio=0.5,
+        iter_num=1,
+        min_area_ratio=0.2,
+        type='TextDetRandomCropFlip'),
+    dict(
+        prob=0.8,
+        transforms=[
+            dict(min_side_ratio=0.3, type='RandomCrop'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.5,
+        transforms=[
+            dict(
+                max_angle=30,
+                pad_with_fixed_color=False,
+                type='RandomRotate',
+                use_canvas=True),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=[
+            0.6,
+            0.4,
+        ],
+        transforms=[
+            [
+                dict(keep_ratio=True, scale=800, type='Resize'),
+                dict(target_scale=800, type='SourceImagePad'),
+            ],
+            dict(keep_ratio=False, scale=800, type='Resize'),
+        ],
+        type='RandomChoice'),
+    dict(direction='horizontal', prob=0.5, type='RandomFlip'),
+    dict(
+        brightness=0.12549019607843137,
+        contrast=0.5,
+        op='ColorJitter',
+        saturation=0.5,
+        type='TorchVisionWrapper'),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'scale_factor',
+        ),
+        type='PackTextDetInputs'),
+]
+val_cfg = dict(type='ValLoop')
+val_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/lsvt_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/ctw_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                2260,
+                2260,
+            ), type='Resize'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=2,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(
+    dataset_prefixes=dict(ctw='data/ctw_mmocr', lsvt='data/lsvt_mmocr'),
+    type='MultiDatasetHmeanIOUMetric')
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    name='visualizer',
+    type='TextDetLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw'
+
+12/28 11:51:29 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+12/28 11:51:29 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+(LOWEST      ) EarlyStoppingHook                  
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+(LOWEST      ) EarlyStoppingHook                  
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+12/28 11:51:47 - mmengine - INFO - LR is set based on batch size of 12 and the current batch size is 32. Scaling the original LR by 2.6666666666666665.
+12/28 11:51:50 - mmengine - INFO - load model from: torchvision://resnet50
+12/28 11:51:50 - mmengine - INFO - Loads checkpoint by torchvision backend from path: torchvision://resnet50
+12/28 11:51:50 - mmengine - WARNING - The model and loaded state dict do not match exactly
+
+unexpected key in source state_dict: fc.weight, fc.bias
+
+missing keys in source state_dict: layer2.0.conv2.conv_offset.weight, layer2.0.conv2.conv_offset.bias, layer2.1.conv2.conv_offset.weight, layer2.1.conv2.conv_offset.bias, layer2.2.conv2.conv_offset.weight, layer2.2.conv2.conv_offset.bias, layer2.3.conv2.conv_offset.weight, layer2.3.conv2.conv_offset.bias, layer3.0.conv2.conv_offset.weight, layer3.0.conv2.conv_offset.bias, layer3.1.conv2.conv_offset.weight, layer3.1.conv2.conv_offset.bias, layer3.2.conv2.conv_offset.weight, layer3.2.conv2.conv_offset.bias, layer3.3.conv2.conv_offset.weight, layer3.3.conv2.conv_offset.bias, layer3.4.conv2.conv_offset.weight, layer3.4.conv2.conv_offset.bias, layer3.5.conv2.conv_offset.weight, layer3.5.conv2.conv_offset.bias, layer4.0.conv2.conv_offset.weight, layer4.0.conv2.conv_offset.bias, layer4.1.conv2.conv_offset.weight, layer4.1.conv2.conv_offset.bias, layer4.2.conv2.conv_offset.weight, layer4.2.conv2.conv_offset.bias
+
+Loads checkpoint by local backend from path: work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw/epoch_20.pth
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.0.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.1.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.2.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.3.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.0.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.1.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.2.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.3.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.4.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.5.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.0.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.1.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.2.conv2 is upgraded to version 2.
+12/28 11:51:51 - mmengine - INFO - Load checkpoint from work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw/epoch_20.pth
+12/28 11:51:51 - mmengine - INFO - resumed epoch: 20, iter: 30880
+12/28 11:51:51 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+12/28 11:51:51 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+12/28 11:51:51 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw.
+12/28 11:52:22 - mmengine - INFO - Epoch(train) [21][   5/1544]  lr: 1.8952e-03  eta: 4 days, 12:38:36  time: 4.8086  data_time: 0.5611  memory: 20552  grad_norm: 49.3570  loss: 5.7314  loss_text: 0.7641  loss_center: 3.3928  loss_reg_x: 0.8784  loss_reg_y: 0.6960
+12/28 11:52:41 - mmengine - INFO - Epoch(train) [21][  10/1544]  lr: 1.8952e-03  eta: 3 days, 15:12:53  time: 5.0846  data_time: 0.5613  memory: 19779  grad_norm: nan  loss: 5.4362  loss_text: 0.7231  loss_center: 3.2909  loss_reg_x: 0.7936  loss_reg_y: 0.6286
+12/28 11:53:02 - mmengine - INFO - Epoch(train) [21][  15/1544]  lr: 1.8952e-03  eta: 3 days, 9:42:45  time: 3.9796  data_time: 0.0028  memory: 19779  grad_norm: nan  loss: 4.7814  loss_text: 0.7708  loss_center: 2.5456  loss_reg_x: 0.9222  loss_reg_y: 0.5427
+12/28 11:53:21 - mmengine - INFO - Epoch(train) [21][  20/1544]  lr: 1.8952e-03  eta: 3 days, 5:43:01  time: 3.9786  data_time: 0.0027  memory: 19779  grad_norm: 40.4501  loss: 4.7328  loss_text: 0.8095  loss_center: 2.3575  loss_reg_x: 0.9885  loss_reg_y: 0.5774
+12/28 11:53:41 - mmengine - INFO - Epoch(train) [21][  25/1544]  lr: 1.8952e-03  eta: 3 days, 4:04:16  time: 3.9437  data_time: 0.0031  memory: 19779  grad_norm: 37.7186  loss: 4.6437  loss_text: 0.7975  loss_center: 2.2047  loss_reg_x: 0.9822  loss_reg_y: 0.6593
+12/28 11:54:02 - mmengine - INFO - Epoch(train) [21][  30/1544]  lr: 1.8952e-03  eta: 3 days, 2:56:10  time: 4.0473  data_time: 0.0038  memory: 19779  grad_norm: 34.6826  loss: 4.3877  loss_text: 0.7694  loss_center: 1.9744  loss_reg_x: 0.9303  loss_reg_y: 0.7137
+12/28 11:54:20 - mmengine - INFO - Epoch(train) [21][  35/1544]  lr: 1.8952e-03  eta: 3 days, 1:17:34  time: 3.8714  data_time: 0.0029  memory: 19779  grad_norm: 31.1814  loss: 4.4857  loss_text: 0.8505  loss_center: 1.9524  loss_reg_x: 0.9389  loss_reg_y: 0.7439
+12/28 11:54:40 - mmengine - INFO - Epoch(train) [21][  40/1544]  lr: 1.8952e-03  eta: 3 days, 0:26:36  time: 3.7914  data_time: 0.0027  memory: 19779  grad_norm: 32.2473  loss: 4.5158  loss_text: 0.8575  loss_center: 1.9481  loss_reg_x: 0.9607  loss_reg_y: 0.7496
+12/28 11:54:59 - mmengine - INFO - Epoch(train) [21][  45/1544]  lr: 1.8952e-03  eta: 2 days, 23:52:17  time: 3.9047  data_time: 0.0028  memory: 19779  grad_norm: 36.5282  loss: 4.1694  loss_text: 0.8013  loss_center: 1.8791  loss_reg_x: 0.8457  loss_reg_y: 0.6433
+12/28 11:55:21 - mmengine - INFO - Epoch(train) [21][  50/1544]  lr: 1.8952e-03  eta: 3 days, 0:05:07  time: 4.1245  data_time: 0.0025  memory: 19779  grad_norm: 41.9318  loss: 4.1735  loss_text: 0.8248  loss_center: 1.8779  loss_reg_x: 0.8414  loss_reg_y: 0.6293
+12/28 11:55:40 - mmengine - INFO - Epoch(train) [21][  55/1544]  lr: 1.8952e-03  eta: 2 days, 23:30:40  time: 4.0806  data_time: 0.0027  memory: 19779  grad_norm: 34.1307  loss: 4.0637  loss_text: 0.7857  loss_center: 1.7513  loss_reg_x: 0.8301  loss_reg_y: 0.6966
+12/28 11:56:00 - mmengine - INFO - Epoch(train) [21][  60/1544]  lr: 1.8952e-03  eta: 2 days, 23:20:07  time: 3.9468  data_time: 0.0034  memory: 19779  grad_norm: 29.7305  loss: 4.1325  loss_text: 0.7966  loss_center: 1.6404  loss_reg_x: 0.9663  loss_reg_y: 0.7291
+12/28 11:56:21 - mmengine - INFO - Epoch(train) [21][  65/1544]  lr: 1.8952e-03  eta: 2 days, 23:10:41  time: 4.0502  data_time: 0.0036  memory: 19779  grad_norm: 31.9649  loss: 4.2372  loss_text: 0.8191  loss_center: 1.6726  loss_reg_x: 1.0827  loss_reg_y: 0.6628
+12/28 11:56:39 - mmengine - INFO - Epoch(train) [21][  70/1544]  lr: 1.8952e-03  eta: 2 days, 22:30:06  time: 3.8263  data_time: 0.0028  memory: 19779  grad_norm: 29.4991  loss: 3.9956  loss_text: 0.7596  loss_center: 1.6283  loss_reg_x: 0.9660  loss_reg_y: 0.6417
+12/28 11:56:58 - mmengine - INFO - Epoch(train) [21][  75/1544]  lr: 1.8952e-03  eta: 2 days, 22:14:15  time: 3.7467  data_time: 0.0023  memory: 19779  grad_norm: 26.7169  loss: 3.7397  loss_text: 0.7086  loss_center: 1.4981  loss_reg_x: 0.8907  loss_reg_y: 0.6423
+12/28 11:57:17 - mmengine - INFO - Epoch(train) [21][  80/1544]  lr: 1.8952e-03  eta: 2 days, 21:51:35  time: 3.8199  data_time: 0.0023  memory: 19779  grad_norm: 28.0552  loss: 3.7265  loss_text: 0.7083  loss_center: 1.5460  loss_reg_x: 0.8540  loss_reg_y: 0.6182
+12/28 11:57:38 - mmengine - INFO - Epoch(train) [21][  85/1544]  lr: 1.8952e-03  eta: 2 days, 21:55:47  time: 3.9521  data_time: 0.0030  memory: 19779  grad_norm: 27.0448  loss: 3.7265  loss_text: 0.7232  loss_center: 1.5262  loss_reg_x: 0.8581  loss_reg_y: 0.6190
+12/28 11:57:59 - mmengine - INFO - Epoch(train) [21][  90/1544]  lr: 1.8952e-03  eta: 2 days, 22:10:44  time: 4.2510  data_time: 0.0029  memory: 19779  grad_norm: 28.6151  loss: 3.7653  loss_text: 0.7787  loss_center: 1.4465  loss_reg_x: 0.9025  loss_reg_y: 0.6376
+12/28 11:58:20 - mmengine - INFO - Epoch(train) [21][  95/1544]  lr: 1.8952e-03  eta: 2 days, 22:09:09  time: 4.2117  data_time: 0.0031  memory: 19779  grad_norm: 31.8542  loss: 4.0350  loss_text: 0.7978  loss_center: 1.5609  loss_reg_x: 1.0111  loss_reg_y: 0.6652
+12/28 11:58:39 - mmengine - INFO - Epoch(train) [21][ 100/1544]  lr: 1.8952e-03  eta: 2 days, 21:54:53  time: 3.9491  data_time: 0.0030  memory: 19779  grad_norm: 28.0797  loss: 4.0921  loss_text: 0.7739  loss_center: 1.5029  loss_reg_x: 1.1308  loss_reg_y: 0.6845
+12/28 11:58:58 - mmengine - INFO - Epoch(train) [21][ 105/1544]  lr: 1.8952e-03  eta: 2 days, 21:46:00  time: 3.8660  data_time: 0.0023  memory: 19779  grad_norm: 28.8763  loss: 3.8001  loss_text: 0.7582  loss_center: 1.3961  loss_reg_x: 0.9941  loss_reg_y: 0.6517
+12/28 11:59:20 - mmengine - INFO - Epoch(train) [21][ 110/1544]  lr: 1.8952e-03  eta: 2 days, 21:57:57  time: 4.1221  data_time: 0.0023  memory: 19779  grad_norm: 30.7309  loss: 3.6629  loss_text: 0.7514  loss_center: 1.4118  loss_reg_x: 0.8019  loss_reg_y: 0.6977
+12/28 11:59:40 - mmengine - INFO - Epoch(train) [21][ 115/1544]  lr: 1.8952e-03  eta: 2 days, 21:51:28  time: 4.1424  data_time: 0.0022  memory: 19779  grad_norm: 25.1862  loss: 3.7684  loss_text: 0.7608  loss_center: 1.4286  loss_reg_x: 0.8727  loss_reg_y: 0.7063
+12/28 12:00:00 - mmengine - INFO - Exp name: fcenet_r50dcnv2_fpn_1500e_lsvt_ctw_pretrain_20251228_115121
+12/28 12:00:00 - mmengine - INFO - Epoch(train) [21][ 120/1544]  lr: 1.8952e-03  eta: 2 days, 21:47:12  time: 3.9680  data_time: 0.0023  memory: 19779  grad_norm: 22.6728  loss: 3.8751  loss_text: 0.7861  loss_center: 1.4598  loss_reg_x: 0.9625  loss_reg_y: 0.6667
+12/28 12:00:18 - mmengine - INFO - Epoch(train) [21][ 125/1544]  lr: 1.8952e-03  eta: 2 days, 21:31:34  time: 3.8456  data_time: 0.0022  memory: 19779  grad_norm: 28.4049  loss: 4.2432  loss_text: 0.8315  loss_center: 1.6563  loss_reg_x: 1.0066  loss_reg_y: 0.7488
+12/28 12:00:40 - mmengine - INFO - Epoch(train) [21][ 130/1544]  lr: 1.8952e-03  eta: 2 days, 21:42:32  time: 4.0254  data_time: 0.0023  memory: 19779  grad_norm: 31.2269  loss: 4.1294  loss_text: 0.8587  loss_center: 1.6471  loss_reg_x: 0.9461  loss_reg_y: 0.6775
+12/28 12:00:59 - mmengine - INFO - Epoch(train) [21][ 135/1544]  lr: 1.8952e-03  eta: 2 days, 21:29:29  time: 4.0426  data_time: 0.0028  memory: 19779  grad_norm: 29.9592  loss: 3.7888  loss_text: 0.8473  loss_center: 1.4843  loss_reg_x: 0.8963  loss_reg_y: 0.5609
+12/28 12:01:18 - mmengine - INFO - Epoch(train) [21][ 140/1544]  lr: 1.8952e-03  eta: 2 days, 21:20:38  time: 3.7827  data_time: 0.0029  memory: 19779  grad_norm: 28.7955  loss: 3.7321  loss_text: 0.7615  loss_center: 1.4914  loss_reg_x: 0.9160  loss_reg_y: 0.5631
+12/28 12:01:39 - mmengine - INFO - Epoch(train) [21][ 145/1544]  lr: 1.8952e-03  eta: 2 days, 21:26:59  time: 4.0338  data_time: 0.0030  memory: 19779  grad_norm: 25.9007  loss: 3.6149  loss_text: 0.7201  loss_center: 1.4688  loss_reg_x: 0.8724  loss_reg_y: 0.5537
+12/28 12:01:57 - mmengine - INFO - Epoch(train) [21][ 150/1544]  lr: 1.8952e-03  eta: 2 days, 21:14:43  time: 3.9746  data_time: 0.0029  memory: 19779  grad_norm: 24.7929  loss: 3.5094  loss_text: 0.7442  loss_center: 1.3864  loss_reg_x: 0.8346  loss_reg_y: 0.5442
+12/28 12:02:22 - mmengine - INFO - Epoch(train) [21][ 155/1544]  lr: 1.8952e-03  eta: 2 days, 21:41:28  time: 4.2865  data_time: 0.0024  memory: 19779  grad_norm: 25.4920  loss: 3.5092  loss_text: 0.7502  loss_center: 1.3424  loss_reg_x: 0.8454  loss_reg_y: 0.5713
+12/28 12:02:44 - mmengine - INFO - Epoch(train) [21][ 160/1544]  lr: 1.8952e-03  eta: 2 days, 21:54:05  time: 4.6703  data_time: 0.0023  memory: 19779  grad_norm: 27.7559  loss: 3.6378  loss_text: 0.7697  loss_center: 1.3821  loss_reg_x: 0.8852  loss_reg_y: 0.6008
+12/28 12:03:04 - mmengine - INFO - Epoch(train) [21][ 165/1544]  lr: 1.8952e-03  eta: 2 days, 21:47:56  time: 4.1874  data_time: 0.0023  memory: 19779  grad_norm: 25.5616  loss: 3.7994  loss_text: 0.8077  loss_center: 1.4518  loss_reg_x: 0.9083  loss_reg_y: 0.6315
+12/28 12:03:25 - mmengine - INFO - Epoch(train) [21][ 170/1544]  lr: 1.8952e-03  eta: 2 days, 21:54:43  time: 4.1067  data_time: 0.0022  memory: 19779  grad_norm: 24.9434  loss: 3.6554  loss_text: 0.7998  loss_center: 1.3407  loss_reg_x: 0.8636  loss_reg_y: 0.6512
+12/28 12:03:45 - mmengine - INFO - Epoch(train) [21][ 175/1544]  lr: 1.8952e-03  eta: 2 days, 21:49:59  time: 4.1260  data_time: 0.0022  memory: 19779  grad_norm: 30.5204  loss: 3.5724  loss_text: 0.7493  loss_center: 1.2397  loss_reg_x: 0.8988  loss_reg_y: 0.6846
+12/28 12:04:07 - mmengine - INFO - Epoch(train) [21][ 180/1544]  lr: 1.8952e-03  eta: 2 days, 21:56:47  time: 4.1348  data_time: 0.0028  memory: 19779  grad_norm: 29.1699  loss: 3.5689  loss_text: 0.7178  loss_center: 1.3217  loss_reg_x: 0.8869  loss_reg_y: 0.6426
+12/28 12:04:28 - mmengine - INFO - Epoch(train) [21][ 185/1544]  lr: 1.8952e-03  eta: 2 days, 22:01:14  time: 4.2972  data_time: 0.0028  memory: 19779  grad_norm: 23.6429  loss: 3.5648  loss_text: 0.7452  loss_center: 1.4020  loss_reg_x: 0.8264  loss_reg_y: 0.5912
+12/28 12:04:45 - mmengine - INFO - Epoch(train) [21][ 190/1544]  lr: 1.8952e-03  eta: 2 days, 21:44:08  time: 3.8673  data_time: 0.0022  memory: 19779  grad_norm: 20.5987  loss: 3.5112  loss_text: 0.7089  loss_center: 1.3974  loss_reg_x: 0.8306  loss_reg_y: 0.5742
+12/28 12:05:07 - mmengine - INFO - Epoch(train) [21][ 195/1544]  lr: 1.8952e-03  eta: 2 days, 21:50:48  time: 3.9086  data_time: 0.0023  memory: 19779  grad_norm: 20.1725  loss: 3.3677  loss_text: 0.6958  loss_center: 1.3468  loss_reg_x: 0.7706  loss_reg_y: 0.5545
+12/28 12:05:26 - mmengine - INFO - Epoch(train) [21][ 200/1544]  lr: 1.8952e-03  eta: 2 days, 21:42:04  time: 4.0504  data_time: 0.0024  memory: 19779  grad_norm: 23.1250  loss: 3.7358  loss_text: 0.8014  loss_center: 1.4064  loss_reg_x: 0.8882  loss_reg_y: 0.6398
+12/28 12:05:47 - mmengine - INFO - Epoch(train) [21][ 205/1544]  lr: 1.8952e-03  eta: 2 days, 21:44:10  time: 3.9653  data_time: 0.0023  memory: 19779  grad_norm: 22.8035  loss: 3.7384  loss_text: 0.7495  loss_center: 1.4876  loss_reg_x: 0.8818  loss_reg_y: 0.6195
+12/28 12:06:06 - mmengine - INFO - Epoch(train) [21][ 210/1544]  lr: 1.8952e-03  eta: 2 days, 21:36:24  time: 3.9743  data_time: 0.0023  memory: 19779  grad_norm: 27.3448  loss: 3.6464  loss_text: 0.7349  loss_center: 1.4604  loss_reg_x: 0.8823  loss_reg_y: 0.5687
+12/28 12:06:25 - mmengine - INFO - Epoch(train) [21][ 215/1544]  lr: 1.8952e-03  eta: 2 days, 21:32:36  time: 3.8502  data_time: 0.0027  memory: 19779  grad_norm: 30.3023  loss: 3.6407  loss_text: 0.7848  loss_center: 1.4279  loss_reg_x: 0.8512  loss_reg_y: 0.5768
+12/28 12:06:47 - mmengine - INFO - Epoch(train) [21][ 220/1544]  lr: 1.8952e-03  eta: 2 days, 21:40:39  time: 4.1769  data_time: 0.0026  memory: 19779  grad_norm: 25.9719  loss: 3.4082  loss_text: 0.7769  loss_center: 1.4072  loss_reg_x: 0.7008  loss_reg_y: 0.5233
+12/28 12:07:07 - mmengine - INFO - Epoch(train) [21][ 225/1544]  lr: 1.8952e-03  eta: 2 days, 21:36:59  time: 4.1789  data_time: 0.0022  memory: 19779  grad_norm: 29.0961  loss: 3.8913  loss_text: 0.8469  loss_center: 1.5401  loss_reg_x: 0.8474  loss_reg_y: 0.6568
+12/28 12:07:27 - mmengine - INFO - Epoch(train) [21][ 230/1544]  lr: 1.8952e-03  eta: 2 days, 21:35:10  time: 3.9683  data_time: 0.0023  memory: 19779  grad_norm: 28.4022  loss: 4.2715  loss_text: 0.8375  loss_center: 1.5807  loss_reg_x: 1.0970  loss_reg_y: 0.7563
+12/28 12:07:47 - mmengine - INFO - Epoch(train) [21][ 235/1544]  lr: 1.8952e-03  eta: 2 days, 21:32:00  time: 3.9743  data_time: 0.0023  memory: 19779  grad_norm: 25.9314  loss: 3.8390  loss_text: 0.7593  loss_center: 1.3990  loss_reg_x: 1.0086  loss_reg_y: 0.6721
+12/28 12:08:08 - mmengine - INFO - Epoch(train) [21][ 240/1544]  lr: 1.8952e-03  eta: 2 days, 21:34:23  time: 4.0690  data_time: 0.0024  memory: 19779  grad_norm: 26.5717  loss: 3.5479  loss_text: 0.7720  loss_center: 1.3981  loss_reg_x: 0.7808  loss_reg_y: 0.5970
+12/28 12:08:30 - mmengine - INFO - Epoch(train) [21][ 245/1544]  lr: 1.8952e-03  eta: 2 days, 21:40:44  time: 4.2933  data_time: 0.0023  memory: 19779  grad_norm: 28.2058  loss: 3.4659  loss_text: 0.7638  loss_center: 1.3850  loss_reg_x: 0.7364  loss_reg_y: 0.5808
+12/28 12:08:47 - mmengine - INFO - Epoch(train) [21][ 250/1544]  lr: 1.8952e-03  eta: 2 days, 21:28:55  time: 3.9544  data_time: 0.0029  memory: 19779  grad_norm: 26.6996  loss: 3.6496  loss_text: 0.7459  loss_center: 1.4366  loss_reg_x: 0.8307  loss_reg_y: 0.6364
+12/28 12:09:08 - mmengine - INFO - Epoch(train) [21][ 255/1544]  lr: 1.8952e-03  eta: 2 days, 21:28:29  time: 3.7901  data_time: 0.0029  memory: 19779  grad_norm: 23.9357  loss: 3.7471  loss_text: 0.7514  loss_center: 1.4239  loss_reg_x: 0.9353  loss_reg_y: 0.6365
+12/28 12:09:28 - mmengine - INFO - Epoch(train) [21][ 260/1544]  lr: 1.8952e-03  eta: 2 days, 21:29:57  time: 4.1098  data_time: 0.0023  memory: 19779  grad_norm: 22.4901  loss: 3.5869  loss_text: 0.7358  loss_center: 1.3236  loss_reg_x: 0.9226  loss_reg_y: 0.6048
+12/28 12:09:49 - mmengine - INFO - Epoch(train) [21][ 265/1544]  lr: 1.8952e-03  eta: 2 days, 21:29:06  time: 4.0998  data_time: 0.0022  memory: 19779  grad_norm: 24.3572  loss: 3.7646  loss_text: 0.7523  loss_center: 1.3859  loss_reg_x: 0.9504  loss_reg_y: 0.6759
+12/28 12:10:07 - mmengine - INFO - Epoch(train) [21][ 270/1544]  lr: 1.8952e-03  eta: 2 days, 21:20:46  time: 3.8444  data_time: 0.0023  memory: 19779  grad_norm: 24.4566  loss: 3.5755  loss_text: 0.7219  loss_center: 1.3201  loss_reg_x: 0.8858  loss_reg_y: 0.6477
+12/28 12:10:28 - mmengine - INFO - Epoch(train) [21][ 275/1544]  lr: 1.8952e-03  eta: 2 days, 21:24:34  time: 3.9645  data_time: 0.0023  memory: 19779  grad_norm: 21.0825  loss: 3.2654  loss_text: 0.6904  loss_center: 1.2333  loss_reg_x: 0.8221  loss_reg_y: 0.5197
+12/28 12:10:52 - mmengine - INFO - Epoch(train) [21][ 280/1544]  lr: 1.8952e-03  eta: 2 days, 21:37:13  time: 4.5280  data_time: 0.0023  memory: 19779  grad_norm: 26.3192  loss: 3.5306  loss_text: 0.7712  loss_center: 1.3235  loss_reg_x: 0.8434  loss_reg_y: 0.5925
+12/28 12:11:12 - mmengine - INFO - Epoch(train) [21][ 285/1544]  lr: 1.8952e-03  eta: 2 days, 21:36:09  time: 4.4050  data_time: 0.0023  memory: 19779  grad_norm: 27.4176  loss: 3.8774  loss_text: 0.8040  loss_center: 1.4650  loss_reg_x: 1.0215  loss_reg_y: 0.5869
+12/28 12:11:31 - mmengine - INFO - Epoch(train) [21][ 290/1544]  lr: 1.8952e-03  eta: 2 days, 21:29:42  time: 3.8829  data_time: 0.0027  memory: 19779  grad_norm: 26.8746  loss: 3.7194  loss_text: 0.7689  loss_center: 1.3741  loss_reg_x: 1.0228  loss_reg_y: 0.5535
+12/28 12:11:49 - mmengine - INFO - Epoch(train) [21][ 295/1544]  lr: 1.8952e-03  eta: 2 days, 21:20:04  time: 3.6326  data_time: 0.0027  memory: 19779  grad_norm: 25.7380  loss: 3.7460  loss_text: 0.7673  loss_center: 1.3871  loss_reg_x: 0.9238  loss_reg_y: 0.6678
+12/28 12:12:08 - mmengine - INFO - Epoch(train) [21][ 300/1544]  lr: 1.8952e-03  eta: 2 days, 21:16:15  time: 3.6958  data_time: 0.0028  memory: 19779  grad_norm: 22.7823  loss: 3.7621  loss_text: 0.7232  loss_center: 1.4576  loss_reg_x: 0.9210  loss_reg_y: 0.6604
+12/28 12:12:27 - mmengine - INFO - Epoch(train) [21][ 305/1544]  lr: 1.8952e-03  eta: 2 days, 21:11:37  time: 3.8293  data_time: 0.0029  memory: 19779  grad_norm: 20.9281  loss: 3.4799  loss_text: 0.6820  loss_center: 1.3639  loss_reg_x: 0.8474  loss_reg_y: 0.5867
+12/28 12:12:48 - mmengine - INFO - Epoch(train) [21][ 310/1544]  lr: 1.8952e-03  eta: 2 days, 21:13:58  time: 4.0091  data_time: 0.0024  memory: 19779  grad_norm: 21.7375  loss: 3.5162  loss_text: 0.7356  loss_center: 1.3673  loss_reg_x: 0.8576  loss_reg_y: 0.5557
+12/28 12:13:08 - mmengine - INFO - Epoch(train) [21][ 315/1544]  lr: 1.8952e-03  eta: 2 days, 21:14:32  time: 4.1637  data_time: 0.0024  memory: 19779  grad_norm: 24.9729  loss: 3.4196  loss_text: 0.7116  loss_center: 1.3359  loss_reg_x: 0.8250  loss_reg_y: 0.5472

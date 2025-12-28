@@ -1,9 +1,8 @@
-auto_scale_lr = dict(base_batch_size=32, enable=True)
+auto_scale_lr = dict(base_batch_size=4, enable=True)
 custom_hooks = [
     dict(
-        min_delta=0.001,
         monitor='icdar/hmean',
-        patience=12,
+        patience=6,
         rule='greater',
         type='EarlyStoppingHook'),
 ]
@@ -32,12 +31,13 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'none'
-load_from = None
+load_from = 'work_dirs/fcenet_r50dcnv2_fpn_direct_finetune_art_rctw_rects/epoch_15.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
 max_epochs = 100
 model = dict(
     backbone=dict(
+        attention_type='se',
         dcn=dict(deform_groups=2, fallback_on_stride=False, type='DCNv2'),
         depth=50,
         frozen_stages=-1,
@@ -57,7 +57,7 @@ model = dict(
             True,
         ),
         style='pytorch',
-        type='mmdet.ResNet'),
+        type='ResNetWithAttention'),
     data_preprocessor=dict(
         bgr_to_rgb=True,
         mean=[
@@ -134,7 +134,7 @@ param_scheduler = [
         type='PolyLR'),
 ]
 randomness = dict(seed=None)
-resume = False
+resume = True
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
@@ -286,9 +286,9 @@ textdet_rects_train = dict(
     filter_cfg=dict(filter_empty_gt=True, min_size=32),
     pipeline=None,
     type='OCRDataset')
-train_cfg = dict(max_epochs=100, type='EpochBasedTrainLoop', val_interval=3)
+train_cfg = dict(max_epochs=1500, type='EpochBasedTrainLoop', val_interval=3)
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=4,
     dataset=dict(
         datasets=[
             dict(
@@ -542,4 +542,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = 'work_dirs/fcenet_r50dcnv2_fpn_1500e_art_rctw_rects_finetune'
+work_dir = 'work_dirs/fcenet_r50dcnv2_fpn_direct_finetune_art_rctw_rects'
