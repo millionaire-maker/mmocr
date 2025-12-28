@@ -159,10 +159,9 @@ class FCEModuleLoss(TextSnakeModuleLoss):
 
         # text center line loss
         tr_neg_mask = 1 - tr_train_mask
-        loss_tcl_positive = self.loss_center(
-            tcl_pred.softmax(-1)[:, 1], tcl_mask, tr_train_mask)
-        loss_tcl_negative = self.loss_center(
-            tcl_pred.softmax(-1)[:, 1], tcl_mask, tr_neg_mask)
+        tcl_prob = tcl_pred.softmax(-1)[:, 1]
+        loss_tcl_positive = self.loss_tcl(tcl_prob, tcl_mask, tr_train_mask)
+        loss_tcl_negative = self.loss_tcl(tcl_prob, tcl_mask, tr_neg_mask)
         loss_tcl = loss_tcl_positive + 0.5 * loss_tcl_negative
 
         # regression loss
@@ -426,6 +425,10 @@ class FCEModuleLoss(TextSnakeModuleLoss):
         Returns:
             ndarray: The resampled polygon.
         """
+        polygon = np.asarray(polygon, dtype=np.float32).reshape(-1, 2)
+        if polygon.size == 0:
+            return np.zeros((n, 2), dtype=np.float32)
+
         length = []
 
         for i in range(len(polygon)):
@@ -436,7 +439,9 @@ class FCEModuleLoss(TextSnakeModuleLoss):
                 p2 = polygon[i + 1]
             length.append(((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5)
 
-        total_length = sum(length)
+        total_length = float(sum(length))
+        if total_length < 1e-6:
+            return np.repeat(polygon[:1], n, axis=0)
         n_on_each_line = (np.array(length) / (total_length + 1e-8)) * n
         n_on_each_line = n_on_each_line.astype(np.int32)
         new_polygon = []
@@ -457,7 +462,9 @@ class FCEModuleLoss(TextSnakeModuleLoss):
                 point = p1 + dxdy * j
                 new_polygon.append(point)
 
-        return np.array(new_polygon)
+        if len(new_polygon) == 0:
+            return np.repeat(polygon[:1], n, axis=0)
+        return np.asarray(new_polygon, dtype=np.float32)
 
     def _normalize_polygon(self, polygon: ArrayLike) -> np.ndarray:
         """Normalize one polygon so that its start point is at right most.

@@ -6,7 +6,6 @@ import torch.nn as nn
 
 from mmocr.registry import MODELS
 
-
 @MODELS.register_module()
 class MaskedBalancedBCEWithLogitsLoss(nn.Module):
     """This loss combines a Sigmoid layers and a masked balanced BCE loss in
