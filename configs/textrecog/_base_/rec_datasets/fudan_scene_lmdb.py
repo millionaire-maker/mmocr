@@ -1,21 +1,21 @@
-fudan_scene_rec_root = 'data/recog_lmdb'
+fudan_scene_rec_root = 'data/fudan/scene'
 
 fudan_scene_textrecog_train = dict(
     type='RecogLMDBDataset',
     data_root=fudan_scene_rec_root,
-    ann_file='fudan_scene_train.lmdb',
+    ann_file='scene_train',
     pipeline=None)
 
 fudan_scene_textrecog_val = dict(
     type='RecogLMDBDataset',
     data_root=fudan_scene_rec_root,
-    ann_file='fudan_scene_val.lmdb',
+    ann_file='scene_val',
     pipeline=None)
 
 fudan_scene_textrecog_test = dict(
     type='RecogLMDBDataset',
     data_root=fudan_scene_rec_root,
-    ann_file='fudan_scene_test.lmdb',
+    ann_file='scene_test',
     pipeline=None)
 
 fudan_scene_train_dataloader = dict(

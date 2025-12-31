@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "config": null,
+    "checkpoint": null,
+    "pred_pkl": "work_dirs/_diagnose_rctw_fcenet_best_20251231_112518/baseline/best_icdar_hmean_epoch_99.pth_predictions.pkl",
+    "split": "val",
+    "num": 100,
+    "pred_score_thr": 0.3,
+    "match_iou_thr": 0.5,
+    "ignore_precision_thr": 0.5,
+    "strategy": "vanilla",
+    "dataset_prefixes": [
+      "art=data/art_mmocr",
+      "rctw=data/rctw17_mmocr",
+      "rects=data/rects_mmocr"
+    ],
+    "only_datasets": [
+      "rctw"
+    ]
+  },
+  "items": []
+}
