@@ -1,0 +1,848 @@
+2025/12/31 12:40:30 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+    CUDA available: True
+    MUSA available: False
+    numpy_random_seed: 347740458
+    GPU 0: NVIDIA GeForce RTX 3090
+    CUDA_HOME: /usr/local/cuda
+    NVCC: Cuda compilation tools, release 11.1, V11.1.105
+    GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+    PyTorch: 1.10.2+cu111
+    PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.2.3 (Git Hash 7336ca9f055cf1bfa13efb658fe15dc9b41f0740)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.0.5
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.1, CUDNN_VERSION=8.0.5, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.10.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+    TorchVision: 0.11.3+cu111
+    OpenCV: 4.12.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: True
+    dist_cfg: {'backend': 'nccl'}
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    seed: 347740458
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2025/12/31 12:40:31 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=32, enable=True)
+custom_hooks = [
+    dict(
+        min_delta=0.001,
+        monitor='icdar/hmean',
+        patience=12,
+        rule='greater',
+        type='EarlyStoppingHook'),
+]
+default_hooks = dict(
+    checkpoint=dict(
+        interval=3,
+        max_keep_ckpts=3,
+        rule='greater',
+        save_best='icdar/hmean',
+        type='CheckpointHook'),
+    logger=dict(interval=5, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    sync_buffer=dict(type='SyncBuffersHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(
+        draw_gt=False,
+        draw_pred=False,
+        enable=False,
+        interval=1,
+        show=False,
+        type='VisualizationHook'))
+default_scope = 'mmocr'
+env_cfg = dict(
+    cudnn_benchmark=True,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'none'
+load_from = 'work_dirs/fcenet_r50dcnv2_fpn_direct_finetune_art_rctw_rects/best_icdar_hmean_epoch_99.pth'
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
+max_epochs = 100
+model = dict(
+    backbone=dict(
+        dcn=dict(deform_groups=2, fallback_on_stride=False, type='DCNv2'),
+        depth=50,
+        frozen_stages=-1,
+        init_cfg=dict(checkpoint='torchvision://resnet50', type='Pretrained'),
+        norm_cfg=dict(requires_grad=True, type='BN'),
+        norm_eval=True,
+        num_stages=4,
+        out_indices=(
+            1,
+            2,
+            3,
+        ),
+        stage_with_dcn=(
+            False,
+            True,
+            True,
+            True,
+        ),
+        style='pytorch',
+        type='mmdet.ResNet'),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+        ],
+        pad_size_divisor=32,
+        std=[
+            58.395,
+            57.12,
+            57.375,
+        ],
+        type='TextDetDataPreprocessor'),
+    det_head=dict(
+        fourier_degree=5,
+        in_channels=256,
+        module_loss=dict(
+            level_proportion_range=(
+                (
+                    0,
+                    0.25,
+                ),
+                (
+                    0.2,
+                    0.65,
+                ),
+                (
+                    0.55,
+                    1.0,
+                ),
+            ),
+            num_sample=50,
+            type='FCEModuleLoss'),
+        postprocessor=dict(
+            alpha=1.0,
+            beta=2.0,
+            nms_thr=0.3,
+            num_reconstr_points=50,
+            scales=(
+                8,
+                16,
+                32,
+            ),
+            score_thr=0.1,
+            text_repr_type='poly',
+            type='FCEPostprocessor'),
+        type='FCEHead'),
+    neck=dict(
+        act_cfg=None,
+        add_extra_convs='on_output',
+        in_channels=[
+            512,
+            1024,
+            2048,
+        ],
+        num_outs=3,
+        out_channels=256,
+        relu_before_extra_convs=True,
+        type='mmdet.FPN'),
+    type='FCENet')
+optim_wrapper = dict(
+    clip_grad=dict(max_norm=5, norm_type=2),
+    loss_scale='dynamic',
+    optimizer=dict(lr=0.001, momentum=0.9, type='SGD', weight_decay=0.0005),
+    type='AmpOptimWrapper')
+param_scheduler = [
+    dict(begin=0, by_epoch=True, end=2, start_factor=0.1, type='LinearLR'),
+    dict(
+        begin=2,
+        by_epoch=True,
+        end=100,
+        eta_min=1e-07,
+        power=0.9,
+        type='PolyLR'),
+]
+randomness = dict(seed=None)
+resume = False
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/rctw17_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                2260,
+                2260,
+            ), type='Resize'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(fix_from_bbox=False, type='FixInvalidPolygon'),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=2,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = [
+    dict(
+        dataset_prefixes=dict(rctw='data/rctw17_mmocr'),
+        type='MultiDatasetHmeanIOUMetric'),
+    dict(
+        out_file_path=
+        'work_dirs/_diagnose_rctw_fcenet_best_20251231_112518/rctw_only_scorethr0.1_nms0.3/best_icdar_hmean_epoch_99.pth_predictions.pkl',
+        type='DumpResults'),
+]
+test_list = [
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/art_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/rctw17_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_val.json',
+        data_root='data/rects_mmocr',
+        pipeline=None,
+        test_mode=True,
+        type='OCRDataset'),
+]
+test_pipeline = [
+    dict(color_type='color_ignore_orientation', type='LoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        2260,
+        2260,
+    ), type='Resize'),
+    dict(
+        type='LoadOCRAnnotations',
+        with_bbox=True,
+        with_label=True,
+        with_polygon=True),
+    dict(fix_from_bbox=False, type='FixInvalidPolygon'),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'scale_factor',
+        ),
+        type='PackTextDetInputs'),
+]
+textdet_art_data_root = 'data/art_mmocr'
+textdet_art_rctw_rects_data_root = 'data/textdet_finetune_art_rctw_rects'
+textdet_art_rctw_rects_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/textdet_finetune_art_rctw_rects',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_art_rctw_rects_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/textdet_finetune_art_rctw_rects',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+textdet_art_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/art_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_art_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/art_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+textdet_rctw_data_root = 'data/rctw17_mmocr'
+textdet_rctw_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/rctw17_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_rctw_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/rctw17_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+textdet_rects_data_root = 'data/rects_mmocr'
+textdet_rects_test = dict(
+    ann_file='instances_val.json',
+    data_root='data/rects_mmocr',
+    pipeline=None,
+    test_mode=True,
+    type='OCRDataset')
+textdet_rects_train = dict(
+    ann_file='instances_train.json',
+    data_root='data/rects_mmocr',
+    filter_cfg=dict(filter_empty_gt=True, min_size=32),
+    pipeline=None,
+    type='OCRDataset')
+train_cfg = dict(max_epochs=100, type='EpochBasedTrainLoop', val_interval=3)
+train_dataloader = dict(
+    batch_size=32,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/art_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/rctw17_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+            dict(
+                ann_file='instances_train.json',
+                data_root='data/rects_mmocr',
+                filter_cfg=dict(filter_empty_gt=True, min_size=32),
+                pipeline=None,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(fix_from_bbox=False, type='FixInvalidPolygon'),
+            dict(
+                keep_ratio=True,
+                ratio_range=(
+                    0.75,
+                    2.5,
+                ),
+                scale=(
+                    800,
+                    800,
+                ),
+                type='RandomResize'),
+            dict(
+                crop_ratio=0.5,
+                iter_num=1,
+                min_area_ratio=0.2,
+                type='TextDetRandomCropFlip'),
+            dict(
+                prob=0.8,
+                transforms=[
+                    dict(min_side_ratio=0.3, type='RandomCrop'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.5,
+                transforms=[
+                    dict(
+                        max_angle=30,
+                        pad_with_fixed_color=False,
+                        type='RandomRotate',
+                        use_canvas=True),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=[
+                    0.6,
+                    0.4,
+                ],
+                transforms=[
+                    [
+                        dict(keep_ratio=True, scale=800, type='Resize'),
+                        dict(target_scale=800, type='SourceImagePad'),
+                    ],
+                    dict(keep_ratio=False, scale=800, type='Resize'),
+                ],
+                type='RandomChoice'),
+            dict(direction='horizontal', prob=0.5, type='RandomFlip'),
+            dict(
+                brightness=0.12549019607843137,
+                contrast=0.5,
+                op='ColorJitter',
+                saturation=0.5,
+                type='TorchVisionWrapper'),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=6,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_list = [
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/art_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/rctw17_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+    dict(
+        ann_file='instances_train.json',
+        data_root='data/rects_mmocr',
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        pipeline=None,
+        type='OCRDataset'),
+]
+train_pipeline = [
+    dict(color_type='color_ignore_orientation', type='LoadImageFromFile'),
+    dict(
+        type='LoadOCRAnnotations',
+        with_bbox=True,
+        with_label=True,
+        with_polygon=True),
+    dict(fix_from_bbox=False, type='FixInvalidPolygon'),
+    dict(
+        keep_ratio=True,
+        ratio_range=(
+            0.75,
+            2.5,
+        ),
+        scale=(
+            800,
+            800,
+        ),
+        type='RandomResize'),
+    dict(
+        crop_ratio=0.5,
+        iter_num=1,
+        min_area_ratio=0.2,
+        type='TextDetRandomCropFlip'),
+    dict(
+        prob=0.8,
+        transforms=[
+            dict(min_side_ratio=0.3, type='RandomCrop'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.5,
+        transforms=[
+            dict(
+                max_angle=30,
+                pad_with_fixed_color=False,
+                type='RandomRotate',
+                use_canvas=True),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=[
+            0.6,
+            0.4,
+        ],
+        transforms=[
+            [
+                dict(keep_ratio=True, scale=800, type='Resize'),
+                dict(target_scale=800, type='SourceImagePad'),
+            ],
+            dict(keep_ratio=False, scale=800, type='Resize'),
+        ],
+        type='RandomChoice'),
+    dict(direction='horizontal', prob=0.5, type='RandomFlip'),
+    dict(
+        brightness=0.12549019607843137,
+        contrast=0.5,
+        op='ColorJitter',
+        saturation=0.5,
+        type='TorchVisionWrapper'),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'scale_factor',
+        ),
+        type='PackTextDetInputs'),
+]
+val_cfg = dict(type='ValLoop')
+val_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        datasets=[
+            dict(
+                ann_file='instances_val.json',
+                data_root='data/rctw17_mmocr',
+                pipeline=None,
+                test_mode=True,
+                type='OCRDataset'),
+        ],
+        pipeline=[
+            dict(
+                color_type='color_ignore_orientation',
+                type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                2260,
+                2260,
+            ), type='Resize'),
+            dict(
+                type='LoadOCRAnnotations',
+                with_bbox=True,
+                with_label=True,
+                with_polygon=True),
+            dict(fix_from_bbox=False, type='FixInvalidPolygon'),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                ),
+                type='PackTextDetInputs'),
+        ],
+        type='ConcatDataset'),
+    num_workers=2,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(
+    dataset_prefixes=dict(rctw='data/rctw17_mmocr'),
+    type='MultiDatasetHmeanIOUMetric')
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    name='visualizer',
+    type='TextDetLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'work_dirs/_diagnose_rctw_fcenet_best_20251231_112518/rctw_only_scorethr0.1_nms0.3'
+
+2025/12/31 12:40:38 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2025/12/31 12:40:38 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+(LOWEST      ) EarlyStoppingHook                  
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+(LOWEST      ) EarlyStoppingHook                  
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2025/12/31 12:40:39 - mmengine - WARNING - The prefix is not set in metric class DumpResults.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.0.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.1.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.2.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.3.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.0.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.1.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.2.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.3.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.4.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.5.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.0.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.1.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.2.conv2 is upgraded to version 2.
+2025/12/31 12:40:43 - mmengine - INFO - Load checkpoint from work_dirs/fcenet_r50dcnv2_fpn_direct_finetune_art_rctw_rects/best_icdar_hmean_epoch_99.pth
+2025/12/31 12:40:48 - mmengine - INFO - Epoch(test) [  5/803]    eta: 0:13:53  time: 1.0439  data_time: 0.0699  memory: 8868  
+2025/12/31 12:40:53 - mmengine - INFO - Epoch(test) [ 10/803]    eta: 0:12:42  time: 0.9620  data_time: 0.0353  memory: 8983  
+2025/12/31 12:40:57 - mmengine - INFO - Epoch(test) [ 15/803]    eta: 0:11:52  time: 0.8345  data_time: 0.0006  memory: 8998  
+2025/12/31 12:40:59 - mmengine - INFO - Epoch(test) [ 20/803]    eta: 0:10:25  time: 0.6360  data_time: 0.0005  memory: 9006  
+2025/12/31 12:41:02 - mmengine - INFO - Epoch(test) [ 25/803]    eta: 0:09:47  time: 0.5328  data_time: 0.0006  memory: 8967  
+2025/12/31 12:41:08 - mmengine - INFO - Epoch(test) [ 30/803]    eta: 0:10:46  time: 0.9105  data_time: 0.0007  memory: 8899  
+2025/12/31 12:41:11 - mmengine - INFO - Epoch(test) [ 35/803]    eta: 0:10:01  time: 0.8532  data_time: 0.0006  memory: 918  
+2025/12/31 12:41:14 - mmengine - INFO - Epoch(test) [ 40/803]    eta: 0:09:43  time: 0.5491  data_time: 0.0006  memory: 8769  
+2025/12/31 12:41:16 - mmengine - INFO - Epoch(test) [ 45/803]    eta: 0:09:09  time: 0.5226  data_time: 0.0005  memory: 1192  
+2025/12/31 12:41:19 - mmengine - INFO - Epoch(test) [ 50/803]    eta: 0:09:01  time: 0.5376  data_time: 0.0005  memory: 8937  
+2025/12/31 12:41:21 - mmengine - INFO - Epoch(test) [ 55/803]    eta: 0:08:31  time: 0.4969  data_time: 0.0005  memory: 918  
+2025/12/31 12:41:23 - mmengine - INFO - Epoch(test) [ 60/803]    eta: 0:08:18  time: 0.4340  data_time: 0.0005  memory: 8807  
+2025/12/31 12:41:26 - mmengine - INFO - Epoch(test) [ 65/803]    eta: 0:08:04  time: 0.5019  data_time: 0.0005  memory: 1192  
+2025/12/31 12:41:32 - mmengine - INFO - Epoch(test) [ 70/803]    eta: 0:08:27  time: 0.8132  data_time: 0.0005  memory: 1177  
+2025/12/31 12:41:35 - mmengine - INFO - Epoch(test) [ 75/803]    eta: 0:08:19  time: 0.8784  data_time: 0.0006  memory: 8945  
+2025/12/31 12:41:37 - mmengine - INFO - Epoch(test) [ 80/803]    eta: 0:08:06  time: 0.5375  data_time: 0.0006  memory: 918  
+2025/12/31 12:41:41 - mmengine - INFO - Epoch(test) [ 85/803]    eta: 0:08:06  time: 0.6154  data_time: 0.0005  memory: 918  
+2025/12/31 12:41:42 - mmengine - INFO - Epoch(test) [ 90/803]    eta: 0:07:47  time: 0.5254  data_time: 0.0005  memory: 918  
+2025/12/31 12:41:44 - mmengine - INFO - Epoch(test) [ 95/803]    eta: 0:07:32  time: 0.3207  data_time: 0.0005  memory: 918  
+2025/12/31 12:41:47 - mmengine - INFO - Epoch(test) [100/803]    eta: 0:07:26  time: 0.4403  data_time: 0.0005  memory: 8639  
+2025/12/31 12:41:50 - mmengine - INFO - Epoch(test) [105/803]    eta: 0:07:24  time: 0.6120  data_time: 0.0005  memory: 8990  
+2025/12/31 12:41:52 - mmengine - INFO - Epoch(test) [110/803]    eta: 0:07:14  time: 0.5531  data_time: 0.0005  memory: 918  
+2025/12/31 12:41:55 - mmengine - INFO - Epoch(test) [115/803]    eta: 0:07:09  time: 0.4918  data_time: 0.0005  memory: 918  
+2025/12/31 12:41:58 - mmengine - INFO - Epoch(test) [120/803]    eta: 0:07:07  time: 0.6179  data_time: 0.0005  memory: 1192  
+2025/12/31 12:42:00 - mmengine - INFO - Epoch(test) [125/803]    eta: 0:06:58  time: 0.5272  data_time: 0.0005  memory: 1192  
+2025/12/31 12:42:03 - mmengine - INFO - Epoch(test) [130/803]    eta: 0:06:52  time: 0.4469  data_time: 0.0005  memory: 8685  
+2025/12/31 12:42:06 - mmengine - INFO - Epoch(test) [135/803]    eta: 0:06:48  time: 0.5494  data_time: 0.0005  memory: 918  
+2025/12/31 12:42:10 - mmengine - INFO - Epoch(test) [140/803]    eta: 0:06:50  time: 0.7127  data_time: 0.0006  memory: 8891  
+2025/12/31 12:42:12 - mmengine - INFO - Epoch(test) [145/803]    eta: 0:06:41  time: 0.5881  data_time: 0.0005  memory: 918  
+2025/12/31 12:42:14 - mmengine - INFO - Epoch(test) [150/803]    eta: 0:06:34  time: 0.3843  data_time: 0.0004  memory: 918  
+2025/12/31 12:42:17 - mmengine - INFO - Epoch(test) [155/803]    eta: 0:06:30  time: 0.5019  data_time: 0.0005  memory: 8708  
+2025/12/31 12:42:22 - mmengine - INFO - Epoch(test) [160/803]    eta: 0:06:37  time: 0.8262  data_time: 0.0006  memory: 8800  
+2025/12/31 12:42:24 - mmengine - INFO - Epoch(test) [165/803]    eta: 0:06:31  time: 0.7640  data_time: 0.0005  memory: 1192  
+2025/12/31 12:42:26 - mmengine - INFO - Epoch(test) [170/803]    eta: 0:06:21  time: 0.3631  data_time: 0.0005  memory: 918  
+2025/12/31 12:42:28 - mmengine - INFO - Epoch(test) [175/803]    eta: 0:06:15  time: 0.3597  data_time: 0.0005  memory: 918  
+2025/12/31 12:42:30 - mmengine - INFO - Epoch(test) [180/803]    eta: 0:06:09  time: 0.4266  data_time: 0.0005  memory: 8754  
+2025/12/31 12:42:33 - mmengine - INFO - Epoch(test) [185/803]    eta: 0:06:07  time: 0.5263  data_time: 0.0005  memory: 8762  
+2025/12/31 12:42:38 - mmengine - INFO - Epoch(test) [190/803]    eta: 0:06:09  time: 0.7630  data_time: 0.0006  memory: 8906  
+2025/12/31 12:42:40 - mmengine - INFO - Epoch(test) [195/803]    eta: 0:06:03  time: 0.6717  data_time: 0.0006  memory: 918  
+2025/12/31 12:42:47 - mmengine - INFO - Epoch(test) [200/803]    eta: 0:06:12  time: 0.9006  data_time: 0.0006  memory: 918  
+2025/12/31 12:42:50 - mmengine - INFO - Epoch(test) [205/803]    eta: 0:06:11  time: 1.0528  data_time: 0.0006  memory: 1192  
+2025/12/31 12:42:54 - mmengine - INFO - Epoch(test) [210/803]    eta: 0:06:10  time: 0.7967  data_time: 0.0006  memory: 918  
+2025/12/31 12:42:56 - mmengine - INFO - Epoch(test) [215/803]    eta: 0:06:04  time: 0.5935  data_time: 0.0005  memory: 918  
+2025/12/31 12:42:58 - mmengine - INFO - Epoch(test) [220/803]    eta: 0:05:57  time: 0.3566  data_time: 0.0005  memory: 918  
+2025/12/31 12:43:00 - mmengine - INFO - Epoch(test) [225/803]    eta: 0:05:51  time: 0.3590  data_time: 0.0004  memory: 1192  
+2025/12/31 12:43:04 - mmengine - INFO - Epoch(test) [230/803]    eta: 0:05:50  time: 0.5693  data_time: 0.0005  memory: 8884  
+2025/12/31 12:43:08 - mmengine - INFO - Epoch(test) [235/803]    eta: 0:05:49  time: 0.7685  data_time: 0.0005  memory: 918  
+2025/12/31 12:43:12 - mmengine - INFO - Epoch(test) [240/803]    eta: 0:05:50  time: 0.8646  data_time: 0.0006  memory: 918  
+2025/12/31 12:43:16 - mmengine - INFO - Epoch(test) [245/803]    eta: 0:05:49  time: 0.8914  data_time: 0.0006  memory: 8914  
+2025/12/31 12:43:20 - mmengine - INFO - Epoch(test) [250/803]    eta: 0:05:47  time: 0.7822  data_time: 0.0006  memory: 1192  
+2025/12/31 12:43:22 - mmengine - INFO - Epoch(test) [255/803]    eta: 0:05:41  time: 0.5500  data_time: 0.0006  memory: 918  
+2025/12/31 12:43:27 - mmengine - INFO - Epoch(test) [260/803]    eta: 0:05:41  time: 0.6428  data_time: 0.0005  memory: 1070  
+2025/12/31 12:43:40 - mmengine - INFO - Epoch(test) [265/803]    eta: 0:05:59  time: 1.8354  data_time: 0.0007  memory: 918  
+2025/12/31 12:43:44 - mmengine - INFO - Epoch(test) [270/803]    eta: 0:05:57  time: 1.7664  data_time: 0.0008  memory: 8990  
+2025/12/31 12:43:47 - mmengine - INFO - Epoch(test) [275/803]    eta: 0:05:52  time: 0.6605  data_time: 0.0008  memory: 918  
+2025/12/31 12:43:50 - mmengine - INFO - Epoch(test) [280/803]    eta: 0:05:49  time: 0.6122  data_time: 0.0007  memory: 8815  
+2025/12/31 12:43:54 - mmengine - INFO - Epoch(test) [285/803]    eta: 0:05:46  time: 0.7084  data_time: 0.0006  memory: 918  
+2025/12/31 12:43:57 - mmengine - INFO - Epoch(test) [290/803]    eta: 0:05:43  time: 0.6821  data_time: 0.0006  memory: 1192  
+2025/12/31 12:44:00 - mmengine - INFO - Epoch(test) [295/803]    eta: 0:05:38  time: 0.5911  data_time: 0.0005  memory: 1147  
+2025/12/31 12:44:02 - mmengine - INFO - Epoch(test) [300/803]    eta: 0:05:34  time: 0.5122  data_time: 0.0005  memory: 918  
+2025/12/31 12:44:06 - mmengine - INFO - Epoch(test) [305/803]    eta: 0:05:30  time: 0.5795  data_time: 0.0005  memory: 1192  
+2025/12/31 12:44:10 - mmengine - INFO - Epoch(test) [310/803]    eta: 0:05:28  time: 0.7356  data_time: 0.0006  memory: 1192  
+2025/12/31 12:44:13 - mmengine - INFO - Epoch(test) [315/803]    eta: 0:05:25  time: 0.7563  data_time: 0.0006  memory: 8823  
+2025/12/31 12:44:15 - mmengine - INFO - Epoch(test) [320/803]    eta: 0:05:20  time: 0.5659  data_time: 0.0005  memory: 918  
+2025/12/31 12:44:17 - mmengine - INFO - Epoch(test) [325/803]    eta: 0:05:14  time: 0.3997  data_time: 0.0005  memory: 1192  
+2025/12/31 12:44:19 - mmengine - INFO - Epoch(test) [330/803]    eta: 0:05:09  time: 0.3963  data_time: 0.0005  memory: 1192  
+2025/12/31 12:44:21 - mmengine - INFO - Epoch(test) [335/803]    eta: 0:05:04  time: 0.4107  data_time: 0.0005  memory: 1192  
+2025/12/31 12:44:24 - mmengine - INFO - Epoch(test) [340/803]    eta: 0:05:00  time: 0.4211  data_time: 0.0004  memory: 918  
+2025/12/31 12:44:26 - mmengine - INFO - Epoch(test) [345/803]    eta: 0:04:55  time: 0.4086  data_time: 0.0005  memory: 918  
+2025/12/31 12:44:28 - mmengine - INFO - Epoch(test) [350/803]    eta: 0:04:51  time: 0.4768  data_time: 0.0005  memory: 1192  
+2025/12/31 12:44:39 - mmengine - INFO - Epoch(test) [355/803]    eta: 0:04:58  time: 1.3901  data_time: 0.0006  memory: 8739  
+2025/12/31 12:44:42 - mmengine - INFO - Epoch(test) [360/803]    eta: 0:04:53  time: 1.3680  data_time: 0.0006  memory: 8792  
+2025/12/31 12:44:46 - mmengine - INFO - Epoch(test) [365/803]    eta: 0:04:50  time: 0.6098  data_time: 0.0006  memory: 1192  
+2025/12/31 12:44:50 - mmengine - INFO - Epoch(test) [370/803]    eta: 0:04:48  time: 0.7756  data_time: 0.0005  memory: 8670  
+2025/12/31 12:44:52 - mmengine - INFO - Epoch(test) [375/803]    eta: 0:04:43  time: 0.6333  data_time: 0.0005  memory: 1192  
+2025/12/31 12:44:57 - mmengine - INFO - Epoch(test) [380/803]    eta: 0:04:42  time: 0.7526  data_time: 0.0005  memory: 1192  
+2025/12/31 12:44:59 - mmengine - INFO - Epoch(test) [385/803]    eta: 0:04:37  time: 0.6911  data_time: 0.0005  memory: 918  
+2025/12/31 12:45:02 - mmengine - INFO - Epoch(test) [390/803]    eta: 0:04:34  time: 0.5172  data_time: 0.0005  memory: 8838  
+2025/12/31 12:45:06 - mmengine - INFO - Epoch(test) [395/803]    eta: 0:04:31  time: 0.7077  data_time: 0.0006  memory: 1131  
+2025/12/31 12:45:10 - mmengine - INFO - Epoch(test) [400/803]    eta: 0:04:28  time: 0.7222  data_time: 0.0006  memory: 8929  
+2025/12/31 12:45:12 - mmengine - INFO - Epoch(test) [405/803]    eta: 0:04:23  time: 0.5804  data_time: 0.0006  memory: 1192  
+2025/12/31 12:45:15 - mmengine - INFO - Epoch(test) [410/803]    eta: 0:04:20  time: 0.4941  data_time: 0.0007  memory: 918  
+2025/12/31 12:45:18 - mmengine - INFO - Epoch(test) [415/803]    eta: 0:04:16  time: 0.5909  data_time: 0.0007  memory: 8876  
+2025/12/31 12:45:20 - mmengine - INFO - Epoch(test) [420/803]    eta: 0:04:12  time: 0.5131  data_time: 0.0007  memory: 8845  
+2025/12/31 12:45:22 - mmengine - INFO - Epoch(test) [425/803]    eta: 0:04:07  time: 0.3996  data_time: 0.0006  memory: 1192  
+2025/12/31 12:45:25 - mmengine - INFO - Epoch(test) [430/803]    eta: 0:04:04  time: 0.4875  data_time: 0.0006  memory: 918  
+2025/12/31 12:45:28 - mmengine - INFO - Epoch(test) [435/803]    eta: 0:04:00  time: 0.6086  data_time: 0.0006  memory: 918  
+2025/12/31 12:45:30 - mmengine - INFO - Epoch(test) [440/803]    eta: 0:03:56  time: 0.5130  data_time: 0.0006  memory: 1192  
+2025/12/31 12:45:33 - mmengine - INFO - Epoch(test) [445/803]    eta: 0:03:52  time: 0.4941  data_time: 0.0006  memory: 1192  
+2025/12/31 12:45:35 - mmengine - INFO - Epoch(test) [450/803]    eta: 0:03:49  time: 0.5411  data_time: 0.0005  memory: 1192  
+2025/12/31 12:45:38 - mmengine - INFO - Epoch(test) [455/803]    eta: 0:03:45  time: 0.5181  data_time: 0.0006  memory: 8975  
+2025/12/31 12:45:41 - mmengine - INFO - Epoch(test) [460/803]    eta: 0:03:41  time: 0.5630  data_time: 0.0006  memory: 918  
+2025/12/31 12:45:43 - mmengine - INFO - Epoch(test) [465/803]    eta: 0:03:38  time: 0.5689  data_time: 0.0006  memory: 918  
+2025/12/31 12:45:48 - mmengine - INFO - Epoch(test) [470/803]    eta: 0:03:36  time: 0.7637  data_time: 0.0006  memory: 1192  
+2025/12/31 12:45:50 - mmengine - INFO - Epoch(test) [475/803]    eta: 0:03:32  time: 0.6758  data_time: 0.0006  memory: 918  
+2025/12/31 12:45:53 - mmengine - INFO - Epoch(test) [480/803]    eta: 0:03:28  time: 0.4714  data_time: 0.0006  memory: 918  
+2025/12/31 12:45:55 - mmengine - INFO - Epoch(test) [485/803]    eta: 0:03:24  time: 0.5287  data_time: 0.0006  memory: 918  
+2025/12/31 12:45:59 - mmengine - INFO - Epoch(test) [490/803]    eta: 0:03:21  time: 0.5743  data_time: 0.0006  memory: 1192  
+2025/12/31 12:46:02 - mmengine - INFO - Epoch(test) [495/803]    eta: 0:03:18  time: 0.6881  data_time: 0.0006  memory: 8747  
+2025/12/31 12:46:05 - mmengine - INFO - Epoch(test) [500/803]    eta: 0:03:14  time: 0.5873  data_time: 0.0006  memory: 8700  
+2025/12/31 12:46:08 - mmengine - INFO - Epoch(test) [505/803]    eta: 0:03:11  time: 0.6054  data_time: 0.0006  memory: 8937  
+2025/12/31 12:46:12 - mmengine - INFO - Epoch(test) [510/803]    eta: 0:03:08  time: 0.6928  data_time: 0.0007  memory: 918  
+2025/12/31 12:46:15 - mmengine - INFO - Epoch(test) [515/803]    eta: 0:03:05  time: 0.6932  data_time: 0.0007  memory: 8876  
+2025/12/31 12:46:18 - mmengine - INFO - Epoch(test) [520/803]    eta: 0:03:02  time: 0.6674  data_time: 0.0006  memory: 8899  
+2025/12/31 12:46:21 - mmengine - INFO - Epoch(test) [525/803]    eta: 0:02:59  time: 0.6061  data_time: 0.0006  memory: 1192  
+2025/12/31 12:46:24 - mmengine - INFO - Epoch(test) [530/803]    eta: 0:02:55  time: 0.5658  data_time: 0.0006  memory: 1192  
+2025/12/31 12:46:26 - mmengine - INFO - Epoch(test) [535/803]    eta: 0:02:51  time: 0.4323  data_time: 0.0006  memory: 8922  
+2025/12/31 12:46:28 - mmengine - INFO - Epoch(test) [540/803]    eta: 0:02:47  time: 0.3735  data_time: 0.0006  memory: 918  
+2025/12/31 12:46:32 - mmengine - INFO - Epoch(test) [545/803]    eta: 0:02:45  time: 0.6090  data_time: 0.0006  memory: 8693  
+2025/12/31 12:46:34 - mmengine - INFO - Epoch(test) [550/803]    eta: 0:02:41  time: 0.5977  data_time: 0.0007  memory: 918  
+2025/12/31 12:46:37 - mmengine - INFO - Epoch(test) [555/803]    eta: 0:02:38  time: 0.5091  data_time: 0.0006  memory: 8952  
+2025/12/31 12:46:41 - mmengine - INFO - Epoch(test) [560/803]    eta: 0:02:35  time: 0.6720  data_time: 0.0006  memory: 8967  
+2025/12/31 12:46:42 - mmengine - INFO - Epoch(test) [565/803]    eta: 0:02:31  time: 0.5475  data_time: 0.0006  memory: 918  
+2025/12/31 12:46:45 - mmengine - INFO - Epoch(test) [570/803]    eta: 0:02:27  time: 0.4497  data_time: 0.0005  memory: 1192  
+2025/12/31 12:46:48 - mmengine - INFO - Epoch(test) [575/803]    eta: 0:02:24  time: 0.5610  data_time: 0.0005  memory: 1192  
+2025/12/31 12:46:50 - mmengine - INFO - Epoch(test) [580/803]    eta: 0:02:21  time: 0.4967  data_time: 0.0005  memory: 918  
+2025/12/31 12:46:54 - mmengine - INFO - Epoch(test) [585/803]    eta: 0:02:18  time: 0.6229  data_time: 0.0006  memory: 8884  
+2025/12/31 12:46:56 - mmengine - INFO - Epoch(test) [590/803]    eta: 0:02:14  time: 0.6463  data_time: 0.0006  memory: 918  
+2025/12/31 12:47:00 - mmengine - INFO - Epoch(test) [595/803]    eta: 0:02:11  time: 0.5513  data_time: 0.0006  memory: 933  
+2025/12/31 12:47:02 - mmengine - INFO - Epoch(test) [600/803]    eta: 0:02:08  time: 0.5355  data_time: 0.0006  memory: 918  
+2025/12/31 12:47:06 - mmengine - INFO - Epoch(test) [605/803]    eta: 0:02:05  time: 0.5747  data_time: 0.0006  memory: 1192  
+2025/12/31 12:47:09 - mmengine - INFO - Epoch(test) [610/803]    eta: 0:02:01  time: 0.6957  data_time: 0.0006  memory: 8983  
+2025/12/31 12:47:12 - mmengine - INFO - Epoch(test) [615/803]    eta: 0:01:58  time: 0.6810  data_time: 0.0006  memory: 8960  
+2025/12/31 12:47:16 - mmengine - INFO - Epoch(test) [620/803]    eta: 0:01:55  time: 0.7315  data_time: 0.0007  memory: 918  
+2025/12/31 12:47:18 - mmengine - INFO - Epoch(test) [625/803]    eta: 0:01:52  time: 0.5617  data_time: 0.0007  memory: 1192  
+2025/12/31 12:47:22 - mmengine - INFO - Epoch(test) [630/803]    eta: 0:01:49  time: 0.5891  data_time: 0.0006  memory: 8914  
+2025/12/31 12:47:26 - mmengine - INFO - Epoch(test) [635/803]    eta: 0:01:46  time: 0.8479  data_time: 0.0007  memory: 1192  
+2025/12/31 12:47:32 - mmengine - INFO - Epoch(test) [640/803]    eta: 0:01:44  time: 0.9852  data_time: 0.0006  memory: 1192  
+2025/12/31 12:47:35 - mmengine - INFO - Epoch(test) [645/803]    eta: 0:01:40  time: 0.8796  data_time: 0.0006  memory: 918  
+2025/12/31 12:47:41 - mmengine - INFO - Epoch(test) [650/803]    eta: 0:01:38  time: 0.9545  data_time: 0.0006  memory: 1192  
+2025/12/31 12:47:44 - mmengine - INFO - Epoch(test) [655/803]    eta: 0:01:35  time: 0.8938  data_time: 0.0006  memory: 1192  
+2025/12/31 12:47:47 - mmengine - INFO - Epoch(test) [660/803]    eta: 0:01:31  time: 0.5657  data_time: 0.0006  memory: 1192  
+2025/12/31 12:47:50 - mmengine - INFO - Epoch(test) [665/803]    eta: 0:01:28  time: 0.6269  data_time: 0.0005  memory: 918  
+2025/12/31 12:47:54 - mmengine - INFO - Epoch(test) [670/803]    eta: 0:01:25  time: 0.6867  data_time: 0.0005  memory: 1131  
+2025/12/31 12:47:59 - mmengine - INFO - Epoch(test) [675/803]    eta: 0:01:22  time: 0.8291  data_time: 0.0006  memory: 1192  
+2025/12/31 12:48:04 - mmengine - INFO - Epoch(test) [680/803]    eta: 0:01:19  time: 1.0007  data_time: 0.0006  memory: 1192  
+2025/12/31 12:48:07 - mmengine - INFO - Epoch(test) [685/803]    eta: 0:01:16  time: 0.8717  data_time: 0.0006  memory: 1192  
+2025/12/31 12:48:11 - mmengine - INFO - Epoch(test) [690/803]    eta: 0:01:13  time: 0.7332  data_time: 0.0006  memory: 1192  
+2025/12/31 12:48:13 - mmengine - INFO - Epoch(test) [695/803]    eta: 0:01:09  time: 0.5977  data_time: 0.0006  memory: 918  
+2025/12/31 12:48:16 - mmengine - INFO - Epoch(test) [700/803]    eta: 0:01:06  time: 0.4735  data_time: 0.0005  memory: 8922  
+2025/12/31 12:48:17 - mmengine - INFO - Epoch(test) [705/803]    eta: 0:01:03  time: 0.3916  data_time: 0.0005  memory: 1192  
+2025/12/31 12:48:20 - mmengine - INFO - Epoch(test) [710/803]    eta: 0:00:59  time: 0.3893  data_time: 0.0005  memory: 1009  
+2025/12/31 12:48:22 - mmengine - INFO - Epoch(test) [715/803]    eta: 0:00:56  time: 0.4296  data_time: 0.0005  memory: 1192  
+2025/12/31 12:48:25 - mmengine - INFO - Epoch(test) [720/803]    eta: 0:00:53  time: 0.5539  data_time: 0.0005  memory: 1192  
+2025/12/31 12:48:29 - mmengine - INFO - Epoch(test) [725/803]    eta: 0:00:50  time: 0.7343  data_time: 0.0006  memory: 994  
+2025/12/31 12:48:32 - mmengine - INFO - Epoch(test) [730/803]    eta: 0:00:46  time: 0.6599  data_time: 0.0006  memory: 1192  
+2025/12/31 12:48:34 - mmengine - INFO - Epoch(test) [735/803]    eta: 0:00:43  time: 0.4793  data_time: 0.0006  memory: 948  
+2025/12/31 12:48:36 - mmengine - INFO - Epoch(test) [740/803]    eta: 0:00:40  time: 0.4041  data_time: 0.0005  memory: 918  
+2025/12/31 12:48:43 - mmengine - INFO - Epoch(test) [745/803]    eta: 0:00:37  time: 0.9635  data_time: 0.0005  memory: 1025  
+2025/12/31 12:48:47 - mmengine - INFO - Epoch(test) [750/803]    eta: 0:00:34  time: 1.1210  data_time: 0.0006  memory: 8945  
+2025/12/31 12:48:50 - mmengine - INFO - Epoch(test) [755/803]    eta: 0:00:30  time: 0.6180  data_time: 0.0007  memory: 1147  
+2025/12/31 12:48:57 - mmengine - INFO - Epoch(test) [760/803]    eta: 0:00:27  time: 0.9744  data_time: 0.0007  memory: 918  
+2025/12/31 12:48:59 - mmengine - INFO - Epoch(test) [765/803]    eta: 0:00:24  time: 0.9883  data_time: 0.0007  memory: 1040  
+2025/12/31 12:49:02 - mmengine - INFO - Epoch(test) [770/803]    eta: 0:00:21  time: 0.4947  data_time: 0.0006  memory: 1131  
+2025/12/31 12:49:04 - mmengine - INFO - Epoch(test) [775/803]    eta: 0:00:18  time: 0.4209  data_time: 0.0006  memory: 918  
+2025/12/31 12:49:06 - mmengine - INFO - Epoch(test) [780/803]    eta: 0:00:14  time: 0.4502  data_time: 0.0006  memory: 1070  
+2025/12/31 12:49:09 - mmengine - INFO - Epoch(test) [785/803]    eta: 0:00:11  time: 0.4852  data_time: 0.0006  memory: 918  
+2025/12/31 12:49:12 - mmengine - INFO - Epoch(test) [790/803]    eta: 0:00:08  time: 0.5421  data_time: 0.0006  memory: 8784  
+2025/12/31 12:49:16 - mmengine - INFO - Epoch(test) [795/803]    eta: 0:00:05  time: 0.7877  data_time: 0.0006  memory: 918  
+2025/12/31 12:49:19 - mmengine - INFO - Epoch(test) [800/803]    eta: 0:00:01  time: 0.6924  data_time: 0.0007  memory: 918  
+2025/12/31 12:49:20 - mmengine - INFO - Evaluating hmean-iou...
+2025/12/31 12:49:21 - mmengine - INFO - prediction score threshold: 0.30, recall: 0.7194, precision: 0.5634, hmean: 0.6320
+
+2025/12/31 12:49:21 - mmengine - INFO - prediction score threshold: 0.40, recall: 0.7025, precision: 0.6034, hmean: 0.6492
+
+2025/12/31 12:49:21 - mmengine - INFO - prediction score threshold: 0.50, recall: 0.6799, precision: 0.6450, hmean: 0.6620
+
+2025/12/31 12:49:21 - mmengine - INFO - prediction score threshold: 0.60, recall: 0.6504, precision: 0.6803, hmean: 0.6650
+
+2025/12/31 12:49:21 - mmengine - INFO - prediction score threshold: 0.70, recall: 0.6130, precision: 0.7297, hmean: 0.6662
+
+2025/12/31 12:49:21 - mmengine - INFO - prediction score threshold: 0.80, recall: 0.5463, precision: 0.7841, hmean: 0.6439
+
+2025/12/31 12:49:21 - mmengine - INFO - prediction score threshold: 0.90, recall: 0.4168, precision: 0.8768, hmean: 0.5650
+
+2025/12/31 12:49:21 - mmengine - INFO - [rctw] hmean: 0.6662, precision: 0.7297, recall: 0.6130
+2025/12/31 12:49:21 - mmengine - INFO - Results has been saved to work_dirs/_diagnose_rctw_fcenet_best_20251231_112518/rctw_only_scorethr0.1_nms0.3/best_icdar_hmean_epoch_99.pth_predictions.pkl.
+2025/12/31 12:49:21 - mmengine - INFO - Epoch(test) [803/803]    icdar/precision: 0.7297  icdar/recall: 0.6130  icdar/hmean: 0.6662  icdar/rctw/precision: 0.7297  icdar/rctw/recall: 0.6130  icdar/rctw/hmean: 0.6662  data_time: 0.0010  time: 0.6441

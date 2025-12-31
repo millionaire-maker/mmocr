@@ -47,6 +47,8 @@ def build_cmd(args, config_path: str):
         args.corpus_dir,
         "--corpus_mode",
         args.corpus_mode,
+        "--bg_dir",
+        args.bg_dir,
         "--img_height",
         str(args.img_height),
         "--img_width",
@@ -93,9 +95,12 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Wrapper to run text_renderer for Chinese synthetic OCR data."
     )
+    default_repo_root = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "3rdparty", "synth_chinese_ocr")
+    )
     parser.add_argument(
         "--repo-root",
-        default="/home/yzy/mmocr/3rdparty/synth_chinese_ocr",
+        default=default_repo_root,
         help="Path to text_renderer repo.",
     )
     parser.add_argument(
@@ -106,7 +111,9 @@ def parse_args():
     )
     parser.add_argument(
         "--out-root",
-        default="/home/yzy/mmocr/data/synth_rec_ch",
+        default=os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "data", "synth_rec_ch")
+        ),
         help="Output root for generated dataset.",
     )
     parser.add_argument("--tag", default="train", help="Subfolder name under out-root.")
@@ -118,18 +125,23 @@ def parse_args():
     )
     parser.add_argument(
         "--chars-file",
-        default="/home/yzy/mmocr/3rdparty/synth_chinese_ocr/data/chars/chn.txt",
+        default=None,
         help="Chars file for generator.",
     )
     parser.add_argument(
         "--fonts-list",
-        default="/home/yzy/mmocr/3rdparty/synth_chinese_ocr/data/fonts_list/chn.txt",
+        default=None,
         help="Fonts list file.",
     )
     parser.add_argument(
         "--corpus-dir",
-        default="/home/yzy/mmocr/3rdparty/synth_chinese_ocr/data/corpus",
+        default=None,
         help="Corpus directory.",
+    )
+    parser.add_argument(
+        "--bg-dir",
+        default=None,
+        help="Background images dir for generator (passed to --bg_dir).",
     )
     parser.add_argument(
         "--corpus-mode",
@@ -153,12 +165,12 @@ def parse_args():
     )
     parser.add_argument(
         "--base-config",
-        default="/home/yzy/mmocr/3rdparty/synth_chinese_ocr/configs/default.yaml",
+        default=None,
         help="Base config path to start from.",
     )
     parser.add_argument(
         "--out-txt",
-        default="/home/yzy/mmocr/data/synth_rec_ch/train.txt",
+        default=None,
         help="Path to save unified label txt.",
     )
     return parser.parse_args()
@@ -168,6 +180,19 @@ def main():
     args = parse_args()
     args.repo_root = os.path.abspath(args.repo_root)
     args.out_root = os.path.abspath(args.out_root)
+    if args.chars_file is None:
+        args.chars_file = os.path.join(args.repo_root, "data", "chars", "chn.txt")
+    if args.fonts_list is None:
+        args.fonts_list = os.path.join(args.repo_root, "data", "fonts_list", "chn.txt")
+    if args.corpus_dir is None:
+        args.corpus_dir = os.path.join(args.repo_root, "data", "corpus")
+    if args.bg_dir is None:
+        args.bg_dir = os.path.join(args.repo_root, "data", "bg")
+    if args.base_config is None:
+        args.base_config = os.path.join(args.repo_root, "configs", "default.yaml")
+    if args.out_txt is None:
+        args.out_txt = os.path.join(args.out_root, f"{args.tag}.txt")
+
     args.out_txt = os.path.abspath(args.out_txt)
     args.base_config = os.path.abspath(args.base_config)
 

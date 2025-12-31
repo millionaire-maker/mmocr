@@ -438,7 +438,13 @@ def main():
     for output in _iter_outputs():
         if isinstance(output, dict):
             metainfo = output.get('metainfo', {}) or {}
-            img_path = metainfo.get('img_path', '')
+            # DumpResults may save data_samples as plain dict where `img_path`
+            # is a top-level field (instead of nested metainfo).
+            img_path = ''
+            if isinstance(metainfo, dict):
+                img_path = metainfo.get('img_path', '') or ''
+            if not img_path:
+                img_path = output.get('img_path', '') or ''
             gt_instances = output.get('gt_instances', None)
             pred_instances = output.get('pred_instances', None)
         else:
