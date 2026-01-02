@@ -1,11 +1,11 @@
-2026/01/02 12:17:00 - mmengine - INFO - 
+2026/01/02 12:39:40 - mmengine - INFO - 
 ------------------------------------------------------------
 System environment:
     sys.platform: linux
     Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
     CUDA available: True
     MUSA available: False
-    numpy_random_seed: 66653057
+    numpy_random_seed: 1851275732
     GPU 0,1: NVIDIA GeForce RTX 3090
     CUDA_HOME: /usr/local/cuda
     NVCC: Cuda compilation tools, release 11.1, V11.1.105
@@ -34,13 +34,13 @@ Runtime environment:
     cudnn_benchmark: True
     mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
     dist_cfg: {'backend': 'nccl'}
-    seed: 66653057
+    seed: 1851275732
     Distributed launcher: pytorch
     Distributed training: True
     GPU number: 2
 ------------------------------------------------------------
 
-2026/01/02 12:17:01 - mmengine - INFO - Config:
+2026/01/02 12:39:41 - mmengine - INFO - Config:
 auto_scale_lr = dict(base_batch_size=32, enable=True)
 custom_hooks = [
     dict(
@@ -52,7 +52,7 @@ custom_hooks = [
 ]
 default_hooks = dict(
     checkpoint=dict(
-        interval=2,
+        interval=3,
         max_keep_ckpts=3,
         rule='greater',
         save_best='icdar/hmean',
@@ -75,7 +75,7 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'pytorch'
-load_from = 'work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw/best_icdar_hmean_epoch_60.pth'
+load_from = None
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
 max_epochs = 100
@@ -329,7 +329,7 @@ textdet_rects_train = dict(
     filter_cfg=dict(filter_empty_gt=True, min_size=32),
     pipeline=None,
     type='OCRDataset')
-train_cfg = dict(max_epochs=100, type='EpochBasedTrainLoop', val_interval=2)
+train_cfg = dict(max_epochs=100, type='EpochBasedTrainLoop', val_interval=3)
 train_dataloader = dict(
     batch_size=32,
     dataset=dict(
@@ -587,7 +587,7 @@ visualizer = dict(
     ])
 work_dir = 'work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects'
 
-2026/01/02 12:17:03 - mmengine - INFO - Hooks will be executed in the following order:
+2026/01/02 12:39:42 - mmengine - INFO - Hooks will be executed in the following order:
 before_run:
 (VERY_HIGH   ) RuntimeInfoHook                    
 (BELOW_NORMAL) LoggerHook                         
@@ -675,10 +675,10 @@ after_test:
 after_run:
 (BELOW_NORMAL) LoggerHook                         
  -------------------- 
-2026/01/02 12:17:07 - mmengine - INFO - LR is set based on batch size of 32 and the current batch size is 64. Scaling the original LR by 2.0.
-2026/01/02 12:17:08 - mmengine - INFO - load model from: torchvision://resnet50
-2026/01/02 12:17:08 - mmengine - INFO - Loads checkpoint by torchvision backend from path: torchvision://resnet50
-2026/01/02 12:17:08 - mmengine - WARNING - The model and loaded state dict do not match exactly
+2026/01/02 12:39:46 - mmengine - INFO - LR is set based on batch size of 32 and the current batch size is 64. Scaling the original LR by 2.0.
+2026/01/02 12:39:48 - mmengine - INFO - load model from: torchvision://resnet50
+2026/01/02 12:39:48 - mmengine - INFO - Loads checkpoint by torchvision backend from path: torchvision://resnet50
+2026/01/02 12:39:48 - mmengine - WARNING - The model and loaded state dict do not match exactly
 
 unexpected key in source state_dict: fc.weight, fc.bias
 
@@ -1288,23 +1288,51 @@ NormalInit: mean=0, std=0.01, bias=0
 
 det_head.out_conv_reg.bias - torch.Size([22]): 
 NormalInit: mean=0, std=0.01, bias=0 
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.0.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.1.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.2.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.3.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.0.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.1.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.2.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.3.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.4.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.5.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.0.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.1.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.2.conv2 is upgraded to version 2.
-2026/01/02 12:17:09 - mmengine - INFO - Load checkpoint from work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw/best_icdar_hmean_epoch_60.pth
-2026/01/02 12:17:09 - mmengine - WARNING - The dataset metainfo from the resumed checkpoint is different from the current training dataset, please check the correctness of the checkpoint or the training dataset.
-2026/01/02 12:17:09 - mmengine - INFO - resumed epoch: 60, iter: 92640
-2026/01/02 12:17:09 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
-2026/01/02 12:17:09 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
-2026/01/02 12:17:09 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects.
-2026/01/02 12:17:32 - mmengine - INFO - Epoch(train)  [61][  5/474]  lr: 2.0000e-04  eta: -3 days, 13:04:14  time: 4.3333  data_time: 0.4927  memory: 20553  grad_norm: inf  loss: 4.1349  loss_text: 0.9239  loss_center: 1.2728  loss_reg_x: 1.1313  loss_reg_y: 0.8070
+2026/01/02 12:39:48 - mmengine - INFO - Auto resumed from the latest checkpoint /root/lanyun-tmp/mmocr/work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects/epoch_36.pth.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.0.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.1.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.2.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.3.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.0.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.1.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.2.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.3.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.4.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.5.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.0.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.1.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.2.conv2 is upgraded to version 2.
+2026/01/02 12:39:48 - mmengine - INFO - Load checkpoint from /root/lanyun-tmp/mmocr/work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects/epoch_36.pth
+2026/01/02 12:39:48 - mmengine - INFO - resumed epoch: 36, iter: 17064
+2026/01/02 12:39:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2026/01/02 12:39:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2026/01/02 12:39:48 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects.
+2026/01/02 12:40:13 - mmengine - INFO - Epoch(train)  [37][  5/474]  lr: 1.3563e-03  eta: 1 day, 18:18:35  time: 3.8507  data_time: 0.5065  memory: 20661  grad_norm: 20.3052  loss: 2.7475  loss_text: 0.6012  loss_center: 0.9685  loss_reg_x: 0.6770  loss_reg_y: 0.5008
+2026/01/02 12:40:29 - mmengine - INFO - Epoch(train)  [37][ 10/474]  lr: 1.3563e-03  eta: 1 day, 10:09:03  time: 4.0541  data_time: 0.5068  memory: 19884  grad_norm: 19.5925  loss: 3.0970  loss_text: 0.6483  loss_center: 0.9992  loss_reg_x: 0.8605  loss_reg_y: 0.5890
+2026/01/02 12:40:42 - mmengine - INFO - Epoch(train)  [37][ 15/474]  lr: 1.3563e-03  eta: 1 day, 6:17:00  time: 2.8824  data_time: 0.0030  memory: 19884  grad_norm: 20.5777  loss: 2.9929  loss_text: 0.6315  loss_center: 0.9655  loss_reg_x: 0.8119  loss_reg_y: 0.5840
+2026/01/02 12:40:56 - mmengine - INFO - Epoch(train)  [37][ 20/474]  lr: 1.3563e-03  eta: 1 day, 4:42:14  time: 2.7631  data_time: 0.0028  memory: 19884  grad_norm: 19.7816  loss: 2.8797  loss_text: 0.6126  loss_center: 0.9727  loss_reg_x: 0.7561  loss_reg_y: 0.5384
+2026/01/02 12:41:13 - mmengine - INFO - Epoch(train)  [37][ 25/474]  lr: 1.3563e-03  eta: 1 day, 4:41:19  time: 3.1250  data_time: 0.0033  memory: 19884  grad_norm: 18.4698  loss: 3.1165  loss_text: 0.6649  loss_center: 1.0078  loss_reg_x: 0.8537  loss_reg_y: 0.5900
+2026/01/02 12:41:27 - mmengine - INFO - Epoch(train)  [37][ 30/474]  lr: 1.3563e-03  eta: 1 day, 3:42:21  time: 3.0563  data_time: 0.0033  memory: 19884  grad_norm: 21.6935  loss: 3.2985  loss_text: 0.6604  loss_center: 0.9961  loss_reg_x: 0.9373  loss_reg_y: 0.7047
+2026/01/02 12:41:41 - mmengine - INFO - Epoch(train)  [37][ 35/474]  lr: 1.3563e-03  eta: 1 day, 3:06:47  time: 2.7561  data_time: 0.0027  memory: 19884  grad_norm: 22.5339  loss: 3.1634  loss_text: 0.6180  loss_center: 0.9943  loss_reg_x: 0.8898  loss_reg_y: 0.6614
+2026/01/02 12:41:56 - mmengine - INFO - Epoch(train)  [37][ 40/474]  lr: 1.3563e-03  eta: 1 day, 2:50:14  time: 2.8826  data_time: 0.0029  memory: 19884  grad_norm: 19.4416  loss: 2.9396  loss_text: 0.6490  loss_center: 0.9094  loss_reg_x: 0.7704  loss_reg_y: 0.6108
+2026/01/02 12:42:10 - mmengine - INFO - Epoch(train)  [37][ 45/474]  lr: 1.3563e-03  eta: 1 day, 2:31:05  time: 2.9079  data_time: 0.0033  memory: 19884  grad_norm: 18.0543  loss: 2.9627  loss_text: 0.6890  loss_center: 0.8869  loss_reg_x: 0.7684  loss_reg_y: 0.6184
+2026/01/02 12:42:25 - mmengine - INFO - Epoch(train)  [37][ 50/474]  lr: 1.3563e-03  eta: 1 day, 2:19:25  time: 2.8890  data_time: 0.0031  memory: 19884  grad_norm: 20.0332  loss: 3.1068  loss_text: 0.6781  loss_center: 0.9608  loss_reg_x: 0.8528  loss_reg_y: 0.6150
+2026/01/02 12:42:40 - mmengine - INFO - Epoch(train)  [37][ 55/474]  lr: 1.3563e-03  eta: 1 day, 2:21:38  time: 3.0542  data_time: 0.0029  memory: 19884  grad_norm: 21.5243  loss: 3.2794  loss_text: 0.6594  loss_center: 1.0469  loss_reg_x: 0.9001  loss_reg_y: 0.6730
+2026/01/02 12:42:55 - mmengine - INFO - Epoch(train)  [37][ 60/474]  lr: 1.3563e-03  eta: 1 day, 2:12:01  time: 3.0472  data_time: 0.0027  memory: 19884  grad_norm: 22.7167  loss: 3.4458  loss_text: 0.6635  loss_center: 1.0531  loss_reg_x: 0.9726  loss_reg_y: 0.7567
+2026/01/02 12:43:10 - mmengine - INFO - Epoch(train)  [37][ 65/474]  lr: 1.3563e-03  eta: 1 day, 2:10:31  time: 2.9975  data_time: 0.0030  memory: 19884  grad_norm: 22.0809  loss: 3.4135  loss_text: 0.6772  loss_center: 1.0295  loss_reg_x: 0.9635  loss_reg_y: 0.7433
+2026/01/02 12:43:25 - mmengine - INFO - Epoch(train)  [37][ 70/474]  lr: 1.3563e-03  eta: 1 day, 2:05:08  time: 3.0272  data_time: 0.0034  memory: 19884  grad_norm: 19.7722  loss: 3.2409  loss_text: 0.7131  loss_center: 1.0276  loss_reg_x: 0.8495  loss_reg_y: 0.6507
+2026/01/02 12:43:41 - mmengine - INFO - Epoch(train)  [37][ 75/474]  lr: 1.3563e-03  eta: 1 day, 2:07:13  time: 3.0715  data_time: 0.0030  memory: 19884  grad_norm: 18.7465  loss: 3.1754  loss_text: 0.7173  loss_center: 1.0061  loss_reg_x: 0.8427  loss_reg_y: 0.6093
+2026/01/02 12:43:55 - mmengine - INFO - Epoch(train)  [37][ 80/474]  lr: 1.3563e-03  eta: 1 day, 1:53:49  time: 2.9315  data_time: 0.0027  memory: 19884  grad_norm: 21.8791  loss: 3.0692  loss_text: 0.6985  loss_center: 0.9794  loss_reg_x: 0.8267  loss_reg_y: 0.5647
+2026/01/02 12:44:08 - mmengine - INFO - Epoch(train)  [37][ 85/474]  lr: 1.3563e-03  eta: 1 day, 1:42:19  time: 2.6965  data_time: 0.0027  memory: 19884  grad_norm: 21.9797  loss: 2.9787  loss_text: 0.6573  loss_center: 0.9759  loss_reg_x: 0.7755  loss_reg_y: 0.5700
+2026/01/02 12:44:22 - mmengine - INFO - Epoch(train)  [37][ 90/474]  lr: 1.3563e-03  eta: 1 day, 1:36:11  time: 2.7755  data_time: 0.0033  memory: 19884  grad_norm: 22.4139  loss: 2.9341  loss_text: 0.6449  loss_center: 0.9669  loss_reg_x: 0.7756  loss_reg_y: 0.5466
+2026/01/02 12:44:36 - mmengine - INFO - Epoch(train)  [37][ 95/474]  lr: 1.3563e-03  eta: 1 day, 1:28:17  time: 2.8040  data_time: 0.0037  memory: 19884  grad_norm: 27.0121  loss: 2.8466  loss_text: 0.6561  loss_center: 0.9106  loss_reg_x: 0.7569  loss_reg_y: 0.5230
+2026/01/02 12:44:50 - mmengine - INFO - Epoch(train)  [37][100/474]  lr: 1.3563e-03  eta: 1 day, 1:21:02  time: 2.7571  data_time: 0.0033  memory: 19884  grad_norm: 24.4749  loss: 3.0517  loss_text: 0.6954  loss_center: 0.9483  loss_reg_x: 0.7774  loss_reg_y: 0.6306
+2026/01/02 12:45:06 - mmengine - INFO - Epoch(train)  [37][105/474]  lr: 1.3563e-03  eta: 1 day, 1:25:04  time: 2.9757  data_time: 0.0040  memory: 19884  grad_norm: 21.6133  loss: 3.1064  loss_text: 0.7036  loss_center: 0.9829  loss_reg_x: 0.7814  loss_reg_y: 0.6384
+2026/01/02 12:45:20 - mmengine - INFO - Epoch(train)  [37][110/474]  lr: 1.3563e-03  eta: 1 day, 1:18:39  time: 2.9772  data_time: 0.0038  memory: 19884  grad_norm: 22.5095  loss: 3.0086  loss_text: 0.6616  loss_center: 0.9448  loss_reg_x: 0.8228  loss_reg_y: 0.5794
+2026/01/02 12:45:37 - mmengine - INFO - Epoch(train)  [37][115/474]  lr: 1.3563e-03  eta: 1 day, 1:26:55  time: 3.0805  data_time: 0.0056  memory: 19884  grad_norm: 23.6105  loss: 3.0663  loss_text: 0.6574  loss_center: 0.9454  loss_reg_x: 0.8443  loss_reg_y: 0.6192
+2026/01/02 12:45:51 - mmengine - INFO - Epoch(train)  [37][120/474]  lr: 1.3563e-03  eta: 1 day, 1:22:20  time: 3.1145  data_time: 0.0057  memory: 19884  grad_norm: 24.3304  loss: 3.1998  loss_text: 0.6527  loss_center: 1.0422  loss_reg_x: 0.8432  loss_reg_y: 0.6618
+2026/01/02 12:46:05 - mmengine - INFO - Epoch(train)  [37][125/474]  lr: 1.3563e-03  eta: 1 day, 1:18:08  time: 2.8261  data_time: 0.0028  memory: 19884  grad_norm: 26.2685  loss: 3.3610  loss_text: 0.6842  loss_center: 1.0772  loss_reg_x: 0.9088  loss_reg_y: 0.6908
+2026/01/02 12:46:21 - mmengine - INFO - Epoch(train)  [37][130/474]  lr: 1.3563e-03  eta: 1 day, 1:20:14  time: 2.9818  data_time: 0.0027  memory: 19884  grad_norm: 25.3408  loss: 3.4635  loss_text: 0.7289  loss_center: 1.0625  loss_reg_x: 0.9201  loss_reg_y: 0.7519
+2026/01/02 12:46:34 - mmengine - INFO - Epoch(train)  [37][135/474]  lr: 1.3563e-03  eta: 1 day, 1:14:57  time: 2.9433  data_time: 0.0028  memory: 19884  grad_norm: 20.5225  loss: 3.2076  loss_text: 0.6637  loss_center: 1.0223  loss_reg_x: 0.8557  loss_reg_y: 0.6659
+2026/01/02 12:46:50 - mmengine - INFO - Epoch(train)  [37][140/474]  lr: 1.3563e-03  eta: 1 day, 1:18:04  time: 2.9734  data_time: 0.0030  memory: 19884  grad_norm: 23.7630  loss: 2.8879  loss_text: 0.6131  loss_center: 0.9493  loss_reg_x: 0.8115  loss_reg_y: 0.5139
+2026/01/02 12:47:06 - mmengine - INFO - Epoch(train)  [37][145/474]  lr: 1.3563e-03  eta: 1 day, 1:18:28  time: 3.1254  data_time: 0.0034  memory: 19884  grad_norm: 24.1441  loss: 2.9995  loss_text: 0.6637  loss_center: 0.9708  loss_reg_x: 0.8113  loss_reg_y: 0.5538

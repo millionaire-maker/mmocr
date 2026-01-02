@@ -9,7 +9,7 @@ custom_hooks = [
 ]
 default_hooks = dict(
     checkpoint=dict(
-        interval=2,
+        interval=3,
         max_keep_ckpts=3,
         rule='greater',
         save_best='icdar/hmean',
@@ -32,7 +32,7 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'pytorch'
-load_from = 'work_dirs/fcenet_r50dcnv2_fpn_pretrain_lsvt_ctw/best_icdar_hmean_epoch_60.pth'
+load_from = None
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
 max_epochs = 100
@@ -286,7 +286,7 @@ textdet_rects_train = dict(
     filter_cfg=dict(filter_empty_gt=True, min_size=32),
     pipeline=None,
     type='OCRDataset')
-train_cfg = dict(max_epochs=100, type='EpochBasedTrainLoop', val_interval=2)
+train_cfg = dict(max_epochs=100, type='EpochBasedTrainLoop', val_interval=3)
 train_dataloader = dict(
     batch_size=32,
     dataset=dict(
