@@ -1642,3 +1642,27 @@ The value is the same before and after calling `init_weights` of SVTR
 2026/01/04 04:20:19 - mmengine - INFO - Epoch(train)  [2][1450/1989]  lr: 2.3306e-04  eta: 2 days, 3:20:02  time: 3.1929  data_time: 2.4916  memory: 18277  loss: 6.0739  loss_ctc: 6.0739
 2026/01/04 04:23:11 - mmengine - INFO - Epoch(train)  [2][1500/1989]  lr: 2.3463e-04  eta: 2 days, 3:19:28  time: 3.1768  data_time: 2.3990  memory: 18277  loss: 6.0368  loss_ctc: 6.0368
 2026/01/04 04:25:49 - mmengine - INFO - Epoch(train)  [2][1550/1989]  lr: 2.3620e-04  eta: 2 days, 3:15:00  time: 3.1330  data_time: 2.4741  memory: 18277  loss: 6.0307  loss_ctc: 6.0307
+2026/01/04 04:28:34 - mmengine - INFO - Epoch(train)  [2][1600/1989]  lr: 2.3777e-04  eta: 2 days, 3:12:25  time: 3.4124  data_time: 2.3927  memory: 18277  loss: 6.0469  loss_ctc: 6.0469
+2026/01/04 04:31:11 - mmengine - INFO - Epoch(train)  [2][1650/1989]  lr: 2.3934e-04  eta: 2 days, 3:07:56  time: 2.7236  data_time: 2.1059  memory: 18277  loss: 6.0540  loss_ctc: 6.0540
+2026/01/04 04:33:54 - mmengine - INFO - Epoch(train)  [2][1700/1989]  lr: 2.4092e-04  eta: 2 days, 3:04:45  time: 3.2448  data_time: 2.3954  memory: 18277  loss: 5.8420  loss_ctc: 5.8420
+2026/01/04 04:36:33 - mmengine - INFO - Epoch(train)  [2][1750/1989]  lr: 2.4249e-04  eta: 2 days, 3:00:39  time: 2.9061  data_time: 2.1839  memory: 18277  loss: 5.8212  loss_ctc: 5.8212
+2026/01/04 04:39:07 - mmengine - INFO - Epoch(train)  [2][1800/1989]  lr: 2.4406e-04  eta: 2 days, 2:55:37  time: 3.2369  data_time: 2.3931  memory: 18277  loss: 5.8834  loss_ctc: 5.8834
+2026/01/04 04:41:59 - mmengine - INFO - Epoch(train)  [2][1850/1989]  lr: 2.4563e-04  eta: 2 days, 2:54:41  time: 2.9225  data_time: 2.2417  memory: 18277  loss: 5.7730  loss_ctc: 5.7730
+2026/01/04 04:44:49 - mmengine - INFO - Epoch(train)  [2][1900/1989]  lr: 2.4720e-04  eta: 2 days, 2:53:14  time: 2.7515  data_time: 1.8003  memory: 18277  loss: 5.8695  loss_ctc: 5.8695
+2026/01/04 04:47:28 - mmengine - INFO - Epoch(train)  [2][1950/1989]  lr: 2.4877e-04  eta: 2 days, 2:49:16  time: 3.5033  data_time: 2.9076  memory: 18277  loss: 5.6719  loss_ctc: 5.6719
+2026/01/04 04:49:28 - mmengine - INFO - Exp name: svtr-large_fudan_scene_baseline_20260104_010946
+2026/01/04 04:49:28 - mmengine - INFO - Saving checkpoint at 2 epochs
+2026/01/04 04:49:41 - mmengine - INFO - Epoch(val)  [2][ 50/498]    eta: 0:01:32  time: 0.2060  data_time: 0.0395  memory: 18277  
+2026/01/04 04:49:51 - mmengine - INFO - Epoch(val)  [2][100/498]    eta: 0:01:21  time: 0.2035  data_time: 0.0378  memory: 1675  
+2026/01/04 04:50:01 - mmengine - INFO - Epoch(val)  [2][150/498]    eta: 0:01:11  time: 0.2022  data_time: 0.0364  memory: 1675  
+2026/01/04 04:50:12 - mmengine - INFO - Epoch(val)  [2][200/498]    eta: 0:01:01  time: 0.2071  data_time: 0.0396  memory: 1675  
+2026/01/04 04:50:22 - mmengine - INFO - Epoch(val)  [2][250/498]    eta: 0:00:50  time: 0.2053  data_time: 0.0393  memory: 1675  
+2026/01/04 04:50:32 - mmengine - INFO - Epoch(val)  [2][300/498]    eta: 0:00:40  time: 0.2057  data_time: 0.0390  memory: 1675  
+2026/01/04 04:50:42 - mmengine - INFO - Epoch(val)  [2][350/498]    eta: 0:00:30  time: 0.2010  data_time: 0.0360  memory: 1675  
+2026/01/04 04:50:53 - mmengine - INFO - Epoch(val)  [2][400/498]    eta: 0:00:20  time: 0.2056  data_time: 0.0389  memory: 1675  
+2026/01/04 04:51:03 - mmengine - INFO - Epoch(val)  [2][450/498]    eta: 0:00:09  time: 0.2042  data_time: 0.0377  memory: 1675  
+2026/01/04 04:51:13 - mmengine - INFO - Epoch(val) [2][498/498]    Fudan/recog/word_acc: 0.0234  Fudan/recog/1-N.E.D: 0.0994  data_time: 0.0380  time: 0.2044
+2026/01/04 04:51:13 - mmengine - INFO - The previous best checkpoint /root/lanyun-tmp/mmocr/work_dirs/svtr_direct_fudan_scene/best_Fudan_recog_word_acc_epoch_1.pth is removed
+2026/01/04 04:51:15 - mmengine - INFO - The best checkpoint with 0.0234 Fudan/recog/word_acc at 2 epoch is saved to best_Fudan_recog_word_acc_epoch_2.pth.
+2026/01/04 04:52:45 - mmengine - INFO - Exp name: svtr-large_fudan_scene_baseline_20260104_010946
+2026/01/04 04:54:15 - mmengine - INFO - Epoch(train)  [3][  50/1989]  lr: 2.5000e-04  eta: 2 days, 2:45:51  time: 3.3434  data_time: 2.6058  memory: 18277  loss: 5.5864  loss_ctc: 5.5864
