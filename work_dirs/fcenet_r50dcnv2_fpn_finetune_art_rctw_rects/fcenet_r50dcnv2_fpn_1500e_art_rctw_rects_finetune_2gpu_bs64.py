@@ -134,7 +134,7 @@ param_scheduler = [
         type='PolyLR'),
 ]
 randomness = dict(seed=None)
-resume = True
+resume = False
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,

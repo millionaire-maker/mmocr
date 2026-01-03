@@ -1,0 +1,1558 @@
+2026/01/03 23:20:35 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+    CUDA available: True
+    MUSA available: False
+    numpy_random_seed: 579496714
+    GPU 0,1: NVIDIA GeForce RTX 3090
+    CUDA_HOME: /usr/local/cuda
+    NVCC: Cuda compilation tools, release 11.1, V11.1.105
+    GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+    PyTorch: 1.10.2+cu111
+    PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.2.3 (Git Hash 7336ca9f055cf1bfa13efb658fe15dc9b41f0740)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.0.5
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.1, CUDNN_VERSION=8.0.5, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.10.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+    TorchVision: 0.11.3+cu111
+    OpenCV: 4.12.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: False
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 579496714
+    Distributed launcher: pytorch
+    Distributed training: True
+    GPU number: 2
+------------------------------------------------------------
+
+2026/01/03 23:20:35 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=64, enable=True)
+default_hooks = dict(
+    checkpoint=dict(
+        interval=1,
+        max_keep_ckpts=3,
+        rule='greater',
+        save_best='Fudan/recog/word_acc',
+        type='CheckpointHook'),
+    logger=dict(interval=50, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    sync_buffer=dict(type='SyncBuffersHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(
+        draw_gt=False,
+        draw_pred=False,
+        enable=False,
+        interval=1,
+        show=False,
+        type='VisualizationHook'))
+default_scope = 'mmocr'
+dictionary = dict(
+    dict_file='data/charset/charset_rec_cn_en.txt',
+    type='Dictionary',
+    with_padding=True,
+    with_unknown=True)
+env_cfg = dict(
+    cudnn_benchmark=False,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+fudan_scene_rec_root = 'data/fudan/scene'
+fudan_scene_test_dataloader = dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='scene_test',
+        data_root='data/fudan/scene',
+        pipeline=None,
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+fudan_scene_textrecog_test = dict(
+    ann_file='scene_test',
+    data_root='data/fudan/scene',
+    pipeline=None,
+    type='RecogLMDBDataset')
+fudan_scene_textrecog_train = dict(
+    ann_file='scene_train',
+    data_root='data/fudan/scene',
+    pipeline=None,
+    type='RecogLMDBDataset')
+fudan_scene_textrecog_val = dict(
+    ann_file='scene_val',
+    data_root='data/fudan/scene',
+    pipeline=None,
+    type='RecogLMDBDataset')
+fudan_scene_train_dataloader = dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='scene_train',
+        data_root='data/fudan/scene',
+        pipeline=None,
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+fudan_scene_val_dataloader = dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='scene_val',
+        data_root='data/fudan/scene',
+        pipeline=None,
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+launcher = 'pytorch'
+load_from = None
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
+model = dict(
+    data_preprocessor=dict(
+        mean=[
+            127.5,
+        ], std=[
+            127.5,
+        ], type='TextRecogDataPreprocessor'),
+    decoder=dict(
+        dictionary=dict(
+            dict_file='data/charset/charset_rec_cn_en.txt',
+            type='Dictionary',
+            with_padding=True,
+            with_unknown=True),
+        in_channels=384,
+        max_seq_len=40,
+        module_loss=dict(
+            letter_case='lower', type='CTCModuleLoss', zero_infinity=True),
+        postprocessor=dict(type='CTCPostProcessor'),
+        type='SVTRDecoder'),
+    encoder=dict(
+        depth=[
+            3,
+            9,
+            9,
+        ],
+        embed_dims=[
+            192,
+            256,
+            512,
+        ],
+        img_size=[
+            48,
+            160,
+        ],
+        in_channels=3,
+        max_seq_len=40,
+        merging_types='Conv',
+        mixer_types=[
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+        ],
+        num_heads=[
+            6,
+            8,
+            16,
+        ],
+        out_channels=384,
+        prenorm=False,
+        type='SVTREncoder',
+        window_size=[
+            [
+                7,
+                11,
+            ],
+            [
+                7,
+                11,
+            ],
+            [
+                7,
+                11,
+            ],
+        ]),
+    preprocessor=dict(
+        in_channels=3,
+        margins=[
+            0.05,
+            0.05,
+        ],
+        num_control_points=20,
+        output_image_size=(
+            48,
+            160,
+        ),
+        resized_image_size=(
+            32,
+            64,
+        ),
+        type='STN'),
+    type='SVTR')
+optim_wrapper = dict(
+    loss_scale='dynamic',
+    optimizer=dict(
+        betas=(
+            0.9,
+            0.99,
+        ),
+        eps=8e-08,
+        lr=0.00025,
+        type='AdamW',
+        weight_decay=0.05),
+    type='AmpOptimWrapper')
+param_scheduler = [
+    dict(
+        convert_to_iter_based=True,
+        end=2,
+        end_factor=1.0,
+        start_factor=0.5,
+        type='LinearLR',
+        verbose=False),
+    dict(
+        T_max=29,
+        begin=2,
+        convert_to_iter_based=True,
+        end=30,
+        type='CosineAnnealingLR',
+        verbose=False),
+]
+randomness = dict(seed=None)
+resume = False
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='scene_test',
+        data_root='data/fudan/scene',
+        pipeline=[
+            dict(type='LoadImageFromNDArray'),
+            dict(scale=(
+                256,
+                64,
+            ), type='Resize'),
+            dict(type='LoadOCRAnnotations', with_text=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'valid_ratio',
+                ),
+                type='PackTextRecogInputs'),
+        ],
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(
+    dataset_prefixes=[
+        'Fudan',
+    ],
+    metrics=[
+        dict(mode=[
+            'exact',
+        ], type='WordMetric'),
+        dict(type='OneMinusNEDMetric'),
+    ],
+    type='MultiDatasetsEvaluator')
+test_pipeline = [
+    dict(type='LoadImageFromNDArray'),
+    dict(scale=(
+        256,
+        64,
+    ), type='Resize'),
+    dict(type='LoadOCRAnnotations', with_text=True),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'valid_ratio',
+        ),
+        type='PackTextRecogInputs'),
+]
+train_cfg = dict(max_epochs=30, type='EpochBasedTrainLoop', val_interval=1)
+train_dataloader = dict(
+    batch_size=32,
+    dataset=dict(
+        ann_file='scene_train',
+        data_root='data/fudan/scene',
+        pipeline=[
+            dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
+            dict(type='LoadOCRAnnotations', with_text=True),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='TextRecogGeneralAug'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='CropHeight'),
+                ],
+                type='RandomApply'),
+            dict(
+                condition='min(results["img_shape"])>10',
+                true_transforms=dict(
+                    prob=0.4,
+                    transforms=[
+                        dict(
+                            kernel_size=5,
+                            op='GaussianBlur',
+                            sigma=1,
+                            type='TorchVisionWrapper'),
+                    ],
+                    type='RandomApply'),
+                type='ConditionApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(
+                        brightness=0.5,
+                        contrast=0.5,
+                        hue=0.1,
+                        op='ColorJitter',
+                        saturation=0.5,
+                        type='TorchVisionWrapper'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='ImageContentJitter'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(
+                        args=[
+                            dict(
+                                cls='AdditiveGaussianNoise',
+                                scale=0.31622776601683794),
+                        ],
+                        type='ImgAugWrapper'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='ReversePixels'),
+                ],
+                type='RandomApply'),
+            dict(scale=(
+                256,
+                64,
+            ), type='Resize'),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'valid_ratio',
+                ),
+                type='PackTextRecogInputs'),
+        ],
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
+    dict(type='LoadOCRAnnotations', with_text=True),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='TextRecogGeneralAug'),
+        ],
+        type='RandomApply'),
+    dict(prob=0.4, transforms=[
+        dict(type='CropHeight'),
+    ], type='RandomApply'),
+    dict(
+        condition='min(results["img_shape"])>10',
+        true_transforms=dict(
+            prob=0.4,
+            transforms=[
+                dict(
+                    kernel_size=5,
+                    op='GaussianBlur',
+                    sigma=1,
+                    type='TorchVisionWrapper'),
+            ],
+            type='RandomApply'),
+        type='ConditionApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(
+                brightness=0.5,
+                contrast=0.5,
+                hue=0.1,
+                op='ColorJitter',
+                saturation=0.5,
+                type='TorchVisionWrapper'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='ImageContentJitter'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(
+                args=[
+                    dict(
+                        cls='AdditiveGaussianNoise',
+                        scale=0.31622776601683794),
+                ],
+                type='ImgAugWrapper'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='ReversePixels'),
+        ],
+        type='RandomApply'),
+    dict(scale=(
+        256,
+        64,
+    ), type='Resize'),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'valid_ratio',
+        ),
+        type='PackTextRecogInputs'),
+]
+tta_model = dict(type='EncoderDecoderRecognizerTTAModel')
+tta_pipeline = [
+    dict(type='LoadImageFromNDArray'),
+    dict(
+        transforms=[
+            [
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=0, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=1, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=3, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+            ],
+            [
+                dict(scale=(
+                    256,
+                    64,
+                ), type='Resize'),
+            ],
+            [
+                dict(type='LoadOCRAnnotations', with_text=True),
+            ],
+            [
+                dict(
+                    meta_keys=(
+                        'img_path',
+                        'ori_shape',
+                        'img_shape',
+                        'valid_ratio',
+                    ),
+                    type='PackTextRecogInputs'),
+            ],
+        ],
+        type='TestTimeAug'),
+]
+val_cfg = dict(type='ValLoop')
+val_dataloader = dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='scene_val',
+        data_root='data/fudan/scene',
+        pipeline=[
+            dict(type='LoadImageFromNDArray'),
+            dict(scale=(
+                256,
+                64,
+            ), type='Resize'),
+            dict(type='LoadOCRAnnotations', with_text=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'valid_ratio',
+                ),
+                type='PackTextRecogInputs'),
+        ],
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(
+    dataset_prefixes=[
+        'Fudan',
+    ],
+    metrics=[
+        dict(mode=[
+            'exact',
+        ], type='WordMetric'),
+        dict(type='OneMinusNEDMetric'),
+    ],
+    type='MultiDatasetsEvaluator')
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    name='visualizer',
+    type='TextRecogLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'work_dirs/svtr_large_fudan_scene'
+
+2026/01/03 23:20:37 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2026/01/03 23:20:44 - mmengine - INFO - LR is set based on batch size of 64 and the current batch size is 64. Scaling the original LR by 1.0.
+Name of parameter - Initialization information
+
+preprocessor.stn_convnet.0.conv.weight - torch.Size([32, 3, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.0.bn.weight - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.0.bn.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.2.conv.weight - torch.Size([64, 32, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.2.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.2.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.4.conv.weight - torch.Size([128, 64, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.4.bn.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.4.bn.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.6.conv.weight - torch.Size([256, 128, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.6.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.6.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.8.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.8.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.8.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.10.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.10.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.10.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.0.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.0.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc2.weight - torch.Size([40, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc2.bias - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.absolute_pos_embed - torch.Size([1, 480, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.conv.weight - torch.Size([96, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.bn.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.bn.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.conv.weight - torch.Size([192, 96, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.conv.weight - torch.Size([256, 192, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.norm.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.norm.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.conv.weight - torch.Size([512, 256, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.conv.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.norm.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.norm.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.layer_norm.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.layer_norm.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.last_conv.weight - torch.Size([384, 512, 1, 1]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+decoder.decoder.weight - torch.Size([5885, 384]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+decoder.decoder.bias - torch.Size([5885]): 
+The value is the same before and after calling `init_weights` of SVTR  
+2026/01/03 23:20:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2026/01/03 23:20:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2026/01/03 23:20:45 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/svtr_large_fudan_scene.
