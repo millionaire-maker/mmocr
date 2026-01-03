@@ -140,20 +140,15 @@ class RecogLMDBDataset(BaseDataset):
             Any: Depends on ``self.pipeline``.
         """
         data_info = self.get_data_info(idx)
-        try:
-            # Use `buffers=True` to avoid copying large bytes objects between
-            # LMDB and Python. This is more memory-efficient especially when
-            # using multi-worker dataloaders.
-            with self.env.begin(write=False, buffers=True) as txn:
-                img_buf = txn.get(data_info['img_key'].encode('utf-8'))
-                if img_buf is None:
-                    return None
+        with self.env.begin(write=False, buffers=True) as txn:
+            img_buf = txn.get(data_info['img_key'].encode('utf-8'))
+            if img_buf is None:
+                return None
+            try:
                 data_info['img'] = mmcv.imfrombytes(
                     img_buf, flag=self.color_type)
-        except MemoryError:
-            return None
-        except Exception:
-            return None
+            except Exception:
+                return None
         return self.pipeline(data_info)
 
     def _make_env(self):

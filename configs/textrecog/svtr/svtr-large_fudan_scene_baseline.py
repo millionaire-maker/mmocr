@@ -70,12 +70,18 @@ param_scheduler = [
 
 train_dataloader = deepcopy(_base_.fudan_scene_train_dataloader)
 train_dataloader['batch_size'] = 32
+train_dataloader['num_workers'] = 0
+train_dataloader['persistent_workers'] = False
 train_dataloader['dataset']['pipeline'] = train_pipeline
 
 val_dataloader = deepcopy(_base_.fudan_scene_val_dataloader)
+val_dataloader['num_workers'] = 0
+val_dataloader['persistent_workers'] = False
 val_dataloader['dataset']['pipeline'] = test_pipeline
 
 test_dataloader = deepcopy(_base_.fudan_scene_test_dataloader)
+test_dataloader['num_workers'] = 0
+test_dataloader['persistent_workers'] = False
 test_dataloader['dataset']['pipeline'] = test_pipeline
 
 val_evaluator = dict(
