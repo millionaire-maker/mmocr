@@ -715,7 +715,7 @@ class ReversePixels(BaseTransform):
         Returns:
             dict: Reversed results.
         """
-        results['img'] = 255. - results['img'].copy()
+        results['img'] = 255 - results['img'].copy()
         return results
 
     def __repr__(self) -> str:
