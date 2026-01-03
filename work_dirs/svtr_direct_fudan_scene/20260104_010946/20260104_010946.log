@@ -1595,3 +1595,26 @@ The value is the same before and after calling `init_weights` of SVTR
 2026/01/04 02:48:32 - mmengine - INFO - Epoch(train)  [1][1800/1989]  lr: 1.8154e-04  eta: 2 days, 4:46:02  time: 2.9455  data_time: 2.0074  memory: 18262  loss: 6.8386  loss_ctc: 6.8386
 2026/01/04 02:51:16 - mmengine - INFO - Epoch(train)  [1][1850/1989]  lr: 1.8312e-04  eta: 2 days, 4:42:57  time: 3.0709  data_time: 2.3898  memory: 18262  loss: 6.7649  loss_ctc: 6.7649
 2026/01/04 02:54:03 - mmengine - INFO - Epoch(train)  [1][1900/1989]  lr: 1.8469e-04  eta: 2 days, 4:41:52  time: 3.2730  data_time: 2.5357  memory: 18262  loss: 6.7008  loss_ctc: 6.7008
+2026/01/04 02:56:47 - mmengine - INFO - Epoch(train)  [1][1950/1989]  lr: 1.8626e-04  eta: 2 days, 4:38:59  time: 3.2722  data_time: 2.5238  memory: 18262  loss: 6.7160  loss_ctc: 6.7160
+2026/01/04 02:58:54 - mmengine - INFO - Exp name: svtr-large_fudan_scene_baseline_20260104_010946
+2026/01/04 02:58:54 - mmengine - INFO - Saving checkpoint at 1 epochs
+2026/01/04 02:59:06 - mmengine - INFO - Epoch(val)  [1][ 50/498]    eta: 0:01:34  time: 0.2130  data_time: 0.0459  memory: 18262  
+2026/01/04 02:59:17 - mmengine - INFO - Epoch(val)  [1][100/498]    eta: 0:01:23  time: 0.2129  data_time: 0.0457  memory: 1674  
+2026/01/04 02:59:28 - mmengine - INFO - Epoch(val)  [1][150/498]    eta: 0:01:13  time: 0.2081  data_time: 0.0421  memory: 1674  
+2026/01/04 02:59:38 - mmengine - INFO - Epoch(val)  [1][200/498]    eta: 0:01:03  time: 0.2159  data_time: 0.0480  memory: 1674  
+2026/01/04 02:59:49 - mmengine - INFO - Epoch(val)  [1][250/498]    eta: 0:00:52  time: 0.2129  data_time: 0.0467  memory: 1674  
+2026/01/04 03:00:00 - mmengine - INFO - Epoch(val)  [1][300/498]    eta: 0:00:42  time: 0.2126  data_time: 0.0467  memory: 1674  
+2026/01/04 03:00:10 - mmengine - INFO - Epoch(val)  [1][350/498]    eta: 0:00:31  time: 0.2220  data_time: 0.0435  memory: 1674  
+2026/01/04 03:00:21 - mmengine - INFO - Epoch(val)  [1][400/498]    eta: 0:00:20  time: 0.2127  data_time: 0.0460  memory: 1674  
+2026/01/04 03:00:31 - mmengine - INFO - Epoch(val)  [1][450/498]    eta: 0:00:10  time: 0.2134  data_time: 0.0445  memory: 1674  
+2026/01/04 03:00:42 - mmengine - INFO - Epoch(val) [1][498/498]    Fudan/recog/word_acc: 0.0053  Fudan/recog/1-N.E.D: 0.0260  data_time: 0.0454  time: 0.2121
+2026/01/04 03:00:43 - mmengine - INFO - The best checkpoint with 0.0053 Fudan/recog/word_acc at 1 epoch is saved to best_Fudan_recog_word_acc_epoch_1.pth.
+2026/01/04 03:01:23 - mmengine - INFO - Exp name: svtr-large_fudan_scene_baseline_20260104_010946
+2026/01/04 03:03:21 - mmengine - INFO - Epoch(train)  [2][  50/1989]  lr: 1.8906e-04  eta: 2 days, 4:28:53  time: 3.0079  data_time: 2.1513  memory: 18282  loss: 6.7388  loss_ctc: 6.7388
+2026/01/04 03:06:09 - mmengine - INFO - Epoch(train)  [2][ 100/1989]  lr: 1.9063e-04  eta: 2 days, 4:28:01  time: 3.4005  data_time: 2.1254  memory: 18277  loss: 6.6592  loss_ctc: 6.6592
+2026/01/04 03:09:09 - mmengine - INFO - Epoch(train)  [2][ 150/1989]  lr: 1.9220e-04  eta: 2 days, 4:32:34  time: 3.3486  data_time: 2.6103  memory: 18277  loss: 6.7105  loss_ctc: 6.7105
+2026/01/04 03:12:02 - mmengine - INFO - Epoch(train)  [2][ 200/1989]  lr: 1.9377e-04  eta: 2 days, 4:33:33  time: 3.6230  data_time: 2.5072  memory: 18277  loss: 6.7395  loss_ctc: 6.7395
+2026/01/04 03:14:49 - mmengine - INFO - Epoch(train)  [2][ 250/1989]  lr: 1.9534e-04  eta: 2 days, 4:31:50  time: 3.2467  data_time: 2.0474  memory: 18277  loss: 6.6822  loss_ctc: 6.6822
+2026/01/04 03:17:20 - mmengine - INFO - Epoch(train)  [2][ 300/1989]  lr: 1.9691e-04  eta: 2 days, 4:23:18  time: 3.7583  data_time: 2.4342  memory: 18277  loss: 6.6055  loss_ctc: 6.6055
+2026/01/04 03:20:23 - mmengine - INFO - Epoch(train)  [2][ 350/1989]  lr: 1.9849e-04  eta: 2 days, 4:28:14  time: 3.0124  data_time: 2.2316  memory: 18277  loss: 6.5922  loss_ctc: 6.5922
+2026/01/04 03:23:00 - mmengine - INFO - Epoch(train)  [2][ 400/1989]  lr: 2.0006e-04  eta: 2 days, 4:22:33  time: 3.1117  data_time: 2.4874  memory: 18277  loss: 6.5866  loss_ctc: 6.5866
