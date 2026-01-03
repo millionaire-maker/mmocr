@@ -70,21 +70,18 @@ param_scheduler = [
 
 train_dataloader = deepcopy(_base_.fudan_scene_train_dataloader)
 train_dataloader['batch_size'] = 128
-train_dataloader['num_workers'] = 2
-train_dataloader['prefetch_factor'] = 1
-train_dataloader['persistent_workers'] = True
+train_dataloader['num_workers'] = 0
+train_dataloader['persistent_workers'] = False
 train_dataloader['dataset']['pipeline'] = train_pipeline
 
 val_dataloader = deepcopy(_base_.fudan_scene_val_dataloader)
-val_dataloader['num_workers'] = 2
-val_dataloader['prefetch_factor'] = 1
-val_dataloader['persistent_workers'] = True
+val_dataloader['num_workers'] = 0
+val_dataloader['persistent_workers'] = False
 val_dataloader['dataset']['pipeline'] = test_pipeline
 
 test_dataloader = deepcopy(_base_.fudan_scene_test_dataloader)
-test_dataloader['num_workers'] = 2
-test_dataloader['prefetch_factor'] = 1
-test_dataloader['persistent_workers'] = True
+test_dataloader['num_workers'] = 0
+test_dataloader['persistent_workers'] = False
 test_dataloader['dataset']['pipeline'] = test_pipeline
 
 val_evaluator = dict(
@@ -107,5 +104,7 @@ default_hooks = dict(
         max_keep_ckpts=3,
     ),
 )
+
+env_cfg = dict(cudnn_benchmark=True)
 
 auto_scale_lr = dict(base_batch_size=train_dataloader['batch_size'] * 2)

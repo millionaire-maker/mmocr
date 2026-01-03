@@ -233,9 +233,10 @@ test_dataloader = dict(
                 type='PackTextRecogInputs'),
         ],
         type='RecogLMDBDataset'),
-    num_workers=0,
-    persistent_workers=False,
+    num_workers=2,
+    persistent_workers=True,
     pin_memory=True,
+    prefetch_factor=1,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
     dataset_prefixes=[
@@ -348,9 +349,10 @@ train_dataloader = dict(
                 type='PackTextRecogInputs'),
         ],
         type='RecogLMDBDataset'),
-    num_workers=0,
-    persistent_workers=False,
+    num_workers=2,
+    persistent_workers=True,
     pin_memory=True,
+    prefetch_factor=1,
     sampler=dict(shuffle=True, type='DefaultSampler'))
 train_pipeline = [
     dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
@@ -508,9 +510,10 @@ val_dataloader = dict(
                 type='PackTextRecogInputs'),
         ],
         type='RecogLMDBDataset'),
-    num_workers=0,
-    persistent_workers=False,
+    num_workers=2,
+    persistent_workers=True,
     pin_memory=True,
+    prefetch_factor=1,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(
     dataset_prefixes=[
