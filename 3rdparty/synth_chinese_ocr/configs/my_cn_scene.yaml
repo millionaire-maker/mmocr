@@ -1,0 +1,146 @@
+# Curved-text focused Chinese scene synthesis (no vertical layout).
+# Key idea: natural background almost always + moderate seamless clone + medium curve by default.
+
+font_size:
+  min: 14
+  max: 28
+
+# Enable BGR output (color background + color text).
+font_color:
+  enable: true
+  black:
+    fraction: 0.35
+    l_boundary: [0, 0, 0]
+    h_boundary: [60, 60, 60]
+  dark_gray:
+    fraction: 0.15
+    l_boundary: [40, 40, 40]
+    h_boundary: [110, 110, 110]
+  white:
+    fraction: 0.10
+    l_boundary: [200, 200, 200]
+    h_boundary: [255, 255, 255]
+  red:
+    fraction: 0.15
+    l_boundary: [140, 0, 0]
+    h_boundary: [255, 80, 80]
+  blue:
+    fraction: 0.15
+    l_boundary: [0, 0, 120]
+    h_boundary: [80, 80, 255]
+  brown:
+    fraction: 0.10
+    l_boundary: [139, 70, 19]
+    h_boundary: [200, 120, 80]
+
+random_space:
+  enable: false
+  fraction: 0.3
+  min: -0.1
+  max: 0.1
+
+# Sin-based vertical remap. Note: this stage is relatively slow.
+curve:
+  enable: true
+  fraction: 0.55
+  period: 1000
+  min: 2
+  max: 10
+
+# Simulate detection crop errors: occasionally cut a little at top/bottom.
+crop:
+  enable: true
+  fraction: 0.25
+  top:
+    min: 1
+    max: 4
+  bottom:
+    min: 1
+    max: 4
+
+img_bg:
+  enable: true
+  fraction: 0.98
+
+text_border:
+  enable: true
+  fraction: 0.12
+  light:
+    enable: true
+    fraction: 0.5
+  dark:
+    enable: true
+    fraction: 0.5
+
+seamless_clone:
+  enable: true
+  fraction: 0.18
+
+perspective_transform:
+  max_x: 18
+  max_y: 18
+  max_z: 7
+
+blur:
+  enable: true
+  fraction: 0.12
+
+prydown:
+  enable: true
+  fraction: 0.25
+  max_scale: 2.0
+
+noise:
+  enable: true
+  fraction: 0.35
+  gauss:
+    enable: true
+    fraction: 0.35
+  uniform:
+    enable: true
+    fraction: 0.35
+  salt_pepper:
+    enable: true
+    fraction: 0.15
+  poisson:
+    enable: true
+    fraction: 0.15
+
+line:
+  enable: false
+  fraction: 0.05
+  random_over:
+    enable: true
+    fraction: 0.2
+  under_line:
+    enable: false
+    fraction: 0.2
+  table_line:
+    enable: false
+    fraction: 0.3
+  middle_line:
+    enable: false
+    fraction: 0.3
+
+line_color:
+  enable: false
+  black:
+    fraction: 0.5
+    l_boundary: [0, 0, 0]
+    h_boundary: [64, 64, 64]
+  blue:
+    fraction: 0.5
+    l_boundary: [0, 0, 150]
+    h_boundary: [60, 60, 255]
+
+reverse_color:
+  enable: false
+  fraction: 0.08
+
+emboss:
+  enable: false
+  fraction: 0.05
+
+sharp:
+  enable: false
+  fraction: 0.05

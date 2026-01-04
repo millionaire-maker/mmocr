@@ -1,0 +1,118 @@
+{
+  "charset": "/root/lanyun-tmp/mmocr/data/charset/charset_rec_cn_en.txt",
+  "sample_size": 1000,
+  "missing_ratio_thr": 0.25,
+  "mode": "auto",
+  "download_errors": [],
+  "recommended_manual_fonts": [
+    "LXGW WenKai / 霞鹜文楷 (SIL OFL 1.1)",
+    "Smiley Sans / 得意黑 (SIL OFL 1.1)",
+    "Source Han Sans/Serif SC / 思源黑体/思源宋体 (SIL OFL 1.1)",
+    "WenQuanYi Zen Hei / 文泉驿正黑 (GPL/开放字体许可，需自行确认商业合规)"
+  ],
+  "fonts_total": 9,
+  "fonts_kept": 9,
+  "fonts": [
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/LiuJianMaoCao-Regular.ttf",
+      "source": "https://github.com/google/fonts/raw/main/ofl/liujianmaocao/LiuJianMaoCao-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 225,
+      "missing_ratio": 0.225,
+      "kept": true,
+      "error": null
+    },
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/LongCang-Regular.ttf",
+      "source": "https://github.com/google/fonts/raw/main/ofl/longcang/LongCang-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 225,
+      "missing_ratio": 0.225,
+      "kept": true,
+      "error": null
+    },
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/MaShanZheng-Regular.ttf",
+      "source": "https://github.com/google/fonts/raw/main/ofl/mashanzheng/MaShanZheng-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 225,
+      "missing_ratio": 0.225,
+      "kept": true,
+      "error": null
+    },
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/NotoSansSC[wght].ttf",
+      "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 5,
+      "missing_ratio": 0.005,
+      "kept": true,
+      "error": null
+    },
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/NotoSerifSC[wght].ttf",
+      "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoserifsc/NotoSerifSC%5Bwght%5D.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 5,
+      "missing_ratio": 0.005,
+      "kept": true,
+      "error": null
+    },
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/ZCOOLKuaiLe-Regular.ttf",
+      "source": "https://github.com/google/fonts/raw/main/ofl/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 225,
+      "missing_ratio": 0.225,
+      "kept": true,
+      "error": null
+    },
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/ZCOOLQingKeHuangYou-Regular.ttf",
+      "source": "https://github.com/google/fonts/raw/main/ofl/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 112,
+      "missing_ratio": 0.112,
+      "kept": true,
+      "error": null
+    },
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/ZCOOLXiaoWei-Regular.ttf",
+      "source": "https://github.com/google/fonts/raw/main/ofl/zcoolxiaowei/ZCOOLXiaoWei-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 225,
+      "missing_ratio": 0.225,
+      "kept": true,
+      "error": null
+    },
+    {
+      "path": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn/ZhiMangXing-Regular.ttf",
+      "source": "https://github.com/google/fonts/raw/main/ofl/zhimangxing/ZhiMangXing-Regular.ttf",
+      "license": "SIL OFL 1.1",
+      "ok_load_pil": true,
+      "sample_size": 1000,
+      "missing": 225,
+      "missing_ratio": 0.225,
+      "kept": true,
+      "error": null
+    }
+  ],
+  "fonts_list": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts_list/chn.txt",
+  "fonts_dir": "/root/lanyun-tmp/mmocr/data/synth_assets/fonts/chn"
+}
