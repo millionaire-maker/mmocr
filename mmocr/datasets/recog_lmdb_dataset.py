@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os
 from typing import Any, Callable, List, Optional, Sequence, Tuple, Union
 
 import mmcv
@@ -88,6 +89,7 @@ class RecogLMDBDataset(BaseDataset):
             max_refetch=max_refetch)
 
         self.color_type = img_color_type
+        self._env_pid: Optional[int] = None
 
     def load_data_list(self) -> List[dict]:
         """Load annotations from an annotation file named as ``self.ann_file``
@@ -95,11 +97,9 @@ class RecogLMDBDataset(BaseDataset):
         Returns:
             List[dict]: A list of annotation.
         """
-        if not hasattr(self, 'env'):
-            self._make_env()
-            with self.env.begin(write=False) as txn:
-                self.total_number = int(
-                    txn.get(b'num-samples').decode('utf-8'))
+        self._make_env()
+        with self.env.begin(write=False) as txn:
+            self.total_number = int(txn.get(b'num-samples').decode('utf-8'))
 
         data_list = []
         with self.env.begin(write=False) as txn:
@@ -140,6 +140,7 @@ class RecogLMDBDataset(BaseDataset):
             Any: Depends on ``self.pipeline``.
         """
         data_info = self.get_data_info(idx)
+        self._make_env()
         with self.env.begin(write=False, buffers=True) as txn:
             img_buf = txn.get(data_info['img_key'].encode('utf-8'))
             if img_buf is None:
@@ -163,8 +164,13 @@ class RecogLMDBDataset(BaseDataset):
         except ImportError:
             raise ImportError(
                 'Please install lmdb to enable RecogLMDBDataset.')
-        if hasattr(self, 'env'):
+        current_pid = os.getpid()
+        if hasattr(self, 'env') and self._env_pid == current_pid:
             return
+
+        if hasattr(self, 'env'):
+            self.env.close()
+            del self.env
 
         self.env = lmdb.open(
             self.ann_file,
@@ -174,9 +180,11 @@ class RecogLMDBDataset(BaseDataset):
             readahead=False,
             meminit=False,
         )
+        self._env_pid = current_pid
 
     def close(self):
         """Close lmdb environment."""
         if hasattr(self, 'env'):
             self.env.close()
             del self.env
+            self._env_pid = None
