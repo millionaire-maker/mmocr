@@ -29,6 +29,8 @@ TMUX_WINDOW_BASE="auto_fcenet_finetune"
 ATTACH=1
 DRY_RUN=0
 
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --log)
@@ -71,6 +73,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ "$LOG_FILE" != /* ]]; then
+  LOG_FILE="$REPO_ROOT/$LOG_FILE"
+fi
+
 SENTINEL_FILE="${SENTINEL_FILE:-"$(dirname "$LOG_FILE")/.auto_chain_to_fcenet.started"}"
 if [[ -f "$SENTINEL_FILE" ]]; then
   echo "已检测到哨兵文件，认为已触发过：$SENTINEL_FILE"
@@ -95,16 +101,13 @@ else
   echo "检测到结束标记，开始触发后续任务。"
 fi
 
-mkdir -p "$(dirname "$SENTINEL_FILE")"
-date -Iseconds >"$SENTINEL_FILE"
-
 if ! command -v tmux >/dev/null 2>&1; then
   echo "未找到 tmux，请先安装 tmux 或手动启动训练。" >&2
   exit 1
 fi
 
 FCENET_CMD="CUDA_VISIBLE_DEVICES=0,1 bash tools/dist_train.sh configs/textdet/fcenet/fcenet_r50dcnv2_fpn_1500e_art_rctw_rects_finetune.py 2 --resume --work-dir work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects --cfg-options train_cfg.val_interval=2 default_hooks.checkpoint.interval=2"
-LAUNCH_CMD="/bin/bash -lc 'source /root/miniconda/etc/profile.d/conda.sh && conda activate openmmlab && cd /root/lanyun-tmp/mmocr && ${FCENET_CMD}'"
+LAUNCH_CMD="/bin/bash -lc 'source /root/miniconda/etc/profile.d/conda.sh && conda activate openmmlab && cd ${REPO_ROOT} && ${FCENET_CMD}'"
 
 if ! tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then
   echo "tmux 会话不存在，创建：$TMUX_SESSION"
@@ -129,6 +132,9 @@ fi
 tmux new-window -t "$TMUX_SESSION" -n "$WINDOW_NAME" "$LAUNCH_CMD"
 tmux select-window -t "$TMUX_SESSION:$WINDOW_NAME" || true
 
+mkdir -p "$(dirname "$SENTINEL_FILE")"
+date -Iseconds >"$SENTINEL_FILE"
+
 if [[ "$ATTACH" -eq 1 ]]; then
   if [[ -n "${TMUX-}" ]]; then
     tmux switch-client -t "$TMUX_SESSION" || true
@@ -138,4 +144,3 @@ if [[ "$ATTACH" -eq 1 ]]; then
     echo "当前非交互 TTY，已启动训练但跳过 tmux attach。"
   fi
 fi
-
