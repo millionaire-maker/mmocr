@@ -85,6 +85,9 @@ def generate_img(img_index, q=None):
     np.random.seed()
 
     im, word = gen_img_retry(renderer, img_index)
+    # Ensure uint8 for cv2.imwrite to avoid per-image warnings and extra conversions.
+    if im.dtype != np.uint8:
+        im = np.clip(im, 0.0, 255.0).astype(np.uint8)
 
     base_name = '{:08d}'.format(img_index)
 

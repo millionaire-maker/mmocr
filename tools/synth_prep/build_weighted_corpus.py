@@ -18,6 +18,7 @@ class MixStats:
     hard_ratio: float
     seed: int
     min_len: int
+    max_len: int
     base_in: int
     base_usable: int
     hard_in: int
@@ -27,7 +28,7 @@ class MixStats:
     out_lines: int
 
 
-def read_lines(path: Path, min_len: int) -> List[str]:
+def read_lines(path: Path, min_len: int, max_len: int) -> List[str]:
     raw = path.read_text(encoding="utf-8", errors="ignore").splitlines()
     out: List[str] = []
     for s in raw:
@@ -35,6 +36,8 @@ def read_lines(path: Path, min_len: int) -> List[str]:
         if not s:
             continue
         if len(s) < min_len:
+            continue
+        if max_len > 0 and len(s) > max_len:
             continue
         out.append(s)
     return out
@@ -58,6 +61,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--hard-ratio", type=float, default=0.4, help="ratio of hard lines in output")
     parser.add_argument("--seed", type=int, default=0, help="random seed")
     parser.add_argument("--min-len", type=int, default=2, help="drop lines shorter than this length")
+    parser.add_argument("--max-len", type=int, default=0, help="drop lines longer than this length, 0 means no limit")
     parser.add_argument("--stats", default=None, help="write stats json path")
     return parser.parse_args()
 
@@ -76,12 +80,16 @@ def main() -> None:
         raise SystemExit("--total must be > 0")
 
     rng = random.Random(int(args.seed))
-    base_lines = read_lines(base_path, min_len=int(args.min_len))
-    hard_lines = read_lines(hard_path, min_len=int(args.min_len))
+    base_lines = read_lines(base_path, min_len=int(args.min_len), max_len=int(args.max_len))
+    hard_lines = read_lines(hard_path, min_len=int(args.min_len), max_len=int(args.max_len))
     if not base_lines:
-        raise SystemExit(f"no usable base lines after min_len={args.min_len}: {base_path}")
+        raise SystemExit(
+            f"no usable base lines after min_len={args.min_len}, max_len={args.max_len}: {base_path}"
+        )
     if not hard_lines:
-        raise SystemExit(f"no usable hard lines after min_len={args.min_len}: {hard_path}")
+        raise SystemExit(
+            f"no usable hard lines after min_len={args.min_len}, max_len={args.max_len}: {hard_path}"
+        )
 
     hard_n = int(round(int(args.total) * float(args.hard_ratio)))
     hard_n = max(0, min(int(args.total), hard_n))
@@ -104,6 +112,7 @@ def main() -> None:
         hard_ratio=float(args.hard_ratio),
         seed=int(args.seed),
         min_len=int(args.min_len),
+        max_len=int(args.max_len),
         base_in=len(base_path.read_text(encoding="utf-8", errors="ignore").splitlines()),
         base_usable=len(base_lines),
         hard_in=len(hard_path.read_text(encoding="utf-8", errors="ignore").splitlines()),

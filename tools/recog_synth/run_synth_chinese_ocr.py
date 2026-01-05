@@ -33,6 +33,8 @@ def build_cmd(args, config_path: str):
         os.path.join(repo_root, "main.py"),
         "--num_img",
         str(args.num_images),
+        "--length",
+        str(args.length),
         "--output_dir",
         args.out_root,
         "--tag",
@@ -54,11 +56,32 @@ def build_cmd(args, config_path: str):
         "--img_width",
         str(args.img_width),
     ]
+    if args.clip_max_chars:
+        cmd.append("--clip_max_chars")
     if args.strict:
         cmd.append("--strict")
     if args.num_processes:
         cmd.extend(["--num_processes", str(args.num_processes)])
     return cmd
+
+
+def _count_lines(path: str) -> int:
+    n = 0
+    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        for _ in f:
+            n += 1
+    return n
+
+
+def get_existing_samples(save_dir: str) -> int:
+    label_candidates = [
+        os.path.join(save_dir, "labels.txt"),
+        os.path.join(save_dir, "tmp_labels.txt"),
+    ]
+    for p in label_candidates:
+        if os.path.exists(p):
+            return _count_lines(p)
+    return 0
 
 
 def convert_labels(save_dir: str, out_root: str, tag: str, out_txt: str):
@@ -110,6 +133,18 @@ def parse_args():
         help="Number of images to generate.",
     )
     parser.add_argument(
+        "--target-num-images",
+        type=int,
+        default=0,
+        help="If >0, generate until total images under the tag reaches this target (resume-safe).",
+    )
+    parser.add_argument(
+        "--length",
+        type=int,
+        default=10,
+        help="Text length hint (used by random/chn/eng mode; harmless for list mode).",
+    )
+    parser.add_argument(
         "--out-root",
         default=os.path.abspath(
             os.path.join(os.path.dirname(__file__), "..", "..", "data", "synth_rec_ch")
@@ -151,6 +186,11 @@ def parse_args():
     )
     parser.add_argument("--img-height", type=int, default=32)
     parser.add_argument("--img-width", type=int, default=0)
+    parser.add_argument(
+        "--clip-max-chars",
+        action="store_true",
+        help="Truncate too-long labels to fit fixed img_width (passes --clip_max_chars).",
+    )
     parser.add_argument("--strict", action="store_true", help="Enable strict font check.")
     parser.add_argument(
         "--num-processes",
@@ -193,6 +233,12 @@ def main():
     if args.out_txt is None:
         args.out_txt = os.path.join(args.out_root, f"{args.tag}.txt")
 
+    # Make all paths absolute since we run subprocess under repo_root.
+    args.chars_file = os.path.abspath(args.chars_file)
+    args.fonts_list = os.path.abspath(args.fonts_list)
+    args.corpus_dir = os.path.abspath(args.corpus_dir)
+    args.bg_dir = os.path.abspath(args.bg_dir)
+
     args.out_txt = os.path.abspath(args.out_txt)
     args.base_config = os.path.abspath(args.base_config)
 
@@ -201,6 +247,17 @@ def main():
     if args.clean and os.path.exists(save_dir):
         shutil.rmtree(save_dir)
     os.makedirs(save_dir, exist_ok=True)
+
+    if int(getattr(args, "target_num_images", 0)) > 0:
+        existing = get_existing_samples(save_dir)
+        target = int(args.target_num_images)
+        remaining = target - existing
+        if remaining <= 0:
+            print(f"[SKIP] target-num-images satisfied: existing={existing}, target={target}")
+            convert_labels(save_dir, args.out_root, args.tag, args.out_txt)
+            return
+        print(f"[RESUME] existing={existing}, remaining={remaining}, target={target}")
+        args.num_images = remaining
 
     tmp_config = os.path.join(args.out_root, f"{args.tag}_patched.yaml")
     patched_config = load_and_patch_config(args.base_config, args.curve_ratio, tmp_config)

@@ -18,39 +18,32 @@ class Remaper(object):
         h = word_img.shape[0]
         w = word_img.shape[1]
 
-        img_x = np.zeros((h, w), np.float32)
-        img_y = np.zeros((h, w), np.float32)
-
         xmin = text_box_pnts[0][0]
         xmax = text_box_pnts[1][0]
         ymin = text_box_pnts[0][1]
         ymax = text_box_pnts[2][1]
 
-        remap_y_min = ymin
-        remap_y_max = ymax
+        # Vectorized remap (much faster than nested Python loops).
+        # Keep the same math as _remap_y(): int(max_val * sin(2*3.14*x/period)).
+        x = np.arange(w, dtype=np.float32)
+        offset = max_val * np.sin(2 * 3.14 * x / self.cfg.curve.period)
+        # Casting float->int in numpy truncates toward 0, consistent with Python int().
+        offset_i = offset.astype(np.int32)
 
-        for y in range(h):
-            for x in range(w):
-                remaped_y = y + self._remap_y(x, max_val)
+        img_x = np.tile(x, (h, 1)).astype(np.float32)
+        img_y = (np.arange(h, dtype=np.float32)[:, None] + offset_i[None, :].astype(np.float32)).astype(np.float32)
 
-                if y == ymin:
-                    if remaped_y < remap_y_min:
-                        remap_y_min = remaped_y
-
-                if y == ymax:
-                    if remaped_y > remap_y_max:
-                        remap_y_max = remaped_y
-
-                # 某一个位置的 y 值应该为哪个位置的 y 值
-                img_y[y, x] = remaped_y
-                # 某一个位置的 x 值应该为哪个位置的 x 值
-                img_x[y, x] = x
+        # bbox remap range only depends on x-offset.
+        off_min = int(offset_i.min()) if w > 0 else 0
+        off_max = int(offset_i.max()) if w > 0 else 0
+        remap_y_min = ymin + min(0, off_min)
+        remap_y_max = ymax + max(0, off_max)
 
         remaped_text_box_pnts = [
             [xmin, remap_y_min],
             [xmax, remap_y_min],
             [xmax, remap_y_max],
-            [xmin, remap_y_max]
+            [xmin, remap_y_max],
         ]
 
         # TODO: use cuda::remap

@@ -1,0 +1,103 @@
+{
+  "metrics": {
+    "stage1_baseline": {
+      "icdar/precision": 0.7430224816920162,
+      "icdar/recall": 0.7320752812957263,
+      "icdar/hmean": 0.7375082600518476
+    },
+    "stage1_highrecall": {
+      "icdar/precision": 0.7430224816920162,
+      "icdar/recall": 0.7320752812957263,
+      "icdar/hmean": 0.7375082600518476
+    },
+    "refined": {
+      "icdar/precision": 0.7430065492206935,
+      "icdar/recall": 0.7384328169937938,
+      "icdar/hmean": 0.7407126227350946
+    },
+    "delta": {
+      "stage1_highrecall_minus_baseline": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "hmean": 0.0
+      },
+      "refined_minus_stage1_baseline": {
+        "precision": -1.593247132269937e-05,
+        "recall": 0.006357535698067518,
+        "hmean": 0.003204362683247086
+      },
+      "refined_minus_stage1_highrecall": {
+        "precision": -1.593247132269937e-05,
+        "recall": 0.006357535698067518,
+        "hmean": 0.003204362683247086
+      }
+    }
+  },
+  "gating": {
+    "total_images": 3363,
+    "total_stage1_instances": 60137,
+    "total_selected": 12919,
+    "trigger_rate": 0.21482614696443122,
+    "avg_patches_per_image": 3.8415105560511447,
+    "success_rate": 0.19931883272699125
+  },
+  "timing_ms": {
+    "refine_avg_ms": 199.58994676445676,
+    "stage2_avg_ms_per_patch": 44.27188819969013,
+    "stage2_patches": 12918
+  },
+  "fallback_top5": [
+    {
+      "reason": "match_iou",
+      "count": 4467
+    },
+    {
+      "reason": "empty",
+      "count": 3537
+    },
+    {
+      "reason": "area_big",
+      "count": 2238
+    },
+    {
+      "reason": "bounds",
+      "count": 102
+    }
+  ],
+  "patch": {
+    "expand_ratio": 0.3,
+    "max_patch_long_edge": 1024,
+    "min_crop_short_edge": 64.0,
+    "pad_divisor": 32
+  },
+  "stage2_overrides": {
+    "score_thr": 0.05,
+    "nms_thr": -1.0
+  },
+  "fallback_cfg": {
+    "min_match_iou": 0.1,
+    "match_filter": {
+      "mode": "none",
+      "min_bbox_iou": 0.2,
+      "accept_weak_match": true
+    },
+    "min_refined_area": 50.0,
+    "max_refined_area_ratio": 1.5,
+    "reasons": {
+      "area_big": 2238,
+      "bounds": 102,
+      "empty": 3537,
+      "match_iou": 4467,
+      "success": 2575
+    }
+  },
+  "paths": {
+    "stage1_pred_highrecall": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_highrecall.pkl",
+    "refined_pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE10_final_highrecall_plus_matchfilter/refined_full.pkl",
+    "refine_summary": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE10_final_highrecall_plus_matchfilter/refine_summary.json",
+    "metrics_stage1_highrecall": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE10_final_highrecall_plus_matchfilter/metrics_stage1_highrecall.json",
+    "metrics_refined": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE10_final_highrecall_plus_matchfilter/metrics_refined.json",
+    "metrics_stage1_baseline": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE2_full_mincrop64/metrics_stage1.json"
+  },
+  "conclusion": "Stage-1 highrecall 相比 baseline：Recall 0.0pp，Hmean 0.0pp；级联 refined：Recall 0.636pp / Precision -0.002pp / Hmean 0.32pp；success_rate=2575/12919=19.932%，top1 fallback=match_iou。"
+}

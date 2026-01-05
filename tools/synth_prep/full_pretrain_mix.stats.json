@@ -1,0 +1,17 @@
+{
+  "base_path": "/root/lanyun-tmp/mmocr/data/synth_assets/list_corpus/base.plus_fudan.filtered.fontok.txt",
+  "hard_path": "/root/lanyun-tmp/mmocr/data/synth_assets/list_corpus/hard_curve.cleaned.filtered.fontok.txt",
+  "out_path": "/root/lanyun-tmp/mmocr/data/synth_assets/list_corpus/full_pretrain_mix_fontok/mixed_pretrain.txt",
+  "total": 240000,
+  "hard_ratio": 0.1,
+  "seed": 0,
+  "min_len": 2,
+  "max_len": 30,
+  "base_in": 232166,
+  "base_usable": 227489,
+  "hard_in": 352,
+  "hard_usable": 352,
+  "sampled_base": 216000,
+  "sampled_hard": 24000,
+  "out_lines": 240000
+}

@@ -12,6 +12,22 @@ Wrapper：`/root/lanyun-tmp/mmocr/tools/recog_synth/run_synth_chinese_ocr.py`
 
 ---
 
+## 2026-01-06 更新（你已扩充资源后的推荐口径）
+
+- 背景：`data/synth_assets/bg`=1612，`data/synth_assets/bg_proc`=1612（最长边≤1280，不上采样、保持比例不裁剪）
+- 字体：`data/synth_assets/fonts/chn`=27  
+  - 默认推荐（去书法）：`data/synth_assets/fonts_list/chn_no_calligraphy.txt`（20 条）
+  - 原列表（含少量书法）：`data/synth_assets/fonts_list/chn.txt`（21 条）
+- 预训练混合语料（目录内仅 1 个 txt，避免 list 模式误加载）：  
+  `data/synth_assets/list_corpus/full_pretrain_mix_fontok/mixed_pretrain.txt`（24 万行，hard_ratio=0.10，max_len=30）
+- 最优预训练配置（更偏可读性 + 真实背景 + 适度弯曲/退化）：  
+  `3rdparty/synth_chinese_ocr/configs/my_cn_scene_pretrain.yaml`
+- 性能/稳定性修复：
+  - `3rdparty/synth_chinese_ocr/textrenderer/remaper.py`：弯曲 remap 向量化加速（CPU 大幅提速）
+  - `3rdparty/synth_chinese_ocr/main.py`：写图前强制 `uint8`，避免 100 万级别警告刷屏
+
+如果你现在的目标是“直接开跑 100 万+”，看文末 **9) 最终推荐：单条命令生成 120 万（可断点续跑）**。
+
 ## 0) 自检与环境
 
 - conda 环境：`openmmlab`
@@ -367,3 +383,21 @@ debug500/00000442.jpg	窝头
 cat data/synth_rec_ch/cn_scene_main.txt data/synth_rec_ch/cn_scene_curve_boost.txt > data/synth_rec_ch/cn_scene_all.txt
 ```
 
+---
+
+## 9) 最终推荐：单条命令生成 120 万（可断点续跑）
+
+说明：
+- 使用 `--target-num-images`：中断后重复执行同一条命令，会自动补齐到目标总数（避免重复生成）。
+- `--num-processes` 建议按你可用的 CPU 核数设置（你说是 14 核，这里用 14）。
+- 输出结构固定：图片在 `data/synth_rec_ch/<tag>/`，标签在 `data/synth_rec_ch/<tag>.txt`。
+
+```bash
+/bin/bash -lc 'source /root/miniconda/etc/profile.d/conda.sh && conda activate openmmlab && cd /root/lanyun-tmp/mmocr && /root/miniconda/envs/openmmlab/bin/python tools/recog_synth/run_synth_chinese_ocr.py --target-num-images 1200000 --out-root data/synth_rec_ch --tag pretrain_cn_scene_120w_c035 --curve-ratio 0.35 --chars-file data/charset/charset_rec_cn_en.txt --fonts-list data/synth_assets/fonts_list/chn_no_calligraphy.txt --corpus-dir data/synth_assets/list_corpus/full_pretrain_mix_fontok --corpus-mode list --bg-dir data/synth_assets/bg_proc --base-config 3rdparty/synth_chinese_ocr/configs/my_cn_scene_pretrain.yaml --img-height 32 --img-width 256 --clip-max-chars --strict --num-processes 14'
+```
+
+（可选）转成 Fudan 风格 LMDB（`data.mdb/data.lock`）：
+
+```bash
+/bin/bash -lc 'source /root/miniconda/etc/profile.d/conda.sh && conda activate openmmlab && cd /root/lanyun-tmp/mmocr && /root/miniconda/envs/openmmlab/bin/python tools/synth_prep/make_lmdb.py --label-txt data/synth_rec_ch/pretrain_cn_scene_120w_c035.txt --img-root data/synth_rec_ch --lmdb-dir data/synth_rec_ch/pretrain_cn_scene_120w_c035_lmdb --map-size-gb 200 --commit-interval 2000 --overwrite'
+```
