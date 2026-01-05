@@ -82,6 +82,30 @@ def parse_args():
         help='Stage-2 映射回原图后，与 coarse polygon 的最小 IoU；低于则 fallback。'
     )
     parser.add_argument(
+        '--match-filter',
+        choices=['none', 'center', 'bbox_iou'],
+        default='center',
+        help='mapped_polys 的弱匹配过滤方式：'
+        'none=不过滤；center=仅保留质心落在 coarse minAreaRect 内；'
+        'bbox_iou=仅保留与 coarse bbox IoU>=min_bbox_iou。')
+    parser.add_argument(
+        '--min-bbox-iou',
+        type=float,
+        default=0.2,
+        help='match-filter=bbox_iou 或 weak match 时的 bbox IoU 下限。')
+    parser.set_defaults(accept_weak_match=True)
+    parser.add_argument(
+        '--accept-weak-match',
+        dest='accept_weak_match',
+        action='store_true',
+        help='当 best_iou < min_match_iou 时，若满足 weak match 仍允许接受 refined（默认开启）。'
+    )
+    parser.add_argument(
+        '--no-accept-weak-match',
+        dest='accept_weak_match',
+        action='store_false',
+        help='关闭 --accept-weak-match。')
+    parser.add_argument(
         '--min-refined-area',
         type=float,
         default=50.0,
@@ -313,6 +337,39 @@ def _bbox_overlap(a: Tuple[float, float, float, float],
     bx1, by1, bx2, by2 = b
     return (min(ax2, bx2) - max(ax1, bx1) > 0) and (min(ay2, by2) -
                                                     max(ay1, by1) > 0)
+
+
+def _bbox_iou(a: Tuple[float, float, float, float],
+              b: Tuple[float, float, float, float]) -> float:
+    ax1, ay1, ax2, ay2 = a
+    bx1, by1, bx2, by2 = b
+    iw = max(0.0, min(ax2, bx2) - max(ax1, bx1))
+    ih = max(0.0, min(ay2, by2) - max(ay1, by1))
+    inter = iw * ih
+    if inter <= 0:
+        return 0.0
+    area_a = max(0.0, ax2 - ax1) * max(0.0, ay2 - ay1)
+    area_b = max(0.0, bx2 - bx1) * max(0.0, by2 - by1)
+    union = area_a + area_b - inter
+    if union <= 0:
+        return 0.0
+    return float(inter / union)
+
+
+def _poly_centroid(poly: np.ndarray) -> Tuple[float, float]:
+    pts = _poly_points(poly)
+    if pts.shape[0] >= 3:
+        try:
+            m = cv2.moments(pts.astype(np.float32))
+            if abs(float(m.get('m00', 0.0))) > 1e-6:
+                cx = float(m['m10'] / m['m00'])
+                cy = float(m['m01'] / m['m00'])
+                return cx, cy
+        except Exception:
+            pass
+    cx = float(np.mean(pts[:, 0])) if pts.size else 0.0
+    cy = float(np.mean(pts[:, 1])) if pts.size else 0.0
+    return cx, cy
 
 
 def _greedy_poly_nms(polys: List[np.ndarray], scores: List[float],
@@ -654,10 +711,57 @@ def main():
                 fallback_reasons['bounds'] += 1
                 continue
 
+            filtered_js = list(range(len(mapped_polys)))
+            coarse_bbox = _bbox_from_poly(coarse_poly)
+            coarse_box = None
+            try:
+                rect = cv2.minAreaRect(_poly_points(coarse_poly))
+                coarse_box = _order_points_clockwise(cv2.boxPoints(rect))
+            except Exception:
+                coarse_box = None
+
+            if args.match_filter != 'none':
+                kept_js: List[int] = []
+                for j in filtered_js:
+                    mp = mapped_polys[j]
+
+                    center_in_rect = False
+                    if coarse_box is not None:
+                        try:
+                            cx, cy = _poly_centroid(mp)
+                            center_in_rect = cv2.pointPolygonTest(
+                                coarse_box, (float(cx), float(cy)),
+                                False) >= 0
+                        except Exception:
+                            center_in_rect = False
+
+                    biou = 0.0
+                    try:
+                        biou = _bbox_iou(_bbox_from_poly(mp), coarse_bbox)
+                    except Exception:
+                        biou = 0.0
+
+                    if args.match_filter == 'center':
+                        ok = center_in_rect
+                    elif args.match_filter == 'bbox_iou':
+                        ok = biou >= float(args.min_bbox_iou)
+                    else:
+                        ok = True
+                    if ok:
+                        kept_js.append(j)
+
+                filtered_js = kept_js
+
+            if not filtered_js:
+                refine_fallback += 1
+                fallback_reasons['match_filter_empty'] += 1
+                continue
+
             # choose the best polygon for this coarse instance: max IoU
             best_j = -1
             best_iou = -1.0
-            for j, mp in enumerate(mapped_polys):
+            for j in filtered_js:
+                mp = mapped_polys[j]
                 iou = _safe_poly_iou(coarse_poly, mp)
                 if iou > best_iou:
                     best_iou = iou
@@ -681,10 +785,51 @@ def main():
                     not _bbox_overlap(_bbox_from_poly(mapped_polys[best_j]),
                                       img_bbox))
 
-            if best_j < 0 or best_iou < float(args.min_match_iou):
+            if best_j < 0:
                 refine_fallback += 1
                 fallback_reasons['bounds' if bounds_flag else 'match_iou'] += 1
                 continue
+            if best_iou < float(args.min_match_iou):
+                if (not bounds_flag) and bool(args.accept_weak_match):
+                    rect_w = float(stats[i]['rect_w'])
+                    rect_h = float(stats[i]['rect_h'])
+                    rect_area = max(rect_w * rect_h, 1.0)
+                    mp = mapped_polys[best_j]
+
+                    center_in_rect = False
+                    if coarse_box is not None:
+                        try:
+                            cx, cy = _poly_centroid(mp)
+                            center_in_rect = cv2.pointPolygonTest(
+                                coarse_box, (float(cx), float(cy)),
+                                False) >= 0
+                        except Exception:
+                            center_in_rect = False
+
+                    biou = 0.0
+                    try:
+                        biou = _bbox_iou(_bbox_from_poly(mp), coarse_bbox)
+                    except Exception:
+                        biou = 0.0
+
+                    mp_clip = _clip_polygon(
+                        mp, w=img.shape[1], h=img.shape[0])
+                    area = _poly_area(mp_clip)
+                    area_ok = (area >= float(args.min_refined_area)) and (
+                        area <= rect_area *
+                        float(args.max_refined_area_ratio))
+
+                    weak_ok = area_ok and (center_in_rect or
+                                           (biou >= float(args.min_bbox_iou)))
+                    if not weak_ok:
+                        refine_fallback += 1
+                        fallback_reasons['match_iou'] += 1
+                        continue
+                else:
+                    refine_fallback += 1
+                    fallback_reasons['bounds'
+                                     if bounds_flag else 'match_iou'] += 1
+                    continue
 
             refined_poly = mapped_polys[best_j]
             refined_poly = _clip_polygon(refined_poly, w=img.shape[1],
@@ -793,6 +938,11 @@ def main():
         ),
         fallback=dict(
             min_match_iou=float(args.min_match_iou),
+            match_filter=dict(
+                mode=str(args.match_filter),
+                min_bbox_iou=float(args.min_bbox_iou),
+                accept_weak_match=bool(args.accept_weak_match),
+            ),
             min_refined_area=float(args.min_refined_area),
             max_refined_area_ratio=float(args.max_refined_area_ratio),
             reasons=dict(sorted(fallback_reasons.items())),

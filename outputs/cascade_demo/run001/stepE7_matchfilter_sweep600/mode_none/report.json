@@ -1,0 +1,79 @@
+{
+  "metrics": {
+    "stage1": {
+      "icdar/precision": 0.7884201463624624,
+      "icdar/recall": 0.7209210785278488,
+      "icdar/hmean": 0.753161303587951
+    },
+    "refined": {
+      "icdar/precision": 0.7931404072883173,
+      "icdar/recall": 0.7282031096240897,
+      "icdar/hmean": 0.7592858608659963
+    },
+    "delta_hmean": 0.006124557278045284
+  },
+  "gating": {
+    "total_images": 600,
+    "total_stage1_instances": 7444,
+    "total_selected": 1562,
+    "trigger_rate": 0.20983342289091886,
+    "avg_patches_per_image": 2.6033333333333335,
+    "success_rate": 0.3393085787451985
+  },
+  "timing_ms": {
+    "avg_per_image": 162.6774477415408,
+    "stage2_avg_per_patch": 54.21409794844777,
+    "stage2_patches": 1561
+  },
+  "fallback_top5": [
+    {
+      "reason": "area_big",
+      "count": 448
+    },
+    {
+      "reason": "match_iou",
+      "count": 348
+    },
+    {
+      "reason": "empty",
+      "count": 220
+    },
+    {
+      "reason": "bounds",
+      "count": 16
+    }
+  ],
+  "patch": {
+    "expand_ratio": 0.3,
+    "max_patch_long_edge": 1024,
+    "min_crop_short_edge": 64.0,
+    "pad_divisor": 32
+  },
+  "stage2_overrides": {
+    "score_thr": 0.05,
+    "nms_thr": -1.0
+  },
+  "fallback_cfg": {
+    "min_match_iou": 0.1,
+    "match_filter": {
+      "mode": "none",
+      "min_bbox_iou": 0.2,
+      "accept_weak_match": true
+    },
+    "min_refined_area": 50.0,
+    "max_refined_area_ratio": 1.5,
+    "reasons": {
+      "area_big": 448,
+      "bounds": 16,
+      "empty": 220,
+      "match_iou": 348,
+      "success": 530
+    }
+  },
+  "paths": {
+    "refined_pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sweep600/mode_none/refined_600.pkl",
+    "refine_summary": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sweep600/mode_none/refine_summary.json",
+    "metrics_stage1": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sweep600/mode_none/metrics_stage1.json",
+    "metrics_refined": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sweep600/mode_none/metrics_refined.json"
+  }
+}

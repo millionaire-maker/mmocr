@@ -1,0 +1,65 @@
+{
+  "sanity_run_dir": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sanity50_v2",
+  "paths": {
+    "refined_pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sanity50_v2/refined_sanity.pkl",
+    "refine_summary": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sanity50_v2/refine_summary.json",
+    "vis_patches_dir": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sanity50_v2/vis/patches",
+    "run_log": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE7_matchfilter_sanity50_v2/run.log"
+  },
+  "gating": {
+    "total_images": 50,
+    "total_stage1_instances": 661,
+    "total_selected": 140,
+    "trigger_rate": 0.2118003025718608,
+    "success_rate": 0.2571428571428571
+  },
+  "fallback_top5": [
+    {
+      "reason": "match_filter_empty",
+      "count": 48
+    },
+    {
+      "reason": "area_big",
+      "count": 33
+    },
+    {
+      "reason": "empty",
+      "count": 18
+    },
+    {
+      "reason": "match_iou",
+      "count": 3
+    },
+    {
+      "reason": "bounds",
+      "count": 2
+    }
+  ],
+  "debug_vis_samples": [
+    {
+      "patch_pred": "vis/patches/0012_sel005_patch_pred.jpg",
+      "comment": "绿(poly)基本贴合红(coarse)区域，回映射无明显偏移"
+    },
+    {
+      "patch_pred": "vis/patches/0011_sel002_patch_pred.jpg",
+      "comment": "长文本样例：绿线紧贴红框内部，方向一致"
+    },
+    {
+      "patch_pred": "vis/patches/0014_sel002_patch_pred.jpg",
+      "comment": "小目标：绿线落在红框附近"
+    },
+    {
+      "patch_pred": "vis/patches/0012_sel014_patch_pred.jpg",
+      "comment": "小目标：绿线落在红框附近"
+    },
+    {
+      "patch_pred": "vis/patches/0018_sel004_patch_pred.jpg",
+      "comment": "多实例/背景复杂：绿线仍在红框附近"
+    }
+  ],
+  "notes": [
+    "本次 sanity 使用 match-filter=center + accept_weak_match=True。",
+    "match_iou 已显著下降（当前 top5 中仅 3 次）；主要失败来自 match_filter_empty/area_big/empty。",
+    "match_filter_empty 偏高可能说明 center 过滤偏严，后续在 600 张 sweep 中对比 none/center/bbox_iou。"
+  ]
+}
