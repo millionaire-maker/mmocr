@@ -1,0 +1,74 @@
+{
+  "stage2_cfg": "work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects/fcenet_r50dcnv2_fpn_1500e_art_rctw_rects_finetune.py",
+  "stage2_ckpt": "work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects/best_icdar_hmean_epoch_96.pth",
+  "counts": {
+    "total": 145,
+    "script_empty": 100,
+    "inferencer_empty": 121,
+    "both_empty": 99,
+    "both_nonempty": 23,
+    "script_empty_infer_nonempty": 1,
+    "script_nonempty_infer_empty": 22
+  },
+  "examples": {
+    "script_empty_infer_nonempty": [
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepE2_full_mincrop64/vis/patches/0004_sel006_patch.jpg",
+        "script_polys": 0,
+        "inferencer_polys": 1
+      }
+    ],
+    "script_nonempty_infer_empty": [
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepB_dryrun/vis/patches/0002_sel001_patch.jpg",
+        "script_polys": 3,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepB_dryrun/vis/patches/0006_sel023_patch.jpg",
+        "script_polys": 1,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepB_dryrun/vis/patches/0015_sel000_patch.jpg",
+        "script_polys": 1,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepB_dryrun/vis/patches/0015_sel008_patch.jpg",
+        "script_polys": 1,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepB_dryrun_v2/vis/patches/0002_sel001_patch.jpg",
+        "script_polys": 3,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepC_stage2_smoke/vis/patches/0002_sel001_patch.jpg",
+        "script_polys": 3,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepC_stage2_smoke/vis/patches/0006_sel023_patch.jpg",
+        "script_polys": 1,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepC_stage2_smoke/vis/patches/0015_sel000_patch.jpg",
+        "script_polys": 1,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepC_stage2_smoke/vis/patches/0015_sel008_patch.jpg",
+        "script_polys": 1,
+        "inferencer_polys": 0
+      },
+      {
+        "patch_path": "outputs/cascade_demo/run001/stepD_full/vis/patches/0002_sel001_patch.jpg",
+        "script_polys": 3,
+        "inferencer_polys": 0
+      }
+    ]
+  }
+}
