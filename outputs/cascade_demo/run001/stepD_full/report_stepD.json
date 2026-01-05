@@ -1,0 +1,61 @@
+{
+  "metrics": {
+    "stage1": {
+      "icdar/precision": 0.7430224816920162,
+      "icdar/recall": 0.7320752812957263,
+      "icdar/hmean": 0.7375082600518476
+    },
+    "refined": {
+      "icdar/precision": 0.7448544885284607,
+      "icdar/recall": 0.7322266511932993,
+      "icdar/hmean": 0.7384865910131799
+    },
+    "delta_hmean": 0.0009783309613323743
+  },
+  "gating": {
+    "total_images": 3363,
+    "total_stage1_instances": 58879,
+    "total_selected": 12913,
+    "trigger_rate_selected_over_stage1": 0.21931418672192124,
+    "refine_success": 860,
+    "refine_fallback": 12053,
+    "success_rate_over_selected": 0.06659955084023853,
+    "fallback_rate_over_selected": 0.9334004491597615,
+    "refined_per_image_hist": {
+      "0": 2639,
+      "1": 613,
+      "2": 91,
+      "3": 15,
+      "4": 5
+    },
+    "config": {
+      "mode": "ratio",
+      "refine_ratio": 0.3,
+      "score_low": 0.3,
+      "score_high": 0.7,
+      "aspect_ratio_thr": 5.0,
+      "topk_per_image": 10
+    }
+  },
+  "timing_ms": {
+    "total": 502856.66079446673,
+    "avg_per_image": 149.52621492550304,
+    "stage2_total": 375185.750246048,
+    "stage2_avg_per_patch": 29.054886567493842,
+    "stage2_patches": 12913
+  },
+  "patch": {
+    "expand_ratio": 0.2,
+    "max_patch_long_edge": 1024,
+    "pad_divisor": 32
+  },
+  "nms": {
+    "iou_thr": 0.2
+  },
+  "latency": {
+    "stage1_test_elapsed_s": 614.0,
+    "stage1_avg_ms_per_image_from_testlog": 182.57508177222718,
+    "refine_avg_ms_per_image": 149.52621492550304,
+    "cascade_estimated_avg_ms_per_image_stage1_plus_refine": 332.1012966977302
+  }
+}
