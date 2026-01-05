@@ -372,15 +372,18 @@ def _select_to_refine(
     return selected, stats
 
 
-def _draw_polys(img_bgr: np.ndarray, polys: List[np.ndarray],
-                color: Tuple[int, int, int]) -> np.ndarray:
+def _draw_polys(img_bgr: np.ndarray,
+                polys: List[np.ndarray],
+                color: Tuple[int, int, int],
+                thickness: int = 2) -> np.ndarray:
     out = img_bgr.copy()
     for poly in polys:
         arr = _as_poly_array(poly)
         if arr is None:
             continue
         pts = arr.reshape(-1, 2).astype(np.int32)
-        cv2.polylines(out, [pts], isClosed=True, color=color, thickness=2)
+        cv2.polylines(
+            out, [pts], isClosed=True, color=color, thickness=int(thickness))
     return out
 
 
@@ -518,8 +521,19 @@ def main():
 
             if args.save_debug_vis and img_idx < save_vis_max:
                 patch_base = patch.copy()
+                # Draw coarse poly (red) + stage2 pred (green) to make overlap
+                # visible (green uses thinner stroke).
+                coarse_patch_polys = _transform_polygons([coarse_poly], mat_o2p)
                 patch_pred_vis = _draw_polys(
-                    patch_base, patch_polys, color=(0, 255, 0))
+                    patch_base,
+                    coarse_patch_polys,
+                    color=(0, 0, 255),
+                    thickness=2)
+                patch_pred_vis = _draw_polys(
+                    patch_pred_vis,
+                    patch_polys,
+                    color=(0, 255, 0),
+                    thickness=1)
                 mmcv.imwrite(
                     patch, str(patch_vis_dir /
                                f'{img_idx:04d}_sel{i:03d}_patch.jpg'))
@@ -601,10 +615,15 @@ def main():
 
         if args.save_debug_vis and img_idx < save_vis_max:
             overlay = img.copy()
-            overlay = _draw_polys(overlay, polys, color=(0, 0, 255))
+            overlay = _draw_polys(overlay, polys, color=(0, 0, 255),
+                                  thickness=2)
             selected_polys = [polys[i] for i in selected] if selected else []
-            overlay = _draw_polys(overlay, selected_polys, color=(0, 255, 255))
-            overlay = _draw_polys(overlay, keep_polys, color=(0, 255, 0))
+            overlay = _draw_polys(
+                overlay, selected_polys, color=(0, 255, 255), thickness=2)
+            # Draw final polys with thinner stroke so red/yellow are still
+            # visible when polygons overlap.
+            overlay = _draw_polys(overlay, keep_polys, color=(0, 255, 0),
+                                  thickness=1)
             mmcv.imwrite(overlay, str(vis_dir / f'{img_idx:04d}.jpg'))
 
         total_time_s += (time.perf_counter() - t0)
