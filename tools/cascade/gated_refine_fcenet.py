@@ -167,6 +167,21 @@ def _poly_area(poly: np.ndarray) -> float:
         return 0.0
 
 
+def _poly_oob_vertex_ratio(poly: np.ndarray, w: int, h: int,
+                           eps: float = 2.0) -> float:
+    """Return ratio of vertices outside image bounds (with tolerance eps)."""
+    try:
+        pts = _poly_points(poly)
+    except Exception:
+        return 1.0
+    if pts.size == 0 or w <= 0 or h <= 0:
+        return 1.0
+    x = pts[:, 0]
+    y = pts[:, 1]
+    oob = (x < -eps) | (x > (w - 1 + eps)) | (y < -eps) | (y > (h - 1 + eps))
+    return float(np.mean(oob))
+
+
 def _min_area_rect_stats(poly: np.ndarray) -> Tuple[float, float, float]:
     """Return (w, h, aspect_ratio=max(w,h)/min(w,h))."""
     pts = _poly_points(poly)
@@ -223,7 +238,12 @@ def _crop_rotated_patch(
     raw_w = max(int(round(np.linalg.norm(box[0] - box[1]))), 2)
     raw_h = max(int(round(np.linalg.norm(box[0] - box[3]))), 2)
 
-    scale = float(max_long_edge) / float(max(raw_w, raw_h))
+    # Clamp: only downsample, never upsample.
+    if max_long_edge is None or int(max_long_edge) <= 0:
+        scale = 1.0
+    else:
+        scale = float(max_long_edge) / float(max(raw_w, raw_h))
+        scale = min(scale, 1.0)
     scaled_w = max(int(round(raw_w * scale)), 2)
     scaled_h = max(int(round(raw_h * scale)), 2)
 
@@ -569,7 +589,7 @@ def main():
             coarse_score = scores[i]
 
             try:
-                patch, mat_o2p, mat_p2o, _ = _crop_rotated_patch(
+                patch, mat_o2p, mat_p2o, valid_hw = _crop_rotated_patch(
                     img,
                     coarse_poly,
                     expand_ratio=args.expand_ratio,
@@ -579,7 +599,7 @@ def main():
                 )
             except Exception:
                 refine_fallback += 1
-                fallback_reasons['crop_fail'] += 1
+                fallback_reasons['bounds'] += 1
                 continue
 
             if args.dry_run_refine:
@@ -587,8 +607,14 @@ def main():
                 patch_scores = [coarse_score]
             else:
                 t_stage2 = time.perf_counter()
-                patch_polys, patch_scores = _infer_stage2_patch(
-                    stage2_model, patch, args.device)  # type: ignore[arg-type]
+                try:
+                    patch_polys, patch_scores = _infer_stage2_patch(
+                        stage2_model, patch,
+                        args.device)  # type: ignore[arg-type]
+                except Exception:
+                    refine_fallback += 1
+                    fallback_reasons['empty'] += 1
+                    continue
                 stage2_time_s += (time.perf_counter() - t_stage2)
                 stage2_patches += 1
 
@@ -619,13 +645,13 @@ def main():
 
             if not patch_polys:
                 refine_fallback += 1
-                fallback_reasons['stage2_empty'] += 1
+                fallback_reasons['empty'] += 1
                 continue
 
             mapped_polys = _transform_polygons(patch_polys, mat_p2o)
             if not mapped_polys:
                 refine_fallback += 1
-                fallback_reasons['map_empty'] += 1
+                fallback_reasons['bounds'] += 1
                 continue
 
             # choose the best polygon for this coarse instance: max IoU
@@ -637,9 +663,27 @@ def main():
                     best_iou = iou
                     best_j = j
 
+            # If the best polygon is largely out-of-bounds (patch valid region
+            # or original image), classify fallback as `bounds`.
+            bounds_flag = False
+            if best_j >= 0:
+                try:
+                    valid_h, valid_w = int(valid_hw[0]), int(valid_hw[1])
+                except Exception:
+                    valid_h, valid_w = patch.shape[0], patch.shape[1]
+                patch_oob = _poly_oob_vertex_ratio(
+                    patch_polys[best_j], w=valid_w, h=valid_h)
+                orig_oob = _poly_oob_vertex_ratio(
+                    mapped_polys[best_j], w=img.shape[1], h=img.shape[0])
+                img_bbox = (0.0, 0.0, float(img.shape[1] - 1),
+                            float(img.shape[0] - 1))
+                bounds_flag = (patch_oob > 0.25) or (orig_oob > 0.25) or (
+                    not _bbox_overlap(_bbox_from_poly(mapped_polys[best_j]),
+                                      img_bbox))
+
             if best_j < 0 or best_iou < float(args.min_match_iou):
                 refine_fallback += 1
-                fallback_reasons['iou_low'] += 1
+                fallback_reasons['bounds' if bounds_flag else 'match_iou'] += 1
                 continue
 
             refined_poly = mapped_polys[best_j]
@@ -653,11 +697,12 @@ def main():
             rect_area = max(rect_w * rect_h, 1.0)
             if area < float(args.min_refined_area):
                 refine_fallback += 1
-                fallback_reasons['refined_area_small'] += 1
+                fallback_reasons['bounds'
+                                 if bounds_flag else 'area_small'] += 1
                 continue
             if area > rect_area * float(args.max_refined_area_ratio):
                 refine_fallback += 1
-                fallback_reasons['refined_area_big'] += 1
+                fallback_reasons['bounds' if bounds_flag else 'area_big'] += 1
                 continue
 
             # score: use stage2 score if available, otherwise inherit stage1
