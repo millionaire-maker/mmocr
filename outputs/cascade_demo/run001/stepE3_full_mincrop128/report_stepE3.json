@@ -1,0 +1,81 @@
+{
+  "metrics": {
+    "stage1": {
+      "icdar/precision": 0.7430224816920162,
+      "icdar/recall": 0.7320752812957263,
+      "icdar/hmean": 0.7375082600518476
+    },
+    "refined": {
+      "icdar/precision": 0.7440285204991087,
+      "icdar/recall": 0.7371209445481609,
+      "icdar/hmean": 0.7405586252344503
+    },
+    "delta_hmean": 0.00305036518260271
+  },
+  "gating": {
+    "total_images": 3363,
+    "total_stage1_instances": 58879,
+    "total_selected": 12913,
+    "trigger_rate_selected_over_stage1": 0.21931418672192124,
+    "refine_success": 1924,
+    "refine_fallback": 10989,
+    "success_rate_over_selected": 0.1489971346704871,
+    "fallback_rate_over_selected": 0.8510028653295129,
+    "refined_per_image_hist": {
+      "0": 1996,
+      "1": 991,
+      "2": 261,
+      "3": 72,
+      "4": 27,
+      "5": 13,
+      "6": 1,
+      "8": 2
+    },
+    "config": {
+      "mode": "ratio",
+      "refine_ratio": 0.3,
+      "score_low": 0.3,
+      "score_high": 0.7,
+      "aspect_ratio_thr": 5.0,
+      "topk_per_image": 10
+    }
+  },
+  "timing_ms": {
+    "total": 889997.7283952758,
+    "avg_per_image": 264.6439870339803,
+    "stage2_total": 763882.2446875274,
+    "stage2_avg_per_patch": 59.156063245375,
+    "stage2_patches": 12913
+  },
+  "patch": {
+    "expand_ratio": 0.2,
+    "max_patch_long_edge": 1024,
+    "min_crop_short_edge": 128.0,
+    "pad_divisor": 32
+  },
+  "stage2_overrides": {
+    "score_thr": -1.0,
+    "nms_thr": -1.0
+  },
+  "fallback": {
+    "min_match_iou": 0.1,
+    "min_refined_area": 50.0,
+    "max_refined_area_ratio": 1.5,
+    "reasons": {
+      "iou_low": 3914,
+      "refined_area_big": 876,
+      "refined_area_small": 4,
+      "stage2_empty": 6195,
+      "success": 1924
+    }
+  },
+  "nms": {
+    "iou_thr": 0.2
+  },
+  "latency": {
+    "stage1_test_elapsed_s": 614.0,
+    "stage1_avg_ms_per_image_from_testlog": 182.57508177222718,
+    "refine_avg_ms_per_image": 264.6439870339803,
+    "cascade_estimated_avg_ms_per_image_stage1_plus_refine": 447.2190688062075
+  }
+}
