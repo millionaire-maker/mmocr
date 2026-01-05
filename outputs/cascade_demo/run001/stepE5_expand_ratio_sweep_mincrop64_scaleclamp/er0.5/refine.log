@@ -12,3 +12,29 @@ Loads checkpoint by local backend from path: work_dirs/fcenet_r50dcnv2_fpn_finet
 01/05 21:11:01 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.0.conv2 is upgraded to version 2.
 01/05 21:11:01 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.1.conv2 is upgraded to version 2.
 01/05 21:11:01 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.2.conv2 is upgraded to version 2.
+{
+  "total_images": 3363,
+  "total_stage1_instances": 58879,
+  "total_candidates": 45270,
+  "total_selected": 12913,
+  "refine_success": 2087,
+  "refine_fallback": 10826,
+  "refined_per_image_hist": {
+    "0": 1914,
+    "1": 1039,
+    "2": 268,
+    "3": 88,
+    "4": 34,
+    "5": 12,
+    "6": 6,
+    "7": 1,
+    "9": 1
+  }
+}
+{
+  "total": 497471.7996735126,
+  "avg_per_image": 147.92500733675664,
+  "stage2_total": 406987.8257671371,
+  "stage2_avg_per_patch": 31.520122813439986,
+  "stage2_patches": 12912
+}

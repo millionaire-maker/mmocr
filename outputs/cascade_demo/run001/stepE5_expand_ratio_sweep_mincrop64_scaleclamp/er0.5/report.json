@@ -1,0 +1,64 @@
+{
+  "metrics": {
+    "stage1": {
+      "icdar/precision": 0.7430224816920162,
+      "icdar/recall": 0.7320752812957263,
+      "icdar/hmean": 0.7375082600518476
+    },
+    "refined": {
+      "icdar/precision": 0.7408982733302952,
+      "icdar/recall": 0.7382814470962208,
+      "icdar/hmean": 0.7395875454913061
+    },
+    "delta_hmean": 0.002079285439458567
+  },
+  "gating": {
+    "total_images": 3363,
+    "total_stage1_instances": 58879,
+    "total_selected": 12913,
+    "trigger_rate": 0.21931418672192124,
+    "success_rate": 0.1616200727948579
+  },
+  "timing_ms": {
+    "avg_per_image": 147.92500733675664,
+    "stage2_avg_per_patch": 31.520122813439986,
+    "stage2_patches": 12912
+  },
+  "fallback_top5": [
+    {
+      "reason": "empty",
+      "count": 5874
+    },
+    {
+      "reason": "match_iou",
+      "count": 3202
+    },
+    {
+      "reason": "area_big",
+      "count": 1684
+    },
+    {
+      "reason": "bounds",
+      "count": 65
+    },
+    {
+      "reason": "area_small",
+      "count": 1
+    }
+  ],
+  "patch": {
+    "expand_ratio": 0.5,
+    "max_patch_long_edge": 1024,
+    "min_crop_short_edge": 64.0,
+    "pad_divisor": 32
+  },
+  "note": {
+    "patch_scale": "clamp_to_downsample_only (scale<=1.0)"
+  },
+  "paths": {
+    "refined_pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE5_expand_ratio_sweep_mincrop64_scaleclamp/er0.5/refined_full.pkl",
+    "refine_summary": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE5_expand_ratio_sweep_mincrop64_scaleclamp/er0.5/refine_summary.json",
+    "metrics_refined": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE5_expand_ratio_sweep_mincrop64_scaleclamp/er0.5/metrics_refined.json",
+    "metrics_stage1": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE2_full_mincrop64/metrics_stage1.json"
+  }
+}
