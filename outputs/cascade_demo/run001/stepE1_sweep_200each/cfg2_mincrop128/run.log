@@ -12,3 +12,26 @@ Loads checkpoint by local backend from path: /root/lanyun-tmp/mmocr/work_dirs/fc
 01/05 18:40:52 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.0.conv2 is upgraded to version 2.
 01/05 18:40:52 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.1.conv2 is upgraded to version 2.
 01/05 18:40:52 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.2.conv2 is upgraded to version 2.
+{
+  "total_images": 600,
+  "total_stage1_instances": 8392,
+  "total_candidates": 5953,
+  "total_selected": 1871,
+  "refine_success": 398,
+  "refine_fallback": 1473,
+  "refined_per_image_hist": {
+    "0": 311,
+    "1": 213,
+    "2": 54,
+    "3": 14,
+    "4": 5,
+    "5": 3
+  }
+}
+{
+  "total": 157151.0681612417,
+  "avg_per_image": 261.9184469354028,
+  "stage2_total": 122163.6804100126,
+  "stage2_avg_per_patch": 65.29325516302116,
+  "stage2_patches": 1871
+}

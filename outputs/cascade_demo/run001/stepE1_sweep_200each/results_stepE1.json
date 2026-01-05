@@ -1,0 +1,105 @@
+{
+  "baseline_hmean": 0.747493650581473,
+  "baseline_metrics": {
+    "icdar/precision": 0.7775305895439377,
+    "icdar/recall": 0.7196911196911197,
+    "icdar/hmean": 0.747493650581473
+  },
+  "rows": [
+    {
+      "name": "cfg0_base",
+      "hmean": 0.746723722920567,
+      "delta_hmean": -0.0007699276609060002,
+      "ms_per_img_refine": 159.92599341397485,
+      "ms_per_patch_stage2": 31.301031923016115,
+      "stage2_patches": 1871,
+      "total_selected": 1871,
+      "refine_success": 203,
+      "success_rate": 0.10849812934259755,
+      "min_crop_short_edge": 0.0,
+      "stage2_score_thr": -1.0,
+      "fallback_reasons": {
+        "iou_low": 3,
+        "stage2_empty": 1665,
+        "success": 203
+      }
+    },
+    {
+      "name": "cfg1_scorethr0.2",
+      "hmean": 0.7463205780037463,
+      "delta_hmean": -0.001173072577726697,
+      "ms_per_img_refine": 163.82187406377247,
+      "ms_per_patch_stage2": 32.077071449571534,
+      "stage2_patches": 1871,
+      "total_selected": 1871,
+      "refine_success": 211,
+      "success_rate": 0.1127739176910743,
+      "min_crop_short_edge": 0.0,
+      "stage2_score_thr": 0.2,
+      "fallback_reasons": {
+        "iou_low": 2,
+        "stage2_empty": 1658,
+        "success": 211
+      }
+    },
+    {
+      "name": "cfg4_mincrop64",
+      "hmean": 0.7496331866079766,
+      "delta_hmean": 0.00213953602650363,
+      "ms_per_img_refine": 183.4586039185524,
+      "ms_per_patch_stage2": 40.095744604759524,
+      "stage2_patches": 1871,
+      "total_selected": 1871,
+      "refine_success": 328,
+      "success_rate": 0.17530732228754678,
+      "min_crop_short_edge": 64.0,
+      "stage2_score_thr": -1.0,
+      "fallback_reasons": {
+        "iou_low": 130,
+        "refined_area_big": 67,
+        "stage2_empty": 1346,
+        "success": 328
+      }
+    },
+    {
+      "name": "cfg2_mincrop128",
+      "hmean": 0.7528972958571999,
+      "delta_hmean": 0.005403645275726898,
+      "ms_per_img_refine": 261.9184469354028,
+      "ms_per_patch_stage2": 65.29325516302116,
+      "stage2_patches": 1871,
+      "total_selected": 1871,
+      "refine_success": 398,
+      "success_rate": 0.21272047033671834,
+      "min_crop_short_edge": 128.0,
+      "stage2_score_thr": -1.0,
+      "fallback_reasons": {
+        "iou_low": 512,
+        "refined_area_big": 159,
+        "refined_area_small": 1,
+        "stage2_empty": 801,
+        "success": 398
+      }
+    },
+    {
+      "name": "cfg3_both",
+      "hmean": 0.7524990003998401,
+      "delta_hmean": 0.005005349818367089,
+      "ms_per_img_refine": 287.91243670353043,
+      "ms_per_patch_stage2": 76.9221975519369,
+      "stage2_patches": 1871,
+      "total_selected": 1871,
+      "refine_success": 434,
+      "success_rate": 0.23196151790486372,
+      "min_crop_short_edge": 128.0,
+      "stage2_score_thr": 0.2,
+      "fallback_reasons": {
+        "iou_low": 520,
+        "refined_area_big": 182,
+        "refined_area_small": 1,
+        "stage2_empty": 734,
+        "success": 434
+      }
+    }
+  ]
+}
