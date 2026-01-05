@@ -1,0 +1,41 @@
+Loads checkpoint by local backend from path: /root/lanyun-tmp/mmocr/work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects/best_icdar_hmean_epoch_96.pth
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.0.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.1.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.2.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.3.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.0.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.1.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.2.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.3.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.4.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.5.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.0.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.1.conv2 is upgraded to version 2.
+01/05 23:29:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.2.conv2 is upgraded to version 2.
+{
+  "total_images": 3363,
+  "total_stage1_instances": 58879,
+  "total_candidates": 45270,
+  "total_selected": 12913,
+  "refine_success": 2579,
+  "refine_fallback": 10334,
+  "refined_per_image_hist": {
+    "0": 1662,
+    "1": 1164,
+    "2": 345,
+    "3": 113,
+    "4": 39,
+    "5": 21,
+    "6": 13,
+    "7": 3,
+    "8": 2,
+    "10": 1
+  }
+}
+{
+  "total": 655574.4183249772,
+  "avg_per_image": 194.9373827906563,
+  "stage2_total": 559097.3698301241,
+  "stage2_avg_per_patch": 43.30060175264282,
+  "stage2_patches": 12912
+}
