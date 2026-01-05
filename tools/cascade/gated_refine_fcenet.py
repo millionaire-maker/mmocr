@@ -42,6 +42,12 @@ def parse_args():
         help='不跑 FCENet，仅验证裁 patch + 映射 + NMS + fallback 流程')
     parser.add_argument('--expand-ratio', type=float, default=0.2)
     parser.add_argument('--max-patch-long-edge', type=int, default=1024)
+    parser.add_argument(
+        '--min-crop-short-edge',
+        type=float,
+        default=0.0,
+        help='对旋转矩形 ROI（expand 后）做最小 short edge 限制（原图像素）。'
+        '不足时等比放大 ROI（中心/角度不变），减少极端上采样并增加上下文。')
     parser.add_argument('--pad-divisor', type=int, default=32)
     parser.add_argument(
         '--gating-mode',
@@ -53,7 +59,45 @@ def parse_args():
     parser.add_argument('--aspect-ratio-thr', type=float, default=5.0)
     parser.add_argument('--topk-per-image', type=int, default=10)
     parser.add_argument('--nms-iou-thr', type=float, default=0.2)
+    parser.add_argument(
+        '--min-stage1-area',
+        type=float,
+        default=0.0,
+        help='在 gating 阶段过滤 Stage-1 polygon 面积过小的实例（像素^2）。'
+        '0 表示不启用。')
+    parser.add_argument(
+        '--stage2-score-thr',
+        type=float,
+        default=-1.0,
+        help='覆盖 FCENet postprocessor.score_thr；<0 表示使用 config 默认。')
+    parser.add_argument(
+        '--stage2-nms-thr',
+        type=float,
+        default=-1.0,
+        help='覆盖 FCENet postprocessor.nms_thr；<0 表示使用 config 默认。')
+    parser.add_argument(
+        '--min-match-iou',
+        type=float,
+        default=0.1,
+        help='Stage-2 映射回原图后，与 coarse polygon 的最小 IoU；低于则 fallback。'
+    )
+    parser.add_argument(
+        '--min-refined-area',
+        type=float,
+        default=50.0,
+        help='refined polygon 的最小面积（像素^2）；低于则 fallback。')
+    parser.add_argument(
+        '--max-refined-area-ratio',
+        type=float,
+        default=1.5,
+        help='refined polygon 面积上限：<= minAreaRect_area * ratio；超过则 fallback。'
+    )
     parser.add_argument('--save-debug-vis', action='store_true')
+    parser.add_argument(
+        '--save-empty-patches',
+        action='store_true',
+        help='配合 --save-debug-vis：即使 Stage-2 无输出，也保存 patch 可视化（便于排查）。'
+    )
     parser.add_argument('--max-images', type=int, default=0)
     return parser.parse_args()
 
@@ -140,6 +184,7 @@ def _crop_rotated_patch(
     poly: np.ndarray,
     expand_ratio: float,
     max_long_edge: int,
+    min_crop_short_edge: float,
     pad_divisor: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Tuple[int, int]]:
     """Crop a rotated patch by minAreaRect + perspective warp.
@@ -159,6 +204,17 @@ def _crop_rotated_patch(
     # expand by margin on both sides -> (1 + 2r)
     w *= (1.0 + 2.0 * expand_ratio)
     h *= (1.0 + 2.0 * expand_ratio)
+
+    # Avoid extremely small ROI that would be heavily upsampled, by enlarging
+    # the ROI in original-image space while keeping aspect ratio.
+    min_crop_short_edge = float(min_crop_short_edge)
+    if min_crop_short_edge > 0:
+        short_edge = float(min(w, h))
+        if short_edge > 1e-6 and short_edge < min_crop_short_edge:
+            scale_up = min_crop_short_edge / short_edge
+            w *= scale_up
+            h *= scale_up
+
     rect_expanded = ((float(cx), float(cy)), (float(w), float(h)), float(angle))
 
     box = cv2.boxPoints(rect_expanded)  # (4,2)
@@ -278,10 +334,19 @@ def _greedy_poly_nms(polys: List[np.ndarray], scores: List[float],
 
 
 def _build_stage2_model(stage2_config: str, stage2_ckpt: str,
-                        device: str) -> torch.nn.Module:
+                        device: str, stage2_score_thr: float,
+                        stage2_nms_thr: float) -> torch.nn.Module:
     cfg = Config.fromfile(stage2_config)
     model = MODELS.build(cfg.model)
     load_checkpoint(model, stage2_ckpt, map_location='cpu')
+    # Optional runtime overrides for postprocessor (helpful for patch inference)
+    try:
+        if stage2_score_thr >= 0:
+            model.det_head.postprocessor.score_thr = float(stage2_score_thr)
+        if stage2_nms_thr >= 0:
+            model.det_head.postprocessor.nms_thr = float(stage2_nms_thr)
+    except Exception:
+        pass
     model.to(device)
     model.eval()
     return model
@@ -338,6 +403,7 @@ def _select_to_refine(
     score_high: float,
     aspect_ratio_thr: float,
     topk_per_image: int,
+    min_stage1_area: float,
 ) -> Tuple[List[int], Dict[int, Dict]]:
     """Return indices of polys to refine (<= topk_per_image)."""
     stats: Dict[int, Dict] = {}
@@ -347,6 +413,8 @@ def _select_to_refine(
         area = _poly_area(p)
         stats[i] = dict(score=float(s), rect_w=w, rect_h=h, aspect_ratio=ar,
                         area=area)
+        if float(min_stage1_area) > 0 and area < float(min_stage1_area):
+            continue
         if (score_low <= float(s) <= score_high) or (ar > aspect_ratio_thr):
             candidates.append(i)
 
@@ -413,8 +481,13 @@ def main():
 
     stage2_model = None
     if not args.dry_run_refine:
-        stage2_model = _build_stage2_model(args.stage2_config,
-                                           args.stage2_ckpt, args.device)
+        stage2_model = _build_stage2_model(
+            args.stage2_config,
+            args.stage2_ckpt,
+            args.device,
+            stage2_score_thr=float(args.stage2_score_thr),
+            stage2_nms_thr=float(args.stage2_nms_thr),
+        )
 
     total_images = 0
     total_stage1 = 0
@@ -427,6 +500,7 @@ def main():
     stage2_time_s = 0.0
     stage2_patches = 0
     total_time_s = 0.0
+    fallback_reasons = Counter()
 
     refined_outputs = []
 
@@ -477,6 +551,7 @@ def main():
             score_high=args.score_high,
             aspect_ratio_thr=args.aspect_ratio_thr,
             topk_per_image=args.topk_per_image,
+            min_stage1_area=float(args.min_stage1_area),
         )
         candidates_num = sum(
             1 for i in range(len(polys))
@@ -499,10 +574,12 @@ def main():
                     coarse_poly,
                     expand_ratio=args.expand_ratio,
                     max_long_edge=args.max_patch_long_edge,
+                    min_crop_short_edge=args.min_crop_short_edge,
                     pad_divisor=args.pad_divisor,
                 )
             except Exception:
                 refine_fallback += 1
+                fallback_reasons['crop_fail'] += 1
                 continue
 
             if args.dry_run_refine:
@@ -514,10 +591,6 @@ def main():
                     stage2_model, patch, args.device)  # type: ignore[arg-type]
                 stage2_time_s += (time.perf_counter() - t_stage2)
                 stage2_patches += 1
-
-            if not patch_polys:
-                refine_fallback += 1
-                continue
 
             if args.save_debug_vis and img_idx < save_vis_max:
                 patch_base = patch.copy()
@@ -534,17 +607,25 @@ def main():
                     patch_polys,
                     color=(0, 255, 0),
                     thickness=1)
-                mmcv.imwrite(
-                    patch, str(patch_vis_dir /
-                               f'{img_idx:04d}_sel{i:03d}_patch.jpg'))
-                mmcv.imwrite(
-                    patch_pred_vis,
-                    str(patch_vis_dir /
-                        f'{img_idx:04d}_sel{i:03d}_patch_pred.jpg'))
+                if args.save_empty_patches or patch_polys:
+                    mmcv.imwrite(
+                        patch,
+                        str(patch_vis_dir /
+                            f'{img_idx:04d}_sel{i:03d}_patch.jpg'))
+                    mmcv.imwrite(
+                        patch_pred_vis,
+                        str(patch_vis_dir /
+                            f'{img_idx:04d}_sel{i:03d}_patch_pred.jpg'))
+
+            if not patch_polys:
+                refine_fallback += 1
+                fallback_reasons['stage2_empty'] += 1
+                continue
 
             mapped_polys = _transform_polygons(patch_polys, mat_p2o)
             if not mapped_polys:
                 refine_fallback += 1
+                fallback_reasons['map_empty'] += 1
                 continue
 
             # choose the best polygon for this coarse instance: max IoU
@@ -556,8 +637,9 @@ def main():
                     best_iou = iou
                     best_j = j
 
-            if best_j < 0 or best_iou < 0.1:
+            if best_j < 0 or best_iou < float(args.min_match_iou):
                 refine_fallback += 1
+                fallback_reasons['iou_low'] += 1
                 continue
 
             refined_poly = mapped_polys[best_j]
@@ -569,8 +651,13 @@ def main():
             rect_w = float(stats[i]['rect_w'])
             rect_h = float(stats[i]['rect_h'])
             rect_area = max(rect_w * rect_h, 1.0)
-            if area < 50.0 or area > rect_area * 1.5:
+            if area < float(args.min_refined_area):
                 refine_fallback += 1
+                fallback_reasons['refined_area_small'] += 1
+                continue
+            if area > rect_area * float(args.max_refined_area_ratio):
+                refine_fallback += 1
+                fallback_reasons['refined_area_big'] += 1
                 continue
 
             # score: use stage2 score if available, otherwise inherit stage1
@@ -580,6 +667,7 @@ def main():
 
             refined_map[i] = (refined_poly.astype(np.float32), refined_score)
             refine_success += 1
+            fallback_reasons['success'] += 1
 
         total_refine_success += refine_success
         total_refine_fallback += refine_fallback
@@ -651,7 +739,18 @@ def main():
         patch=dict(
             expand_ratio=float(args.expand_ratio),
             max_patch_long_edge=int(args.max_patch_long_edge),
+            min_crop_short_edge=float(args.min_crop_short_edge),
             pad_divisor=int(args.pad_divisor),
+        ),
+        stage2_overrides=dict(
+            score_thr=float(args.stage2_score_thr),
+            nms_thr=float(args.stage2_nms_thr),
+        ),
+        fallback=dict(
+            min_match_iou=float(args.min_match_iou),
+            min_refined_area=float(args.min_refined_area),
+            max_refined_area_ratio=float(args.max_refined_area_ratio),
+            reasons=dict(sorted(fallback_reasons.items())),
         ),
         nms=dict(iou_thr=float(args.nms_iou_thr)),
         stats=dict(

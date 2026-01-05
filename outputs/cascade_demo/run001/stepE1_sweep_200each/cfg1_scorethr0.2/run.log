@@ -1,0 +1,36 @@
+Loads checkpoint by local backend from path: /root/lanyun-tmp/mmocr/work_dirs/fcenet_r50dcnv2_fpn_finetune_art_rctw_rects/best_icdar_hmean_epoch_96.pth
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.0.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.1.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.2.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer2.3.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.0.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.1.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.2.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.3.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.4.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer3.5.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.0.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.1.conv2 is upgraded to version 2.
+01/05 18:38:18 - mmengine - INFO - ModulatedDeformConvPack backbone.layer4.2.conv2 is upgraded to version 2.
+{
+  "total_images": 600,
+  "total_stage1_instances": 8392,
+  "total_candidates": 5953,
+  "total_selected": 1871,
+  "refine_success": 211,
+  "refine_fallback": 1660,
+  "refined_per_image_hist": {
+    "0": 425,
+    "1": 149,
+    "2": 18,
+    "3": 6,
+    "4": 2
+  }
+}
+{
+  "total": 98293.12443826348,
+  "avg_per_image": 163.82187406377247,
+  "stage2_total": 60016.20068214834,
+  "stage2_avg_per_patch": 32.077071449571534,
+  "stage2_patches": 1871
+}
