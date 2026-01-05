@@ -49,6 +49,8 @@ class FontItem:
     sample_size: int
     missing: int
     missing_ratio: float
+    is_calligraphy: bool
+    kept_by_quality: bool
     kept: bool
     error: Optional[str] = None
 
@@ -141,6 +143,15 @@ def pick_local_fonts(candidates_limit: int = 200) -> List[Path]:
     return sorted(set(out))
 
 
+def iter_fonts_in_dir(root: Path) -> Iterable[Path]:
+    exts = {".ttf", ".otf", ".ttc"}
+    if not root.exists():
+        return
+    for path in sorted(root.rglob("*")):
+        if path.is_file() and path.suffix.lower() in exts:
+            yield path
+
+
 def link_or_copy(src: Path, dst: Path, mode: str) -> Path:
     dst.parent.mkdir(parents=True, exist_ok=True)
     if dst.exists():
@@ -152,6 +163,72 @@ def link_or_copy(src: Path, dst: Path, mode: str) -> Path:
         shutil.copy2(src, dst)
         return dst
     raise ValueError(f"unknown mode: {mode}")
+
+
+def _get_name_strings(font_path: Path) -> List[str]:
+    try:
+        if font_path.suffix.lower() == ".ttc":
+            ttc = TTCollection(str(font_path))
+            ttf = ttc.fonts[0]
+        else:
+            ttf = TTFont(
+                str(font_path),
+                0,
+                allowVID=0,
+                ignoreDecompileErrors=True,
+                fontNumber=-1,
+            )
+        names: List[str] = []
+        if "name" in ttf:
+            for rec in ttf["name"].names:
+                try:
+                    names.append(rec.toUnicode())
+                except Exception:  # noqa: BLE001
+                    try:
+                        names.append(rec.string.decode("utf-8", errors="ignore"))
+                    except Exception:  # noqa: BLE001
+                        continue
+        ttf.close()
+        return [n for n in names if n]
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _is_calligraphy(font_path: Path) -> bool:
+    # Heuristic classification: "strong calligraphy/handwriting" vs normal print/display.
+    # Exclude WenKai (it contains "楷" but is closer to printed style).
+    text = " ".join([font_path.name, font_path.stem] + _get_name_strings(font_path))
+    text_l = text.lower()
+
+    exclude = ("wenkai" in text_l) or ("文楷" in text) or ("霞鹜" in text)
+    if exclude:
+        return False
+
+    strong_kw = (
+        "行草",
+        "草书",
+        "行书",
+        "毛笔",
+        "书法",
+        "手写",
+        "连笔",
+        "隶",
+        "篆",
+        "魏",
+        "行楷",
+        "草",
+        "xing",
+        "cao",
+        "maocao",
+        "calligraphy",
+        "hand",
+        "brush",
+        "zhimang",
+        "liujian",
+        "longcang",
+        "mashan",
+    )
+    return any(k in text_l or k in text for k in strong_kw)
 
 
 def _load_codepoints(font_path: Path) -> Set[int]:
@@ -210,6 +287,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--link-mode", default="copy", choices=["copy", "symlink"], help="copy or symlink local fonts")
     parser.add_argument("--sample-size", type=int, default=1000, help="sample charset size for missing check")
     parser.add_argument("--missing-ratio-thr", type=float, default=0.10, help="drop font if missing_ratio > thr")
+    parser.add_argument(
+        "--calligraphy-max-ratio",
+        type=float,
+        default=0.10,
+        help="limit calligraphy fonts in final list by ratio (0~1).",
+    )
+    parser.add_argument(
+        "--calligraphy-max-count",
+        type=int,
+        default=10,
+        help="limit calligraphy fonts in final list by count.",
+    )
     parser.add_argument("--seed", type=int, default=0, help="random seed for sampling charset")
     return parser.parse_args()
 
@@ -238,6 +327,10 @@ def main() -> None:
     download_errors: List[str] = []
     font_candidates: List[Tuple[Path, str, str]] = []
 
+    # Always include existing fonts under dst_dir (user may manually add fonts).
+    for p in iter_fonts_in_dir(dst_dir):
+        font_candidates.append((p.resolve(), f"existing:{p}", "UNKNOWN"))
+
     if args.mode in ("auto", "download"):
         downloaded, errs = ensure_download_fonts(dst_dir)
         download_errors.extend(errs)
@@ -259,22 +352,28 @@ def main() -> None:
             except Exception as exc:  # noqa: BLE001
                 download_errors.append(f"local import failed: {src} ({exc})")
 
-    # de-dup candidates by realpath
+    # de-dup candidates by absolute path; prefer non-UNKNOWN license record if conflict.
     uniq: Dict[str, Tuple[Path, str, str]] = {}
     for p, src, lic in font_candidates:
-        uniq[str(p)] = (p, src, lic)
+        key = str(p)
+        if key not in uniq:
+            uniq[key] = (p, src, lic)
+            continue
+        _p0, _src0, lic0 = uniq[key]
+        if lic0 == "UNKNOWN" and lic != "UNKNOWN":
+            uniq[key] = (p, src, lic)
     font_candidates = list(uniq.values())
 
     items: List[FontItem] = []
-    kept_paths: List[str] = []
 
     for font_path, source, lic in sorted(font_candidates, key=lambda x: x[0].name.lower()):
+        is_calligraphy = _is_calligraphy(font_path)
         ok_pil, ok_cmap, missing, ratio, err = check_one_font(
             font_path=font_path,
             sample_chars=sample_chars,
             missing_ratio_thr=float(args.missing_ratio_thr),
         )
-        kept = ok_pil and ok_cmap and (ratio <= float(args.missing_ratio_thr))
+        kept_by_quality = ok_pil and ok_cmap and (ratio <= float(args.missing_ratio_thr))
         item = FontItem(
             path=str(font_path),
             source=source,
@@ -283,12 +382,38 @@ def main() -> None:
             sample_size=sample_size,
             missing=missing,
             missing_ratio=ratio,
-            kept=kept,
+            is_calligraphy=is_calligraphy,
+            kept_by_quality=kept_by_quality,
+            kept=False,
             error=err,
         )
         items.append(item)
-        if kept:
-            kept_paths.append(str(font_path))
+
+    # Apply calligraphy limiting policy on the final list.
+    non_calligraphy = [it for it in items if it.kept_by_quality and (not it.is_calligraphy)]
+    calligraphy = [it for it in items if it.kept_by_quality and it.is_calligraphy]
+    total_quality = len(non_calligraphy) + len(calligraphy)
+
+    max_by_ratio = int(round(total_quality * float(args.calligraphy_max_ratio)))
+    max_calligraphy = min(int(args.calligraphy_max_count), max_by_ratio)
+    if calligraphy and float(args.calligraphy_max_ratio) > 0 and max_calligraphy == 0:
+        max_calligraphy = 1
+    if max_calligraphy < 0:
+        max_calligraphy = 0
+
+    calligraphy_sorted = sorted(calligraphy, key=lambda x: x.missing_ratio)
+    calligraphy_keep = set(id(it) for it in calligraphy_sorted[:max_calligraphy])
+
+    kept_paths: List[str] = []
+    for it in items:
+        if not it.kept_by_quality:
+            it.kept = False
+            continue
+        if it.is_calligraphy and id(it) not in calligraphy_keep:
+            it.kept = False
+            continue
+        it.kept = True
+        kept_paths.append(it.path)
 
     list_out.parent.mkdir(parents=True, exist_ok=True)
     list_out.write_text("\n".join(kept_paths) + ("\n" if kept_paths else ""), encoding="utf-8")
@@ -297,11 +422,15 @@ def main() -> None:
         "charset": str(charset_path),
         "sample_size": sample_size,
         "missing_ratio_thr": float(args.missing_ratio_thr),
+        "calligraphy_max_ratio": float(args.calligraphy_max_ratio),
+        "calligraphy_max_count": int(args.calligraphy_max_count),
         "mode": used_mode,
         "download_errors": download_errors,
         "recommended_manual_fonts": list(RECOMMENDED_MANUAL_FONTS),
         "fonts_total": len(items),
         "fonts_kept": len(kept_paths),
+        "fonts_kept_non_calligraphy": len([it for it in items if it.kept and (not it.is_calligraphy)]),
+        "fonts_kept_calligraphy": len([it for it in items if it.kept and it.is_calligraphy]),
         "fonts": [asdict(it) for it in items],
         "fonts_list": str(list_out),
         "fonts_dir": str(dst_dir),

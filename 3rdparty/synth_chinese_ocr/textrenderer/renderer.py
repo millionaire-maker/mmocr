@@ -474,8 +474,6 @@ class Renderer(object):
         """
         Resize background, let bg_width>=width, bg_height >=height, and random crop from resized background
         """
-        assert width > height
-
         bg = random.choice(self.bgs)
 
         scale = max(width / bg.shape[1], height / bg.shape[0])
