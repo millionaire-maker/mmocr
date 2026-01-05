@@ -1,0 +1,58 @@
+{
+  "metrics": {
+    "stage1": {
+      "icdar/precision": 0.7430224816920162,
+      "icdar/recall": 0.7320752812957263,
+      "icdar/hmean": 0.7375082600518476
+    },
+    "refined": {
+      "icdar/precision": 0.7429050109153679,
+      "icdar/recall": 0.7383319037287451,
+      "icdar/hmean": 0.7406113979147687
+    },
+    "delta_hmean": 0.003103137862921157
+  },
+  "gating": {
+    "total_images": 3363,
+    "total_stage1_instances": 58879,
+    "total_selected": 12913,
+    "trigger_rate": 0.21931418672192124,
+    "success_rate": 0.19910168047703863
+  },
+  "timing_ms": {
+    "avg_per_image": 195.21277736614334,
+    "stage2_avg_per_patch": 43.61493747037705,
+    "stage2_patches": 12912
+  },
+  "fallback_top5": [
+    {
+      "reason": "match_iou",
+      "count": 4475
+    },
+    {
+      "reason": "empty",
+      "count": 3529
+    },
+    {
+      "reason": "area_big",
+      "count": 2236
+    },
+    {
+      "reason": "bounds",
+      "count": 102
+    }
+  ],
+  "patch": {
+    "expand_ratio": 0.3,
+    "max_patch_long_edge": 1024,
+    "min_crop_short_edge": 64.0,
+    "pad_divisor": 32
+  },
+  "stage2_overrides": {
+    "score_thr": 0.05,
+    "nms_thr": -1.0
+  },
+  "note": {
+    "patch_scale": "clamp_to_downsample_only (scale<=1.0)"
+  }
+}

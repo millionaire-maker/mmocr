@@ -60,7 +60,7 @@ train_list = [textdet_lsvt_train, textdet_ctw_train]
 test_list = [textdet_lsvt_test, textdet_ctw_test]
 
 train_dataloader = dict(
-    batch_size=16,
+    batch_size=32,
     num_workers=12,
     persistent_workers=True,
     pin_memory=True,
@@ -81,7 +81,7 @@ val_dataloader = dict(
 
 test_dataloader = val_dataloader
 
-auto_scale_lr = dict(enable=True, base_batch_size=16)
+auto_scale_lr = dict(enable=True, base_batch_size=32)
 
 # AMP + 梯度裁剪：提升吞吐、降低显存并增强训练稳定性
 optim_wrapper = dict(
@@ -91,7 +91,7 @@ optim_wrapper = dict(
     loss_scale='dynamic')
 
 # 数据集较大，验证过于频繁会明显拖慢训练；保持更合理的验证间隔
-train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=300, val_interval=5)
+train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=60, val_interval=5)
 
 # 配置权重保存策略：保留最新3个权重 + 保留最优权重
 default_hooks = dict(
@@ -119,5 +119,5 @@ custom_hooks = [
 # 学习率策略：缩短热身到 2 个 epoch，快速进入正常学习率避免长时间几乎不学习
 param_scheduler = [
     dict(type='LinearLR', begin=0, end=2, start_factor=0.1, by_epoch=True),
-    dict(type='PolyLR', power=0.9, eta_min=1e-7, begin=2, end=1200, by_epoch=True),
+    dict(type='PolyLR', power=0.9, eta_min=1e-7, begin=2, end=60, by_epoch=True),
 ]
