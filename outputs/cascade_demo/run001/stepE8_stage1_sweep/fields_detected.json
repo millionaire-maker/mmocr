@@ -1,0 +1,31 @@
+{
+  "stage1_config": "/root/lanyun-tmp/mmocr/work_dirs/dbnetpp_r50_finetune_art_rctw_rects/expB_ft93_Ir2e4/dbnetpp_resnet50_fpnc_1200e_art_rctw_rects_finetune.py",
+  "postprocessors_found": [
+    {
+      "path": "model.det_head.postprocessor",
+      "type": "DBPostprocessor",
+      "keys_in_cfg": [
+        "epsilon_ratio",
+        "text_repr_type",
+        "type"
+      ],
+      "fields": {
+        "min_text_score": {
+          "field": "min_text_score",
+          "full_path": "model.det_head.postprocessor.min_text_score",
+          "value": null,
+          "present_in_cfg": false,
+          "note": "cfg 未显式配置（DBPostprocessor 默认 0.3），可用 --cfg-options 覆盖"
+        },
+        "epsilon_ratio": {
+          "field": "epsilon_ratio",
+          "full_path": "model.det_head.postprocessor.epsilon_ratio",
+          "value": 0.002,
+          "present_in_cfg": true
+        }
+      },
+      "suggested_sweep_field": "model.det_head.postprocessor.min_text_score"
+    }
+  ],
+  "recommended_cfg_options_key": "model.det_head.postprocessor.min_text_score"
+}
