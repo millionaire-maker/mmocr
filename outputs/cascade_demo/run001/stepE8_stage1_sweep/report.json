@@ -1,0 +1,65 @@
+{
+  "field": {
+    "swept_cfg_option": "model.det_head.postprocessor.min_text_score",
+    "values": [
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6
+    ]
+  },
+  "rows": [
+    {
+      "score_thr": 0.2,
+      "precision": 0.7430224816920162,
+      "recall": 0.7320752812957263,
+      "hmean": 0.7375082600518476,
+      "num_instances": 60137,
+      "pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_score0.2.pkl"
+    },
+    {
+      "score_thr": 0.3,
+      "precision": 0.7430224816920162,
+      "recall": 0.7320752812957263,
+      "hmean": 0.7375082600518476,
+      "num_instances": 58891,
+      "pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_score0.3.pkl"
+    },
+    {
+      "score_thr": 0.4,
+      "precision": 0.7429463874238312,
+      "recall": 0.7320752812957263,
+      "hmean": 0.7374707736098405,
+      "num_instances": 26640,
+      "pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_score0.4.pkl"
+    },
+    {
+      "score_thr": 0.5,
+      "precision": 0.7429844326095862,
+      "recall": 0.7320752812957263,
+      "hmean": 0.737489516354487,
+      "num_instances": 24200,
+      "pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_score0.5.pkl"
+    },
+    {
+      "score_thr": 0.6,
+      "precision": 0.7429332240884883,
+      "recall": 0.732024824663202,
+      "hmean": 0.7374386865580603,
+      "num_instances": 21995,
+      "pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_score0.6.pkl"
+    }
+  ],
+  "selected": {
+    "score_thr": 0.2,
+    "stage1_pred_highrecall": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_highrecall.pkl",
+    "source_pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_score0.2.pkl",
+    "rationale": "本次 sweep 的 icdar/recall/hmean 基本不变（metric 搜索阈值>=0.3 会忽略 <0.3 的预测），因此优先选 num_instances 最大的点以提高级联阶段潜在召回（更多低分/长条候选可被 gating+Stage-2 精修）。"
+  },
+  "paths": {
+    "fields_detected": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/fields_detected.json",
+    "results_csv": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/results.csv",
+    "choice_json": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/choice.json"
+  }
+}

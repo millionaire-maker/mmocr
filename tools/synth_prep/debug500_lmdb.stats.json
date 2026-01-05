@@ -1,0 +1,23 @@
+{
+  "lmdb_dir": "/root/lanyun-tmp/mmocr/data/synth_rec_ch/debug500_lmdb",
+  "charset_path": "/root/lanyun-tmp/mmocr/data/charset/charset_rec_cn_en.txt",
+  "normalize": "nfkc_lower",
+  "remove_space": true,
+  "lmdb_num_samples_meta": 500,
+  "lmdb_start_index": 1,
+  "lmdb_label_tmpl": "label-%09d",
+  "lmdb_missing_label_keys": 0,
+  "lmdb_decode_errors": 0,
+  "lmdb_empty_labels": 0,
+  "extracted_total": 500,
+  "extracted_kept": 500,
+  "extracted_filtered_oov": 0,
+  "extracted_dedup": 500,
+  "base_in_lines": null,
+  "base_kept": null,
+  "base_filtered_oov": null,
+  "base_dedup": null,
+  "merged_total": null,
+  "merged_added_from_lmdb": null,
+  "merged_dup_skipped": null
+}

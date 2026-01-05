@@ -14,10 +14,13 @@ from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 PREFIX_RULES: Sequence[Tuple[str, re.Pattern]] = (
+    # leading list punct like "、xxx"
+    ("leading_list_punct", re.compile(r"^\s*、+\s*")),
     # 001\txxx / 001 xxx
     ("digits_tab", re.compile(r"^\s*\d{1,6}\t+\s*")),
     # (23) xxx / （23）xxx / [23] xxx / 【23】xxx
-    ("bracket_digits", re.compile(r"^\s*[\(\[\{（【]\s*\d{1,6}\s*[\)\]\}）】]\s*")),
+    # also strip a following punctuation like "、" in patterns such as "[01]、xxx"
+    ("bracket_digits", re.compile(r"^\s*[\(\[\{（【]\s*\d{1,6}\s*[\)\]\}）】]\s*[\.．。、,:：\-—]?\s*")),
     # 23) xxx / 23）xxx
     ("digits_rparen", re.compile(r"^\s*\d{1,6}\s*[)）]\s*")),
     # 23. xxx / 23、xxx / 23: xxx / 23：xxx / 23-xxx

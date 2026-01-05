@@ -71,6 +71,11 @@ def remove_spaces(text: str) -> str:
     return re.sub(r"\s+", "", text).strip()
 
 
+def strip_leading_list_punct(text: str) -> str:
+    # Common artifact in some corpora: leading "、" used as list marker.
+    return re.sub(r"^、+", "", text).strip()
+
+
 def stable_dedup(lines: Iterable[str]) -> List[str]:
     seen = set()
     out: List[str] = []
@@ -280,6 +285,11 @@ def parse_args() -> argparse.Namespace:
         help="normalization mode",
     )
     parser.add_argument("--keep-space", action="store_true", help="keep spaces; default remove if charset has no space")
+    parser.add_argument(
+        "--keep-leading-punct",
+        action="store_true",
+        help="keep leading list punct like '、xxx' (default: strip it)",
+    )
     parser.add_argument("--merge-base", default=None, help="base corpus txt to merge into")
     parser.add_argument("--out-merged", default=None, help="merged output txt path (required if --merge-base)")
     parser.add_argument("--stats", default=None, help="write stats json to this path")
@@ -296,6 +306,7 @@ def main() -> None:
 
     charset_set = None
     remove_space_flag = True
+    strip_leading_flag = not bool(args.keep_leading_punct)
     charset_path: Optional[Path] = None
     if args.charset:
         charset_path = Path(args.charset).expanduser().resolve()
@@ -313,6 +324,9 @@ def main() -> None:
         remove_space_flag=remove_space_flag,
         charset_set=charset_set,
     )
+
+    if strip_leading_flag:
+        extracted = [strip_leading_list_punct(s) for s in extracted if strip_leading_list_punct(s)]
 
     deduped = stable_dedup(extracted)
 
@@ -358,6 +372,8 @@ def main() -> None:
                 continue
             s = normalize_text(s, str(args.normalize))
             s = remove_spaces(s) if remove_space_flag else collapse_spaces(s)
+            if strip_leading_flag:
+                s = strip_leading_list_punct(s)
             if not s:
                 base_empty += 1
                 continue

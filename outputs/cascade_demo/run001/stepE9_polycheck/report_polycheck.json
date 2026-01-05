@@ -1,0 +1,34 @@
+{
+  "paths": {
+    "vertex_stats": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE9_polycheck/vertex_stats.json",
+    "vis_poly_dir": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE9_polycheck/vis_poly",
+    "run_vis10_log": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE9_polycheck/run_vis10.log"
+  },
+  "summary": {
+    "stage1_old": {
+      "avg_vertices": 4.0,
+      "ratio_gt4": 0.0,
+      "total_polygons": 58879
+    },
+    "stage1_highrecall": {
+      "avg_vertices": 4.0,
+      "ratio_gt4": 0.0,
+      "total_polygons": 60137
+    },
+    "refined_full": {
+      "avg_vertices": 6.018592482776663,
+      "ratio_gt4": 0.043882445277753555,
+      "vertex_dist_top": [
+        [
+          4,
+          54819
+        ],
+        [
+          50,
+          2516
+        ]
+      ]
+    }
+  },
+  "conclusion": "Stage-1(old/highrecall) 输出均为 quad(4点)；refined 输出以 quad 为主，但存在 >4 点 poly（多为 50 点，来自 FCENet 曲线表示）。当前可视化使用 cv2.polylines 绘制全部顶点（红=Stage-1，黄=selected，绿=final），可清楚看到 poly/quad 边界差异。"
+}
