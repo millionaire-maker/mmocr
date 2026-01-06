@@ -152,10 +152,7 @@ default_hooks = dict(
     checkpoint=dict(
         type='CheckpointHook',
         interval=1,
-        save_best=[
-            'PretrainCN_holdout/recog/word_acc',
-            'PretrainCN_holdout/recog/1-N.E.D',
-        ],
+        save_best='PretrainCN_holdout/recog/word_acc',
         rule='greater',
         max_keep_ckpts=2,
     ),
