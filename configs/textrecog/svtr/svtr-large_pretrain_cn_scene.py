@@ -1,4 +1,26 @@
 from copy import deepcopy
+import os.path as osp
+
+
+def _get_lmdb_num_samples(lmdb_dir: str) -> int:
+    import lmdb  # noqa: PLC0415
+
+    env = lmdb.open(
+        lmdb_dir,
+        max_readers=1,
+        readonly=True,
+        lock=False,
+        readahead=False,
+        meminit=False,
+    )
+    try:
+        with env.begin(write=False) as txn:
+            v = txn.get(b'num-samples')
+            if v is None:
+                raise RuntimeError(f'num-samples not found in lmdb: {lmdb_dir}')
+            return int(v.decode('utf-8'))
+    finally:
+        env.close()
 
 _base_ = [
     '_base_svtr-tiny.py',
@@ -70,11 +92,16 @@ param_scheduler = [
 ]
 
 pretrain_cn_scene_root = 'data'
+pretrain_cn_scene_lmdb = osp.join(pretrain_cn_scene_root, 'pretrain_cn_scene')
+pretrain_total = _get_lmdb_num_samples(pretrain_cn_scene_lmdb)
+pretrain_val_size = 5000
+pretrain_train_size = max(0, pretrain_total - pretrain_val_size)
 
 pretrain_train = dict(
     type='RecogLMDBDataset',
     data_root=pretrain_cn_scene_root,
     ann_file='pretrain_cn_scene',
+    indices=pretrain_train_size,
     pipeline=train_pipeline,
     test_mode=False,
 )
@@ -83,7 +110,8 @@ pretrain_val = dict(
     type='RecogLMDBDataset',
     data_root=pretrain_cn_scene_root,
     ann_file='pretrain_cn_scene',
-    indices=5000,
+    # Hold-out split to avoid evaluating on training samples.
+    indices=list(range(pretrain_train_size, pretrain_total)),
     pipeline=test_pipeline,
     test_mode=True,
 )
