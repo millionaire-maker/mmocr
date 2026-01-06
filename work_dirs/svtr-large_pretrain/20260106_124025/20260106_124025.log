@@ -1,0 +1,1994 @@
+2026/01/06 12:40:32 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+    CUDA available: True
+    MUSA available: False
+    numpy_random_seed: 786557014
+    GPU 0,1: NVIDIA GeForce RTX 3090
+    CUDA_HOME: /usr/local/cuda
+    NVCC: Cuda compilation tools, release 11.1, V11.1.105
+    GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+    PyTorch: 1.10.2+cu111
+    PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.2.3 (Git Hash 7336ca9f055cf1bfa13efb658fe15dc9b41f0740)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.0.5
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.1, CUDNN_VERSION=8.0.5, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.10.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+    TorchVision: 0.11.3+cu111
+    OpenCV: 4.12.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: True
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 786557014
+    Distributed launcher: pytorch
+    Distributed training: True
+    GPU number: 2
+------------------------------------------------------------
+
+2026/01/06 12:40:33 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=256, enable=True)
+default_hooks = dict(
+    checkpoint=dict(interval=1, max_keep_ckpts=2, type='CheckpointHook'),
+    logger=dict(interval=50, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    sync_buffer=dict(type='SyncBuffersHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(
+        draw_gt=False,
+        draw_pred=False,
+        enable=False,
+        interval=1,
+        show=False,
+        type='VisualizationHook'))
+default_scope = 'mmocr'
+dictionary = dict(
+    dict_file='data/charset/charset_rec_cn_en.txt',
+    type='Dictionary',
+    with_padding=True,
+    with_unknown=True)
+env_cfg = dict(
+    cudnn_benchmark=True,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'pytorch'
+load_from = None
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
+max_epochs = 20
+model = dict(
+    data_preprocessor=dict(
+        mean=[
+            127.5,
+        ], std=[
+            127.5,
+        ], type='TextRecogDataPreprocessor'),
+    decoder=dict(
+        dictionary=dict(
+            dict_file='data/charset/charset_rec_cn_en.txt',
+            type='Dictionary',
+            with_padding=True,
+            with_unknown=True),
+        in_channels=384,
+        max_seq_len=40,
+        module_loss=dict(
+            letter_case='lower', type='CTCModuleLoss', zero_infinity=True),
+        postprocessor=dict(type='CTCPostProcessor'),
+        type='SVTRDecoder'),
+    encoder=dict(
+        depth=[
+            3,
+            9,
+            9,
+        ],
+        embed_dims=[
+            192,
+            256,
+            512,
+        ],
+        img_size=[
+            48,
+            160,
+        ],
+        in_channels=3,
+        max_seq_len=40,
+        merging_types='Conv',
+        mixer_types=[
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Local',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+        ],
+        num_heads=[
+            6,
+            8,
+            16,
+        ],
+        out_channels=384,
+        prenorm=False,
+        type='SVTREncoder',
+        window_size=[
+            [
+                7,
+                11,
+            ],
+            [
+                7,
+                11,
+            ],
+            [
+                7,
+                11,
+            ],
+        ]),
+    preprocessor=dict(
+        in_channels=3,
+        margins=[
+            0.05,
+            0.05,
+        ],
+        num_control_points=20,
+        output_image_size=(
+            48,
+            160,
+        ),
+        resized_image_size=(
+            32,
+            64,
+        ),
+        type='STN'),
+    type='SVTR')
+optim_wrapper = dict(
+    loss_scale='dynamic',
+    optimizer=dict(
+        betas=(
+            0.9,
+            0.99,
+        ),
+        eps=8e-08,
+        lr=0.00025,
+        type='AdamW',
+        weight_decay=0.05),
+    type='AmpOptimWrapper')
+param_scheduler = [
+    dict(
+        convert_to_iter_based=True,
+        end=2,
+        end_factor=1.0,
+        start_factor=0.5,
+        type='LinearLR',
+        verbose=False),
+    dict(
+        T_max=19,
+        begin=2,
+        convert_to_iter_based=True,
+        end=20,
+        type='CosineAnnealingLR',
+        verbose=False),
+]
+pretrain_cn_scene_root = 'data'
+pretrain_train = dict(
+    ann_file='pretrain_cn_scene',
+    data_root='data',
+    pipeline=[
+        dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
+        dict(type='LoadOCRAnnotations', with_text=True),
+        dict(
+            prob=0.4,
+            transforms=[
+                dict(type='TextRecogGeneralAug'),
+            ],
+            type='RandomApply'),
+        dict(
+            prob=0.4,
+            transforms=[
+                dict(type='CropHeight'),
+            ],
+            type='RandomApply'),
+        dict(
+            condition='min(results["img_shape"])>10',
+            true_transforms=dict(
+                prob=0.4,
+                transforms=[
+                    dict(
+                        kernel_size=5,
+                        op='GaussianBlur',
+                        sigma=1,
+                        type='TorchVisionWrapper'),
+                ],
+                type='RandomApply'),
+            type='ConditionApply'),
+        dict(
+            prob=0.4,
+            transforms=[
+                dict(
+                    brightness=0.5,
+                    contrast=0.5,
+                    hue=0.1,
+                    op='ColorJitter',
+                    saturation=0.5,
+                    type='TorchVisionWrapper'),
+            ],
+            type='RandomApply'),
+        dict(
+            prob=0.4,
+            transforms=[
+                dict(type='ImageContentJitter'),
+            ],
+            type='RandomApply'),
+        dict(
+            prob=0.4,
+            transforms=[
+                dict(
+                    args=[
+                        dict(
+                            cls='AdditiveGaussianNoise',
+                            scale=0.31622776601683794),
+                    ],
+                    type='ImgAugWrapper'),
+            ],
+            type='RandomApply'),
+        dict(
+            prob=0.4,
+            transforms=[
+                dict(type='ReversePixels'),
+            ],
+            type='RandomApply'),
+        dict(scale=(
+            256,
+            64,
+        ), type='Resize'),
+        dict(
+            meta_keys=(
+                'img_path',
+                'ori_shape',
+                'img_shape',
+                'valid_ratio',
+            ),
+            type='PackTextRecogInputs'),
+    ],
+    test_mode=False,
+    type='RecogLMDBDataset')
+pretrain_val = dict(
+    ann_file='pretrain_cn_scene',
+    data_root='data',
+    indices=5000,
+    pipeline=[
+        dict(type='LoadImageFromNDArray'),
+        dict(scale=(
+            256,
+            64,
+        ), type='Resize'),
+        dict(type='LoadOCRAnnotations', with_text=True),
+        dict(
+            meta_keys=(
+                'img_path',
+                'ori_shape',
+                'img_shape',
+                'valid_ratio',
+            ),
+            type='PackTextRecogInputs'),
+    ],
+    test_mode=True,
+    type='RecogLMDBDataset')
+randomness = dict(seed=None)
+resume = False
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=128,
+    dataset=dict(
+        ann_file='pretrain_cn_scene',
+        data_root='data',
+        indices=5000,
+        pipeline=[
+            dict(type='LoadImageFromNDArray'),
+            dict(scale=(
+                256,
+                64,
+            ), type='Resize'),
+            dict(type='LoadOCRAnnotations', with_text=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'valid_ratio',
+                ),
+                type='PackTextRecogInputs'),
+        ],
+        test_mode=True,
+        type='RecogLMDBDataset'),
+    drop_last=False,
+    num_workers=4,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(
+    dataset_prefixes=[
+        'PretrainCN',
+    ],
+    metrics=[
+        dict(mode=[
+            'exact',
+        ], type='WordMetric'),
+        dict(type='OneMinusNEDMetric'),
+    ],
+    type='MultiDatasetsEvaluator')
+test_pipeline = [
+    dict(type='LoadImageFromNDArray'),
+    dict(scale=(
+        256,
+        64,
+    ), type='Resize'),
+    dict(type='LoadOCRAnnotations', with_text=True),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'valid_ratio',
+        ),
+        type='PackTextRecogInputs'),
+]
+train_cfg = dict(max_epochs=20, type='EpochBasedTrainLoop', val_interval=1)
+train_dataloader = dict(
+    batch_size=128,
+    dataset=dict(
+        ann_file='pretrain_cn_scene',
+        data_root='data',
+        pipeline=[
+            dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
+            dict(type='LoadOCRAnnotations', with_text=True),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='TextRecogGeneralAug'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='CropHeight'),
+                ],
+                type='RandomApply'),
+            dict(
+                condition='min(results["img_shape"])>10',
+                true_transforms=dict(
+                    prob=0.4,
+                    transforms=[
+                        dict(
+                            kernel_size=5,
+                            op='GaussianBlur',
+                            sigma=1,
+                            type='TorchVisionWrapper'),
+                    ],
+                    type='RandomApply'),
+                type='ConditionApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(
+                        brightness=0.5,
+                        contrast=0.5,
+                        hue=0.1,
+                        op='ColorJitter',
+                        saturation=0.5,
+                        type='TorchVisionWrapper'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='ImageContentJitter'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(
+                        args=[
+                            dict(
+                                cls='AdditiveGaussianNoise',
+                                scale=0.31622776601683794),
+                        ],
+                        type='ImgAugWrapper'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='ReversePixels'),
+                ],
+                type='RandomApply'),
+            dict(scale=(
+                256,
+                64,
+            ), type='Resize'),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'valid_ratio',
+                ),
+                type='PackTextRecogInputs'),
+        ],
+        test_mode=False,
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
+    dict(type='LoadOCRAnnotations', with_text=True),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='TextRecogGeneralAug'),
+        ],
+        type='RandomApply'),
+    dict(prob=0.4, transforms=[
+        dict(type='CropHeight'),
+    ], type='RandomApply'),
+    dict(
+        condition='min(results["img_shape"])>10',
+        true_transforms=dict(
+            prob=0.4,
+            transforms=[
+                dict(
+                    kernel_size=5,
+                    op='GaussianBlur',
+                    sigma=1,
+                    type='TorchVisionWrapper'),
+            ],
+            type='RandomApply'),
+        type='ConditionApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(
+                brightness=0.5,
+                contrast=0.5,
+                hue=0.1,
+                op='ColorJitter',
+                saturation=0.5,
+                type='TorchVisionWrapper'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='ImageContentJitter'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(
+                args=[
+                    dict(
+                        cls='AdditiveGaussianNoise',
+                        scale=0.31622776601683794),
+                ],
+                type='ImgAugWrapper'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='ReversePixels'),
+        ],
+        type='RandomApply'),
+    dict(scale=(
+        256,
+        64,
+    ), type='Resize'),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'valid_ratio',
+        ),
+        type='PackTextRecogInputs'),
+]
+tta_model = dict(type='EncoderDecoderRecognizerTTAModel')
+tta_pipeline = [
+    dict(type='LoadImageFromNDArray'),
+    dict(
+        transforms=[
+            [
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=0, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=1, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=3, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+            ],
+            [
+                dict(scale=(
+                    256,
+                    64,
+                ), type='Resize'),
+            ],
+            [
+                dict(type='LoadOCRAnnotations', with_text=True),
+            ],
+            [
+                dict(
+                    meta_keys=(
+                        'img_path',
+                        'ori_shape',
+                        'img_shape',
+                        'valid_ratio',
+                    ),
+                    type='PackTextRecogInputs'),
+            ],
+        ],
+        type='TestTimeAug'),
+]
+val_cfg = dict(type='ValLoop')
+val_dataloader = dict(
+    batch_size=128,
+    dataset=dict(
+        ann_file='pretrain_cn_scene',
+        data_root='data',
+        indices=5000,
+        pipeline=[
+            dict(type='LoadImageFromNDArray'),
+            dict(scale=(
+                256,
+                64,
+            ), type='Resize'),
+            dict(type='LoadOCRAnnotations', with_text=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'valid_ratio',
+                ),
+                type='PackTextRecogInputs'),
+        ],
+        test_mode=True,
+        type='RecogLMDBDataset'),
+    drop_last=False,
+    num_workers=4,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(
+    dataset_prefixes=[
+        'PretrainCN',
+    ],
+    metrics=[
+        dict(mode=[
+            'exact',
+        ], type='WordMetric'),
+        dict(type='OneMinusNEDMetric'),
+    ],
+    type='MultiDatasetsEvaluator')
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    name='visualizer',
+    type='TextRecogLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'work_dirs/svtr-large_pretrain'
+
+2026/01/06 12:40:34 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2026/01/06 12:40:49 - mmengine - INFO - LR is set based on batch size of 256 and the current batch size is 256. Scaling the original LR by 1.0.
+Name of parameter - Initialization information
+
+preprocessor.stn_convnet.0.conv.weight - torch.Size([32, 3, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.0.bn.weight - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.0.bn.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.2.conv.weight - torch.Size([64, 32, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.2.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.2.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.4.conv.weight - torch.Size([128, 64, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.4.bn.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.4.bn.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.6.conv.weight - torch.Size([256, 128, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.6.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.6.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.8.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.8.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.8.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.10.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.10.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.10.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.0.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.0.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc2.weight - torch.Size([40, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc2.bias - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.absolute_pos_embed - torch.Size([1, 480, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.conv.weight - torch.Size([96, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.bn.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.bn.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.conv.weight - torch.Size([192, 96, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.conv.weight - torch.Size([256, 192, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.norm.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.norm.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.conv.weight - torch.Size([512, 256, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.conv.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.norm.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.norm.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.layer_norm.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.layer_norm.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.last_conv.weight - torch.Size([384, 512, 1, 1]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+decoder.decoder.weight - torch.Size([5885, 384]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+decoder.decoder.bias - torch.Size([5885]): 
+The value is the same before and after calling `init_weights` of SVTR  
+2026/01/06 12:40:59 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2026/01/06 12:40:59 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2026/01/06 12:40:59 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/svtr-large_pretrain.
+2026/01/06 12:41:26 - mmengine - INFO - Epoch(train)  [1][  50/4688]  lr: 1.2565e-04  eta: 14:28:22  time: 0.4616  data_time: 0.0020  memory: 18262  loss: 7.8395  loss_ctc: 7.8395
+2026/01/06 12:41:50 - mmengine - INFO - Epoch(train)  [1][ 100/4688]  lr: 1.2632e-04  eta: 13:24:17  time: 0.4611  data_time: 0.0022  memory: 18262  loss: 7.3886  loss_ctc: 7.3886
+2026/01/06 12:42:13 - mmengine - INFO - Epoch(train)  [1][ 150/4688]  lr: 1.2699e-04  eta: 12:57:51  time: 0.5000  data_time: 0.0024  memory: 18262  loss: 7.3568  loss_ctc: 7.3568
+2026/01/06 12:42:36 - mmengine - INFO - Epoch(train)  [1][ 200/4688]  lr: 1.2765e-04  eta: 12:41:20  time: 0.4486  data_time: 0.0020  memory: 18262  loss: 7.3616  loss_ctc: 7.3616
+2026/01/06 12:42:59 - mmengine - INFO - Epoch(train)  [1][ 250/4688]  lr: 1.2832e-04  eta: 12:28:19  time: 0.4377  data_time: 0.0021  memory: 18262  loss: 7.3493  loss_ctc: 7.3493
+2026/01/06 12:43:21 - mmengine - INFO - Epoch(train)  [1][ 300/4688]  lr: 1.2899e-04  eta: 12:19:27  time: 0.4460  data_time: 0.0019  memory: 18262  loss: 7.3439  loss_ctc: 7.3439
+2026/01/06 12:43:44 - mmengine - INFO - Epoch(train)  [1][ 350/4688]  lr: 1.2965e-04  eta: 12:15:30  time: 0.4582  data_time: 0.0017  memory: 18262  loss: 7.3165  loss_ctc: 7.3165
+2026/01/06 12:44:07 - mmengine - INFO - Epoch(train)  [1][ 400/4688]  lr: 1.3032e-04  eta: 12:12:01  time: 0.4613  data_time: 0.0020  memory: 18262  loss: 7.2253  loss_ctc: 7.2253
+2026/01/06 12:44:30 - mmengine - INFO - Epoch(train)  [1][ 450/4688]  lr: 1.3099e-04  eta: 12:09:47  time: 0.4525  data_time: 0.0017  memory: 18262  loss: 7.2140  loss_ctc: 7.2140
+2026/01/06 12:44:52 - mmengine - INFO - Epoch(train)  [1][ 500/4688]  lr: 1.3165e-04  eta: 12:06:49  time: 0.4656  data_time: 0.0018  memory: 18262  loss: 7.1934  loss_ctc: 7.1934
+2026/01/06 12:45:15 - mmengine - INFO - Epoch(train)  [1][ 550/4688]  lr: 1.3232e-04  eta: 12:04:55  time: 0.4788  data_time: 0.0019  memory: 18262  loss: 7.2758  loss_ctc: 7.2758
+2026/01/06 12:45:38 - mmengine - INFO - Epoch(train)  [1][ 600/4688]  lr: 1.3299e-04  eta: 12:03:07  time: 0.4400  data_time: 0.0018  memory: 18262  loss: 7.2204  loss_ctc: 7.2204
+2026/01/06 12:46:01 - mmengine - INFO - Epoch(train)  [1][ 650/4688]  lr: 1.3365e-04  eta: 12:01:10  time: 0.4511  data_time: 0.0019  memory: 18262  loss: 7.1485  loss_ctc: 7.1485
+2026/01/06 12:46:23 - mmengine - INFO - Epoch(train)  [1][ 700/4688]  lr: 1.3432e-04  eta: 11:59:36  time: 0.4435  data_time: 0.0018  memory: 18262  loss: 7.0733  loss_ctc: 7.0733
+2026/01/06 12:46:47 - mmengine - INFO - Epoch(train)  [1][ 750/4688]  lr: 1.3499e-04  eta: 11:59:23  time: 0.4526  data_time: 0.0017  memory: 18262  loss: 7.0796  loss_ctc: 7.0796
+2026/01/06 12:47:09 - mmengine - INFO - Epoch(train)  [1][ 800/4688]  lr: 1.3565e-04  eta: 11:57:49  time: 0.4495  data_time: 0.0017  memory: 18262  loss: 7.0466  loss_ctc: 7.0466
+2026/01/06 12:47:32 - mmengine - INFO - Epoch(train)  [1][ 850/4688]  lr: 1.3632e-04  eta: 11:56:31  time: 0.4295  data_time: 0.0018  memory: 18262  loss: 7.0834  loss_ctc: 7.0834
+2026/01/06 12:47:55 - mmengine - INFO - Epoch(train)  [1][ 900/4688]  lr: 1.3699e-04  eta: 11:56:04  time: 0.4716  data_time: 0.0019  memory: 18262  loss: 7.0668  loss_ctc: 7.0668
+2026/01/06 12:48:18 - mmengine - INFO - Epoch(train)  [1][ 950/4688]  lr: 1.3765e-04  eta: 11:55:38  time: 0.4426  data_time: 0.0017  memory: 18262  loss: 6.9806  loss_ctc: 6.9806
+2026/01/06 12:48:41 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 12:48:41 - mmengine - INFO - Epoch(train)  [1][1000/4688]  lr: 1.3832e-04  eta: 11:54:25  time: 0.4537  data_time: 0.0019  memory: 18262  loss: 6.9390  loss_ctc: 6.9390
+2026/01/06 12:49:03 - mmengine - INFO - Epoch(train)  [1][1050/4688]  lr: 1.3899e-04  eta: 11:52:52  time: 0.4619  data_time: 0.0019  memory: 18262  loss: 7.0392  loss_ctc: 7.0392
+2026/01/06 12:49:26 - mmengine - INFO - Epoch(train)  [1][1100/4688]  lr: 1.3965e-04  eta: 11:52:15  time: 0.4505  data_time: 0.0023  memory: 18262  loss: 6.9597  loss_ctc: 6.9597
+2026/01/06 12:49:49 - mmengine - INFO - Epoch(train)  [1][1150/4688]  lr: 1.4032e-04  eta: 11:52:05  time: 0.4564  data_time: 0.0020  memory: 18262  loss: 6.9592  loss_ctc: 6.9592
+2026/01/06 12:50:12 - mmengine - INFO - Epoch(train)  [1][1200/4688]  lr: 1.4099e-04  eta: 11:51:35  time: 0.4492  data_time: 0.0019  memory: 18262  loss: 6.8863  loss_ctc: 6.8863
+2026/01/06 12:50:35 - mmengine - INFO - Epoch(train)  [1][1250/4688]  lr: 1.4165e-04  eta: 11:50:40  time: 0.4551  data_time: 0.0019  memory: 18262  loss: 6.8543  loss_ctc: 6.8543
+2026/01/06 12:50:58 - mmengine - INFO - Epoch(train)  [1][1300/4688]  lr: 1.4232e-04  eta: 11:50:18  time: 0.4608  data_time: 0.0019  memory: 18262  loss: 6.9007  loss_ctc: 6.9007
+2026/01/06 12:51:20 - mmengine - INFO - Epoch(train)  [1][1350/4688]  lr: 1.4299e-04  eta: 11:49:11  time: 0.4503  data_time: 0.0017  memory: 18262  loss: 6.8575  loss_ctc: 6.8575
+2026/01/06 12:51:43 - mmengine - INFO - Epoch(train)  [1][1400/4688]  lr: 1.4365e-04  eta: 11:48:19  time: 0.4417  data_time: 0.0018  memory: 18262  loss: 6.7856  loss_ctc: 6.7856
+2026/01/06 12:52:06 - mmengine - INFO - Epoch(train)  [1][1450/4688]  lr: 1.4432e-04  eta: 11:47:36  time: 0.4601  data_time: 0.0017  memory: 18262  loss: 6.7972  loss_ctc: 6.7972
+2026/01/06 12:52:29 - mmengine - INFO - Epoch(train)  [1][1500/4688]  lr: 1.4499e-04  eta: 11:47:38  time: 0.4710  data_time: 0.0019  memory: 18262  loss: 6.8233  loss_ctc: 6.8233
+2026/01/06 12:52:51 - mmengine - INFO - Epoch(train)  [1][1550/4688]  lr: 1.4565e-04  eta: 11:46:39  time: 0.4411  data_time: 0.0018  memory: 18262  loss: 6.7563  loss_ctc: 6.7563
+2026/01/06 12:53:14 - mmengine - INFO - Epoch(train)  [1][1600/4688]  lr: 1.4632e-04  eta: 11:46:10  time: 0.4512  data_time: 0.0019  memory: 18262  loss: 6.7799  loss_ctc: 6.7799
+2026/01/06 12:53:37 - mmengine - INFO - Epoch(train)  [1][1650/4688]  lr: 1.4699e-04  eta: 11:45:30  time: 0.4465  data_time: 0.0019  memory: 18262  loss: 6.7930  loss_ctc: 6.7930
+2026/01/06 12:54:00 - mmengine - INFO - Epoch(train)  [1][1700/4688]  lr: 1.4765e-04  eta: 11:44:58  time: 0.4661  data_time: 0.0020  memory: 18262  loss: 6.8390  loss_ctc: 6.8390
+2026/01/06 12:54:22 - mmengine - INFO - Epoch(train)  [1][1750/4688]  lr: 1.4832e-04  eta: 11:44:24  time: 0.4415  data_time: 0.0018  memory: 18262  loss: 6.8477  loss_ctc: 6.8477
+2026/01/06 12:54:45 - mmengine - INFO - Epoch(train)  [1][1800/4688]  lr: 1.4899e-04  eta: 11:43:30  time: 0.4390  data_time: 0.0020  memory: 18262  loss: 6.7661  loss_ctc: 6.7661
+2026/01/06 12:55:07 - mmengine - INFO - Epoch(train)  [1][1850/4688]  lr: 1.4965e-04  eta: 11:42:41  time: 0.4631  data_time: 0.0020  memory: 18262  loss: 6.7627  loss_ctc: 6.7627
+2026/01/06 12:55:30 - mmengine - INFO - Epoch(train)  [1][1900/4688]  lr: 1.5032e-04  eta: 11:42:18  time: 0.4689  data_time: 0.0020  memory: 18262  loss: 6.6785  loss_ctc: 6.6785
+2026/01/06 12:55:53 - mmengine - INFO - Epoch(train)  [1][1950/4688]  lr: 1.5099e-04  eta: 11:41:57  time: 0.4397  data_time: 0.0018  memory: 18262  loss: 6.7614  loss_ctc: 6.7614
+2026/01/06 12:56:16 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 12:56:16 - mmengine - INFO - Epoch(train)  [1][2000/4688]  lr: 1.5165e-04  eta: 11:41:14  time: 0.4425  data_time: 0.0018  memory: 18262  loss: 6.7523  loss_ctc: 6.7523
+2026/01/06 12:56:39 - mmengine - INFO - Epoch(train)  [1][2050/4688]  lr: 1.5232e-04  eta: 11:40:58  time: 0.4733  data_time: 0.0018  memory: 18262  loss: 6.6950  loss_ctc: 6.6950
+2026/01/06 12:57:01 - mmengine - INFO - Epoch(train)  [1][2100/4688]  lr: 1.5299e-04  eta: 11:40:26  time: 0.4568  data_time: 0.0018  memory: 18262  loss: 6.6514  loss_ctc: 6.6514
+2026/01/06 12:57:24 - mmengine - INFO - Epoch(train)  [1][2150/4688]  lr: 1.5365e-04  eta: 11:39:42  time: 0.4465  data_time: 0.0018  memory: 18262  loss: 6.7323  loss_ctc: 6.7323
+2026/01/06 12:57:46 - mmengine - INFO - Epoch(train)  [1][2200/4688]  lr: 1.5432e-04  eta: 11:38:57  time: 0.4447  data_time: 0.0019  memory: 18262  loss: 6.7005  loss_ctc: 6.7005
+2026/01/06 12:58:09 - mmengine - INFO - Epoch(train)  [1][2250/4688]  lr: 1.5499e-04  eta: 11:38:39  time: 0.4584  data_time: 0.0019  memory: 18262  loss: 6.6214  loss_ctc: 6.6214
+2026/01/06 12:58:32 - mmengine - INFO - Epoch(train)  [1][2300/4688]  lr: 1.5565e-04  eta: 11:38:02  time: 0.4430  data_time: 0.0018  memory: 18262  loss: 6.6510  loss_ctc: 6.6510
+2026/01/06 12:58:55 - mmengine - INFO - Epoch(train)  [1][2350/4688]  lr: 1.5632e-04  eta: 11:37:36  time: 0.4520  data_time: 0.0018  memory: 18262  loss: 6.6151  loss_ctc: 6.6151
+2026/01/06 12:59:17 - mmengine - INFO - Epoch(train)  [1][2400/4688]  lr: 1.5699e-04  eta: 11:37:03  time: 0.4503  data_time: 0.0017  memory: 18262  loss: 6.6449  loss_ctc: 6.6449
+2026/01/06 12:59:40 - mmengine - INFO - Epoch(train)  [1][2450/4688]  lr: 1.5765e-04  eta: 11:36:15  time: 0.4413  data_time: 0.0017  memory: 18262  loss: 6.6941  loss_ctc: 6.6941
+2026/01/06 13:00:02 - mmengine - INFO - Epoch(train)  [1][2500/4688]  lr: 1.5832e-04  eta: 11:35:52  time: 0.4571  data_time: 0.0019  memory: 18262  loss: 6.6083  loss_ctc: 6.6083
+2026/01/06 13:00:25 - mmengine - INFO - Epoch(train)  [1][2550/4688]  lr: 1.5899e-04  eta: 11:35:08  time: 0.4325  data_time: 0.0017  memory: 18262  loss: 6.5356  loss_ctc: 6.5356
+2026/01/06 13:00:47 - mmengine - INFO - Epoch(train)  [1][2600/4688]  lr: 1.5965e-04  eta: 11:34:41  time: 0.4890  data_time: 0.0020  memory: 18262  loss: 6.5998  loss_ctc: 6.5998
+2026/01/06 13:01:10 - mmengine - INFO - Epoch(train)  [1][2650/4688]  lr: 1.6032e-04  eta: 11:34:14  time: 0.4425  data_time: 0.0018  memory: 18262  loss: 6.5600  loss_ctc: 6.5600
+2026/01/06 13:01:33 - mmengine - INFO - Epoch(train)  [1][2700/4688]  lr: 1.6099e-04  eta: 11:33:55  time: 0.4572  data_time: 0.0017  memory: 18262  loss: 6.5170  loss_ctc: 6.5170
+2026/01/06 13:01:56 - mmengine - INFO - Epoch(train)  [1][2750/4688]  lr: 1.6165e-04  eta: 11:33:35  time: 0.4544  data_time: 0.0019  memory: 18262  loss: 6.4641  loss_ctc: 6.4641
+2026/01/06 13:02:19 - mmengine - INFO - Epoch(train)  [1][2800/4688]  lr: 1.6232e-04  eta: 11:33:10  time: 0.4695  data_time: 0.0018  memory: 18262  loss: 6.5503  loss_ctc: 6.5503
+2026/01/06 13:02:42 - mmengine - INFO - Epoch(train)  [1][2850/4688]  lr: 1.6299e-04  eta: 11:32:52  time: 0.4451  data_time: 0.0017  memory: 18262  loss: 6.4749  loss_ctc: 6.4749
+2026/01/06 13:03:05 - mmengine - INFO - Epoch(train)  [1][2900/4688]  lr: 1.6365e-04  eta: 11:32:28  time: 0.4613  data_time: 0.0027  memory: 18262  loss: 6.4323  loss_ctc: 6.4323
+2026/01/06 13:03:28 - mmengine - INFO - Epoch(train)  [1][2950/4688]  lr: 1.6432e-04  eta: 11:32:03  time: 0.4526  data_time: 0.0018  memory: 18262  loss: 6.5050  loss_ctc: 6.5050
+2026/01/06 13:03:50 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:03:50 - mmengine - INFO - Epoch(train)  [1][3000/4688]  lr: 1.6499e-04  eta: 11:31:31  time: 0.4561  data_time: 0.0019  memory: 18262  loss: 6.4462  loss_ctc: 6.4462
+2026/01/06 13:04:13 - mmengine - INFO - Epoch(train)  [1][3050/4688]  lr: 1.6565e-04  eta: 11:30:55  time: 0.4468  data_time: 0.0019  memory: 18262  loss: 6.3751  loss_ctc: 6.3751
+2026/01/06 13:04:35 - mmengine - INFO - Epoch(train)  [1][3100/4688]  lr: 1.6632e-04  eta: 11:30:19  time: 0.4466  data_time: 0.0021  memory: 18262  loss: 6.3310  loss_ctc: 6.3310
+2026/01/06 13:04:58 - mmengine - INFO - Epoch(train)  [1][3150/4688]  lr: 1.6699e-04  eta: 11:29:59  time: 0.4893  data_time: 0.0019  memory: 18262  loss: 6.2683  loss_ctc: 6.2683
+2026/01/06 13:05:21 - mmengine - INFO - Epoch(train)  [1][3200/4688]  lr: 1.6765e-04  eta: 11:29:40  time: 0.4558  data_time: 0.0020  memory: 18262  loss: 6.4153  loss_ctc: 6.4153
+2026/01/06 13:05:43 - mmengine - INFO - Epoch(train)  [1][3250/4688]  lr: 1.6832e-04  eta: 11:29:00  time: 0.4385  data_time: 0.0019  memory: 18262  loss: 6.4237  loss_ctc: 6.4237
+2026/01/06 13:06:06 - mmengine - INFO - Epoch(train)  [1][3300/4688]  lr: 1.6899e-04  eta: 11:28:46  time: 0.4765  data_time: 0.0022  memory: 18262  loss: 6.2134  loss_ctc: 6.2134
+2026/01/06 13:06:29 - mmengine - INFO - Epoch(train)  [1][3350/4688]  lr: 1.6965e-04  eta: 11:28:16  time: 0.4631  data_time: 0.0018  memory: 18262  loss: 6.2539  loss_ctc: 6.2539
+2026/01/06 13:06:51 - mmengine - INFO - Epoch(train)  [1][3400/4688]  lr: 1.7032e-04  eta: 11:27:44  time: 0.4408  data_time: 0.0018  memory: 18262  loss: 6.2965  loss_ctc: 6.2965
+2026/01/06 13:07:14 - mmengine - INFO - Epoch(train)  [1][3450/4688]  lr: 1.7099e-04  eta: 11:27:26  time: 0.4505  data_time: 0.0019  memory: 18262  loss: 6.1053  loss_ctc: 6.1053
+2026/01/06 13:07:37 - mmengine - INFO - Epoch(train)  [1][3500/4688]  lr: 1.7165e-04  eta: 11:27:01  time: 0.4675  data_time: 0.0018  memory: 18262  loss: 6.2166  loss_ctc: 6.2166
+2026/01/06 13:08:00 - mmengine - INFO - Epoch(train)  [1][3550/4688]  lr: 1.7232e-04  eta: 11:26:39  time: 0.4753  data_time: 0.0020  memory: 18262  loss: 6.1476  loss_ctc: 6.1476
+2026/01/06 13:08:22 - mmengine - INFO - Epoch(train)  [1][3600/4688]  lr: 1.7299e-04  eta: 11:26:02  time: 0.4435  data_time: 0.0019  memory: 18262  loss: 6.0382  loss_ctc: 6.0382
+2026/01/06 13:08:45 - mmengine - INFO - Epoch(train)  [1][3650/4688]  lr: 1.7365e-04  eta: 11:25:37  time: 0.4559  data_time: 0.0019  memory: 18262  loss: 6.0043  loss_ctc: 6.0043
+2026/01/06 13:09:08 - mmengine - INFO - Epoch(train)  [1][3700/4688]  lr: 1.7432e-04  eta: 11:25:13  time: 0.4491  data_time: 0.0018  memory: 18262  loss: 6.0872  loss_ctc: 6.0872
+2026/01/06 13:09:31 - mmengine - INFO - Epoch(train)  [1][3750/4688]  lr: 1.7499e-04  eta: 11:24:54  time: 0.4635  data_time: 0.0018  memory: 18262  loss: 5.9927  loss_ctc: 5.9927
+2026/01/06 13:09:53 - mmengine - INFO - Epoch(train)  [1][3800/4688]  lr: 1.7565e-04  eta: 11:24:25  time: 0.4304  data_time: 0.0019  memory: 18262  loss: 6.0344  loss_ctc: 6.0344
+2026/01/06 13:10:16 - mmengine - INFO - Epoch(train)  [1][3850/4688]  lr: 1.7632e-04  eta: 11:23:53  time: 0.4369  data_time: 0.0020  memory: 18262  loss: 5.9421  loss_ctc: 5.9421
+2026/01/06 13:10:38 - mmengine - INFO - Epoch(train)  [1][3900/4688]  lr: 1.7699e-04  eta: 11:23:26  time: 0.4652  data_time: 0.0019  memory: 18262  loss: 5.9419  loss_ctc: 5.9419
+2026/01/06 13:11:01 - mmengine - INFO - Epoch(train)  [1][3950/4688]  lr: 1.7765e-04  eta: 11:22:54  time: 0.4553  data_time: 0.0020  memory: 18262  loss: 5.8199  loss_ctc: 5.8199
+2026/01/06 13:11:23 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:11:23 - mmengine - INFO - Epoch(train)  [1][4000/4688]  lr: 1.7832e-04  eta: 11:22:23  time: 0.4543  data_time: 0.0020  memory: 18262  loss: 5.8899  loss_ctc: 5.8899
+2026/01/06 13:11:46 - mmengine - INFO - Epoch(train)  [1][4050/4688]  lr: 1.7899e-04  eta: 11:22:02  time: 0.4677  data_time: 0.0019  memory: 18262  loss: 5.6707  loss_ctc: 5.6707
+2026/01/06 13:12:09 - mmengine - INFO - Epoch(train)  [1][4100/4688]  lr: 1.7965e-04  eta: 11:21:30  time: 0.4618  data_time: 0.0018  memory: 18262  loss: 5.7363  loss_ctc: 5.7363
+2026/01/06 13:12:31 - mmengine - INFO - Epoch(train)  [1][4150/4688]  lr: 1.8032e-04  eta: 11:21:06  time: 0.4594  data_time: 0.0018  memory: 18262  loss: 5.7008  loss_ctc: 5.7008
+2026/01/06 13:12:54 - mmengine - INFO - Epoch(train)  [1][4200/4688]  lr: 1.8099e-04  eta: 11:20:36  time: 0.4331  data_time: 0.0018  memory: 18262  loss: 5.6728  loss_ctc: 5.6728
+2026/01/06 13:13:16 - mmengine - INFO - Epoch(train)  [1][4250/4688]  lr: 1.8165e-04  eta: 11:20:07  time: 0.4768  data_time: 0.0019  memory: 18262  loss: 5.6126  loss_ctc: 5.6126
+2026/01/06 13:13:39 - mmengine - INFO - Epoch(train)  [1][4300/4688]  lr: 1.8232e-04  eta: 11:19:46  time: 0.4673  data_time: 0.0018  memory: 18262  loss: 5.6161  loss_ctc: 5.6161
+2026/01/06 13:14:02 - mmengine - INFO - Epoch(train)  [1][4350/4688]  lr: 1.8299e-04  eta: 11:19:26  time: 0.4466  data_time: 0.0019  memory: 18262  loss: 5.4812  loss_ctc: 5.4812
+2026/01/06 13:14:24 - mmengine - INFO - Epoch(train)  [1][4400/4688]  lr: 1.8365e-04  eta: 11:18:49  time: 0.4317  data_time: 0.0018  memory: 18262  loss: 5.3726  loss_ctc: 5.3726
+2026/01/06 13:14:47 - mmengine - INFO - Epoch(train)  [1][4450/4688]  lr: 1.8432e-04  eta: 11:18:20  time: 0.4734  data_time: 0.0019  memory: 18262  loss: 5.3769  loss_ctc: 5.3769
+2026/01/06 13:15:09 - mmengine - INFO - Epoch(train)  [1][4500/4688]  lr: 1.8499e-04  eta: 11:17:57  time: 0.4401  data_time: 0.0019  memory: 18262  loss: 5.1980  loss_ctc: 5.1980
+2026/01/06 13:15:32 - mmengine - INFO - Epoch(train)  [1][4550/4688]  lr: 1.8565e-04  eta: 11:17:36  time: 0.4502  data_time: 0.0019  memory: 18262  loss: 5.3248  loss_ctc: 5.3248
+2026/01/06 13:15:55 - mmengine - INFO - Epoch(train)  [1][4600/4688]  lr: 1.8632e-04  eta: 11:17:15  time: 0.4715  data_time: 0.0020  memory: 18262  loss: 5.0661  loss_ctc: 5.0661
+2026/01/06 13:16:18 - mmengine - INFO - Epoch(train)  [1][4650/4688]  lr: 1.8699e-04  eta: 11:16:55  time: 0.4675  data_time: 0.0024  memory: 18262  loss: 4.9487  loss_ctc: 4.9487
+2026/01/06 13:16:36 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:16:36 - mmengine - INFO - Saving checkpoint at 1 epochs
+2026/01/06 13:16:47 - mmengine - INFO - Epoch(val) [1][20/20]    PretrainCN/recog/word_acc: 0.0056  PretrainCN/recog/1-N.E.D: 0.2170  data_time: 0.0592  time: 0.4054
+2026/01/06 13:17:14 - mmengine - INFO - Epoch(train)  [2][  50/4688]  lr: 1.8816e-04  eta: 11:17:42  time: 0.4445  data_time: 0.0022  memory: 18282  loss: 4.7933  loss_ctc: 4.7933
+2026/01/06 13:17:37 - mmengine - INFO - Epoch(train)  [2][ 100/4688]  lr: 1.8883e-04  eta: 11:17:22  time: 0.4807  data_time: 0.0020  memory: 18277  loss: 4.7033  loss_ctc: 4.7033
+2026/01/06 13:18:00 - mmengine - INFO - Epoch(train)  [2][ 150/4688]  lr: 1.8949e-04  eta: 11:16:55  time: 0.4468  data_time: 0.0021  memory: 18277  loss: 4.6242  loss_ctc: 4.6242
+2026/01/06 13:18:22 - mmengine - INFO - Epoch(train)  [2][ 200/4688]  lr: 1.9016e-04  eta: 11:16:26  time: 0.4438  data_time: 0.0019  memory: 18277  loss: 4.4645  loss_ctc: 4.4645
+2026/01/06 13:18:45 - mmengine - INFO - Epoch(train)  [2][ 250/4688]  lr: 1.9083e-04  eta: 11:16:00  time: 0.4438  data_time: 0.0019  memory: 18277  loss: 4.4431  loss_ctc: 4.4431
+2026/01/06 13:19:07 - mmengine - INFO - Epoch(train)  [2][ 300/4688]  lr: 1.9149e-04  eta: 11:15:32  time: 0.4572  data_time: 0.0019  memory: 18277  loss: 4.3311  loss_ctc: 4.3311
+2026/01/06 13:19:13 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:19:30 - mmengine - INFO - Epoch(train)  [2][ 350/4688]  lr: 1.9216e-04  eta: 11:15:06  time: 0.4543  data_time: 0.0019  memory: 18277  loss: 4.2155  loss_ctc: 4.2155
+2026/01/06 13:19:53 - mmengine - INFO - Epoch(train)  [2][ 400/4688]  lr: 1.9283e-04  eta: 11:14:43  time: 0.4541  data_time: 0.0019  memory: 18277  loss: 4.0634  loss_ctc: 4.0634
+2026/01/06 13:20:16 - mmengine - INFO - Epoch(train)  [2][ 450/4688]  lr: 1.9349e-04  eta: 11:14:29  time: 0.4935  data_time: 0.0019  memory: 18277  loss: 4.1500  loss_ctc: 4.1500
+2026/01/06 13:20:39 - mmengine - INFO - Epoch(train)  [2][ 500/4688]  lr: 1.9416e-04  eta: 11:14:08  time: 0.4788  data_time: 0.0020  memory: 18277  loss: 4.0006  loss_ctc: 4.0006
+2026/01/06 13:21:02 - mmengine - INFO - Epoch(train)  [2][ 550/4688]  lr: 1.9483e-04  eta: 11:13:39  time: 0.4354  data_time: 0.0019  memory: 18277  loss: 3.9410  loss_ctc: 3.9410
+2026/01/06 13:21:24 - mmengine - INFO - Epoch(train)  [2][ 600/4688]  lr: 1.9549e-04  eta: 11:13:12  time: 0.4591  data_time: 0.0021  memory: 18277  loss: 3.8030  loss_ctc: 3.8030
+2026/01/06 13:21:47 - mmengine - INFO - Epoch(train)  [2][ 650/4688]  lr: 1.9616e-04  eta: 11:12:49  time: 0.4524  data_time: 0.0019  memory: 18277  loss: 3.7107  loss_ctc: 3.7107
+2026/01/06 13:22:09 - mmengine - INFO - Epoch(train)  [2][ 700/4688]  lr: 1.9683e-04  eta: 11:12:21  time: 0.4459  data_time: 0.0020  memory: 18277  loss: 3.6271  loss_ctc: 3.6271
+2026/01/06 13:22:32 - mmengine - INFO - Epoch(train)  [2][ 750/4688]  lr: 1.9749e-04  eta: 11:11:59  time: 0.4392  data_time: 0.0021  memory: 18277  loss: 3.5993  loss_ctc: 3.5993
+2026/01/06 13:22:55 - mmengine - INFO - Epoch(train)  [2][ 800/4688]  lr: 1.9816e-04  eta: 11:11:42  time: 0.4861  data_time: 0.0020  memory: 18277  loss: 3.3609  loss_ctc: 3.3609
+2026/01/06 13:23:18 - mmengine - INFO - Epoch(train)  [2][ 850/4688]  lr: 1.9883e-04  eta: 11:11:19  time: 0.4874  data_time: 0.0020  memory: 18277  loss: 3.4493  loss_ctc: 3.4493
+2026/01/06 13:23:41 - mmengine - INFO - Epoch(train)  [2][ 900/4688]  lr: 1.9949e-04  eta: 11:10:55  time: 0.4428  data_time: 0.0021  memory: 18277  loss: 3.4177  loss_ctc: 3.4177
+2026/01/06 13:24:04 - mmengine - INFO - Epoch(train)  [2][ 950/4688]  lr: 2.0016e-04  eta: 11:10:28  time: 0.4547  data_time: 0.0021  memory: 18277  loss: 3.4294  loss_ctc: 3.4294
+2026/01/06 13:24:26 - mmengine - INFO - Epoch(train)  [2][1000/4688]  lr: 2.0083e-04  eta: 11:10:01  time: 0.4379  data_time: 0.0019  memory: 18277  loss: 3.1169  loss_ctc: 3.1169
+2026/01/06 13:24:49 - mmengine - INFO - Epoch(train)  [2][1050/4688]  lr: 2.0149e-04  eta: 11:09:34  time: 0.4531  data_time: 0.0019  memory: 18277  loss: 3.2952  loss_ctc: 3.2952
+2026/01/06 13:25:12 - mmengine - INFO - Epoch(train)  [2][1100/4688]  lr: 2.0216e-04  eta: 11:09:12  time: 0.4581  data_time: 0.0023  memory: 18277  loss: 3.1858  loss_ctc: 3.1858
+2026/01/06 13:25:35 - mmengine - INFO - Epoch(train)  [2][1150/4688]  lr: 2.0283e-04  eta: 11:08:51  time: 0.4614  data_time: 0.0019  memory: 18277  loss: 3.1066  loss_ctc: 3.1066
+2026/01/06 13:25:57 - mmengine - INFO - Epoch(train)  [2][1200/4688]  lr: 2.0349e-04  eta: 11:08:22  time: 0.4517  data_time: 0.0019  memory: 18277  loss: 3.1569  loss_ctc: 3.1569
+2026/01/06 13:26:20 - mmengine - INFO - Epoch(train)  [2][1250/4688]  lr: 2.0416e-04  eta: 11:07:58  time: 0.4618  data_time: 0.0021  memory: 18277  loss: 3.0324  loss_ctc: 3.0324
+2026/01/06 13:26:42 - mmengine - INFO - Epoch(train)  [2][1300/4688]  lr: 2.0483e-04  eta: 11:07:34  time: 0.4484  data_time: 0.0019  memory: 18277  loss: 3.0255  loss_ctc: 3.0255
+2026/01/06 13:26:48 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:27:05 - mmengine - INFO - Epoch(train)  [2][1350/4688]  lr: 2.0549e-04  eta: 11:07:13  time: 0.4678  data_time: 0.0022  memory: 18277  loss: 2.9128  loss_ctc: 2.9128
+2026/01/06 13:27:28 - mmengine - INFO - Epoch(train)  [2][1400/4688]  lr: 2.0616e-04  eta: 11:06:49  time: 0.4557  data_time: 0.0020  memory: 18277  loss: 2.8501  loss_ctc: 2.8501
+2026/01/06 13:27:51 - mmengine - INFO - Epoch(train)  [2][1450/4688]  lr: 2.0683e-04  eta: 11:06:21  time: 0.4489  data_time: 0.0018  memory: 18277  loss: 2.6959  loss_ctc: 2.6959
+2026/01/06 13:28:14 - mmengine - INFO - Epoch(train)  [2][1500/4688]  lr: 2.0749e-04  eta: 11:06:03  time: 0.4534  data_time: 0.0026  memory: 18277  loss: 2.7575  loss_ctc: 2.7575
+2026/01/06 13:28:36 - mmengine - INFO - Epoch(train)  [2][1550/4688]  lr: 2.0816e-04  eta: 11:05:39  time: 0.4530  data_time: 0.0020  memory: 18277  loss: 2.8121  loss_ctc: 2.8121
+2026/01/06 13:28:59 - mmengine - INFO - Epoch(train)  [2][1600/4688]  lr: 2.0883e-04  eta: 11:05:13  time: 0.4378  data_time: 0.0019  memory: 18277  loss: 2.4540  loss_ctc: 2.4540
+2026/01/06 13:29:22 - mmengine - INFO - Epoch(train)  [2][1650/4688]  lr: 2.0949e-04  eta: 11:04:53  time: 0.4460  data_time: 0.0020  memory: 18277  loss: 2.6672  loss_ctc: 2.6672
+2026/01/06 13:29:45 - mmengine - INFO - Epoch(train)  [2][1700/4688]  lr: 2.1016e-04  eta: 11:04:29  time: 0.4481  data_time: 0.0020  memory: 18277  loss: 2.6161  loss_ctc: 2.6161
+2026/01/06 13:30:08 - mmengine - INFO - Epoch(train)  [2][1750/4688]  lr: 2.1083e-04  eta: 11:04:12  time: 0.4732  data_time: 0.0026  memory: 18277  loss: 2.4842  loss_ctc: 2.4842
+2026/01/06 13:30:31 - mmengine - INFO - Epoch(train)  [2][1800/4688]  lr: 2.1149e-04  eta: 11:03:49  time: 0.4482  data_time: 0.0020  memory: 18277  loss: 2.3729  loss_ctc: 2.3729
+2026/01/06 13:30:54 - mmengine - INFO - Epoch(train)  [2][1850/4688]  lr: 2.1216e-04  eta: 11:03:29  time: 0.4469  data_time: 0.0020  memory: 18277  loss: 2.5747  loss_ctc: 2.5747
+2026/01/06 13:31:17 - mmengine - INFO - Epoch(train)  [2][1900/4688]  lr: 2.1283e-04  eta: 11:03:04  time: 0.4775  data_time: 0.0018  memory: 18277  loss: 2.6579  loss_ctc: 2.6579
+2026/01/06 13:31:39 - mmengine - INFO - Epoch(train)  [2][1950/4688]  lr: 2.1349e-04  eta: 11:02:40  time: 0.4425  data_time: 0.0020  memory: 18277  loss: 2.4141  loss_ctc: 2.4141
+2026/01/06 13:32:02 - mmengine - INFO - Epoch(train)  [2][2000/4688]  lr: 2.1416e-04  eta: 11:02:21  time: 0.4574  data_time: 0.0022  memory: 18277  loss: 2.4618  loss_ctc: 2.4618
+2026/01/06 13:32:25 - mmengine - INFO - Epoch(train)  [2][2050/4688]  lr: 2.1483e-04  eta: 11:02:01  time: 0.4459  data_time: 0.0022  memory: 18277  loss: 2.5103  loss_ctc: 2.5103
+2026/01/06 13:32:48 - mmengine - INFO - Epoch(train)  [2][2100/4688]  lr: 2.1549e-04  eta: 11:01:35  time: 0.4842  data_time: 0.0019  memory: 18277  loss: 2.5473  loss_ctc: 2.5473
+2026/01/06 13:33:11 - mmengine - INFO - Epoch(train)  [2][2150/4688]  lr: 2.1616e-04  eta: 11:01:10  time: 0.4641  data_time: 0.0020  memory: 18277  loss: 2.4489  loss_ctc: 2.4489
+2026/01/06 13:33:33 - mmengine - INFO - Epoch(train)  [2][2200/4688]  lr: 2.1683e-04  eta: 11:00:47  time: 0.4462  data_time: 0.0019  memory: 18277  loss: 2.3259  loss_ctc: 2.3259
+2026/01/06 13:33:56 - mmengine - INFO - Epoch(train)  [2][2250/4688]  lr: 2.1749e-04  eta: 11:00:23  time: 0.4495  data_time: 0.0025  memory: 18277  loss: 2.4669  loss_ctc: 2.4669
+2026/01/06 13:34:19 - mmengine - INFO - Epoch(train)  [2][2300/4688]  lr: 2.1816e-04  eta: 11:00:02  time: 0.4634  data_time: 0.0020  memory: 18277  loss: 2.3704  loss_ctc: 2.3704
+2026/01/06 13:34:25 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:34:42 - mmengine - INFO - Epoch(train)  [2][2350/4688]  lr: 2.1883e-04  eta: 10:59:38  time: 0.4490  data_time: 0.0020  memory: 18277  loss: 2.1133  loss_ctc: 2.1133
+2026/01/06 13:35:05 - mmengine - INFO - Epoch(train)  [2][2400/4688]  lr: 2.1949e-04  eta: 10:59:19  time: 0.4510  data_time: 0.0019  memory: 18277  loss: 2.2064  loss_ctc: 2.2064
+2026/01/06 13:35:28 - mmengine - INFO - Epoch(train)  [2][2450/4688]  lr: 2.2016e-04  eta: 10:58:53  time: 0.4457  data_time: 0.0020  memory: 18277  loss: 2.3244  loss_ctc: 2.3244
+2026/01/06 13:35:51 - mmengine - INFO - Epoch(train)  [2][2500/4688]  lr: 2.2083e-04  eta: 10:58:33  time: 0.4679  data_time: 0.0021  memory: 18277  loss: 2.1611  loss_ctc: 2.1611
+2026/01/06 13:36:14 - mmengine - INFO - Epoch(train)  [2][2550/4688]  lr: 2.2149e-04  eta: 10:58:10  time: 0.4610  data_time: 0.0020  memory: 18277  loss: 2.2928  loss_ctc: 2.2928
+2026/01/06 13:36:37 - mmengine - INFO - Epoch(train)  [2][2600/4688]  lr: 2.2216e-04  eta: 10:57:51  time: 0.4616  data_time: 0.0022  memory: 18277  loss: 2.2324  loss_ctc: 2.2324
+2026/01/06 13:37:00 - mmengine - INFO - Epoch(train)  [2][2650/4688]  lr: 2.2283e-04  eta: 10:57:30  time: 0.4491  data_time: 0.0022  memory: 18277  loss: 2.1199  loss_ctc: 2.1199
+2026/01/06 13:37:23 - mmengine - INFO - Epoch(train)  [2][2700/4688]  lr: 2.2349e-04  eta: 10:57:12  time: 0.4669  data_time: 0.0021  memory: 18277  loss: 2.1457  loss_ctc: 2.1457
+2026/01/06 13:37:46 - mmengine - INFO - Epoch(train)  [2][2750/4688]  lr: 2.2416e-04  eta: 10:56:52  time: 0.4453  data_time: 0.0023  memory: 18277  loss: 2.0634  loss_ctc: 2.0634
+2026/01/06 13:38:09 - mmengine - INFO - Epoch(train)  [2][2800/4688]  lr: 2.2483e-04  eta: 10:56:29  time: 0.4491  data_time: 0.0023  memory: 18277  loss: 2.0796  loss_ctc: 2.0796
+2026/01/06 13:38:32 - mmengine - INFO - Epoch(train)  [2][2850/4688]  lr: 2.2549e-04  eta: 10:56:07  time: 0.4468  data_time: 0.0023  memory: 18277  loss: 2.0843  loss_ctc: 2.0843
+2026/01/06 13:38:54 - mmengine - INFO - Epoch(train)  [2][2900/4688]  lr: 2.2616e-04  eta: 10:55:42  time: 0.4527  data_time: 0.0021  memory: 18277  loss: 2.0063  loss_ctc: 2.0063
+2026/01/06 13:39:17 - mmengine - INFO - Epoch(train)  [2][2950/4688]  lr: 2.2683e-04  eta: 10:55:19  time: 0.4498  data_time: 0.0021  memory: 18277  loss: 2.2128  loss_ctc: 2.2128
+2026/01/06 13:39:40 - mmengine - INFO - Epoch(train)  [2][3000/4688]  lr: 2.2749e-04  eta: 10:54:56  time: 0.4418  data_time: 0.0020  memory: 18277  loss: 2.0005  loss_ctc: 2.0005
+2026/01/06 13:40:02 - mmengine - INFO - Epoch(train)  [2][3050/4688]  lr: 2.2816e-04  eta: 10:54:30  time: 0.4449  data_time: 0.0021  memory: 18277  loss: 1.9036  loss_ctc: 1.9036
+2026/01/06 13:40:25 - mmengine - INFO - Epoch(train)  [2][3100/4688]  lr: 2.2883e-04  eta: 10:54:03  time: 0.4462  data_time: 0.0019  memory: 18277  loss: 1.9959  loss_ctc: 1.9959
+2026/01/06 13:40:48 - mmengine - INFO - Epoch(train)  [2][3150/4688]  lr: 2.2949e-04  eta: 10:53:38  time: 0.4434  data_time: 0.0020  memory: 18277  loss: 1.9717  loss_ctc: 1.9717
+2026/01/06 13:41:10 - mmengine - INFO - Epoch(train)  [2][3200/4688]  lr: 2.3016e-04  eta: 10:53:16  time: 0.4473  data_time: 0.0021  memory: 18277  loss: 1.9561  loss_ctc: 1.9561
+2026/01/06 13:41:33 - mmengine - INFO - Epoch(train)  [2][3250/4688]  lr: 2.3083e-04  eta: 10:52:53  time: 0.4443  data_time: 0.0022  memory: 18277  loss: 2.1909  loss_ctc: 2.1909
+2026/01/06 13:41:57 - mmengine - INFO - Epoch(train)  [2][3300/4688]  lr: 2.3149e-04  eta: 10:52:37  time: 0.4868  data_time: 0.0020  memory: 18277  loss: 1.9407  loss_ctc: 1.9407
+2026/01/06 13:42:02 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:42:20 - mmengine - INFO - Epoch(train)  [2][3350/4688]  lr: 2.3216e-04  eta: 10:52:15  time: 0.4488  data_time: 0.0019  memory: 18277  loss: 1.9439  loss_ctc: 1.9439
+2026/01/06 13:42:43 - mmengine - INFO - Epoch(train)  [2][3400/4688]  lr: 2.3283e-04  eta: 10:51:53  time: 0.4707  data_time: 0.0019  memory: 18277  loss: 1.9363  loss_ctc: 1.9363
+2026/01/06 13:43:05 - mmengine - INFO - Epoch(train)  [2][3450/4688]  lr: 2.3349e-04  eta: 10:51:27  time: 0.4514  data_time: 0.0019  memory: 18277  loss: 1.8616  loss_ctc: 1.8616
+2026/01/06 13:43:28 - mmengine - INFO - Epoch(train)  [2][3500/4688]  lr: 2.3416e-04  eta: 10:51:04  time: 0.4687  data_time: 0.0019  memory: 18277  loss: 1.9627  loss_ctc: 1.9627
+2026/01/06 13:43:50 - mmengine - INFO - Epoch(train)  [2][3550/4688]  lr: 2.3483e-04  eta: 10:50:38  time: 0.4389  data_time: 0.0020  memory: 18277  loss: 1.9924  loss_ctc: 1.9924
+2026/01/06 13:44:13 - mmengine - INFO - Epoch(train)  [2][3600/4688]  lr: 2.3549e-04  eta: 10:50:14  time: 0.4558  data_time: 0.0022  memory: 18277  loss: 2.1207  loss_ctc: 2.1207
+2026/01/06 13:44:36 - mmengine - INFO - Epoch(train)  [2][3650/4688]  lr: 2.3616e-04  eta: 10:49:53  time: 0.4669  data_time: 0.0020  memory: 18277  loss: 1.9292  loss_ctc: 1.9292
+2026/01/06 13:44:59 - mmengine - INFO - Epoch(train)  [2][3700/4688]  lr: 2.3683e-04  eta: 10:49:29  time: 0.4684  data_time: 0.0020  memory: 18277  loss: 1.8674  loss_ctc: 1.8674
+2026/01/06 13:45:22 - mmengine - INFO - Epoch(train)  [2][3750/4688]  lr: 2.3749e-04  eta: 10:49:08  time: 0.4593  data_time: 0.0019  memory: 18277  loss: 1.6182  loss_ctc: 1.6182
+2026/01/06 13:45:44 - mmengine - INFO - Epoch(train)  [2][3800/4688]  lr: 2.3816e-04  eta: 10:48:41  time: 0.4353  data_time: 0.0019  memory: 18277  loss: 1.9008  loss_ctc: 1.9008
+2026/01/06 13:46:07 - mmengine - INFO - Epoch(train)  [2][3850/4688]  lr: 2.3883e-04  eta: 10:48:20  time: 0.4556  data_time: 0.0026  memory: 18277  loss: 1.8852  loss_ctc: 1.8852
+2026/01/06 13:46:30 - mmengine - INFO - Epoch(train)  [2][3900/4688]  lr: 2.3949e-04  eta: 10:48:01  time: 0.4813  data_time: 0.0023  memory: 18277  loss: 1.6789  loss_ctc: 1.6789
+2026/01/06 13:46:53 - mmengine - INFO - Epoch(train)  [2][3950/4688]  lr: 2.4016e-04  eta: 10:47:38  time: 0.4513  data_time: 0.0022  memory: 18277  loss: 1.8460  loss_ctc: 1.8460
+2026/01/06 13:47:16 - mmengine - INFO - Epoch(train)  [2][4000/4688]  lr: 2.4083e-04  eta: 10:47:14  time: 0.4691  data_time: 0.0023  memory: 18277  loss: 1.7574  loss_ctc: 1.7574
+2026/01/06 13:47:39 - mmengine - INFO - Epoch(train)  [2][4050/4688]  lr: 2.4149e-04  eta: 10:46:55  time: 0.4825  data_time: 0.0020  memory: 18277  loss: 1.7376  loss_ctc: 1.7376
+2026/01/06 13:48:02 - mmengine - INFO - Epoch(train)  [2][4100/4688]  lr: 2.4216e-04  eta: 10:46:32  time: 0.4603  data_time: 0.0019  memory: 18277  loss: 1.7281  loss_ctc: 1.7281
+2026/01/06 13:48:25 - mmengine - INFO - Epoch(train)  [2][4150/4688]  lr: 2.4283e-04  eta: 10:46:07  time: 0.4511  data_time: 0.0021  memory: 18277  loss: 1.7345  loss_ctc: 1.7345
+2026/01/06 13:48:47 - mmengine - INFO - Epoch(train)  [2][4200/4688]  lr: 2.4349e-04  eta: 10:45:42  time: 0.4428  data_time: 0.0019  memory: 18277  loss: 1.8503  loss_ctc: 1.8503
+2026/01/06 13:49:10 - mmengine - INFO - Epoch(train)  [2][4250/4688]  lr: 2.4416e-04  eta: 10:45:22  time: 0.4683  data_time: 0.0019  memory: 18277  loss: 1.8299  loss_ctc: 1.8299
+2026/01/06 13:49:33 - mmengine - INFO - Epoch(train)  [2][4300/4688]  lr: 2.4483e-04  eta: 10:44:59  time: 0.4508  data_time: 0.0025  memory: 18277  loss: 1.7571  loss_ctc: 1.7571
+2026/01/06 13:49:39 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:49:56 - mmengine - INFO - Epoch(train)  [2][4350/4688]  lr: 2.4549e-04  eta: 10:44:37  time: 0.4434  data_time: 0.0021  memory: 18277  loss: 1.6725  loss_ctc: 1.6725
+2026/01/06 13:50:19 - mmengine - INFO - Epoch(train)  [2][4400/4688]  lr: 2.4616e-04  eta: 10:44:12  time: 0.4461  data_time: 0.0022  memory: 18277  loss: 1.9085  loss_ctc: 1.9085
+2026/01/06 13:50:42 - mmengine - INFO - Epoch(train)  [2][4450/4688]  lr: 2.4683e-04  eta: 10:43:50  time: 0.4653  data_time: 0.0022  memory: 18277  loss: 1.7329  loss_ctc: 1.7329
+2026/01/06 13:51:05 - mmengine - INFO - Epoch(train)  [2][4500/4688]  lr: 2.4749e-04  eta: 10:43:30  time: 0.4607  data_time: 0.0019  memory: 18277  loss: 1.6971  loss_ctc: 1.6971
+2026/01/06 13:51:27 - mmengine - INFO - Epoch(train)  [2][4550/4688]  lr: 2.4816e-04  eta: 10:43:05  time: 0.4330  data_time: 0.0021  memory: 18277  loss: 1.6905  loss_ctc: 1.6905
+2026/01/06 13:51:50 - mmengine - INFO - Epoch(train)  [2][4600/4688]  lr: 2.4883e-04  eta: 10:42:39  time: 0.4463  data_time: 0.0019  memory: 18277  loss: 1.6174  loss_ctc: 1.6174
+2026/01/06 13:52:13 - mmengine - INFO - Epoch(train)  [2][4650/4688]  lr: 2.4949e-04  eta: 10:42:15  time: 0.4666  data_time: 0.0020  memory: 18277  loss: 1.6960  loss_ctc: 1.6960
+2026/01/06 13:52:29 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:52:29 - mmengine - INFO - Saving checkpoint at 2 epochs
+2026/01/06 13:52:39 - mmengine - INFO - Epoch(val) [2][20/20]    PretrainCN/recog/word_acc: 0.5068  PretrainCN/recog/1-N.E.D: 0.7979  data_time: 0.0190  time: 0.3557
+2026/01/06 13:53:06 - mmengine - INFO - Epoch(train)  [3][  50/4688]  lr: 2.5000e-04  eta: 10:42:03  time: 0.4551  data_time: 0.0020  memory: 18277  loss: 1.6193  loss_ctc: 1.6193
+2026/01/06 13:53:29 - mmengine - INFO - Epoch(train)  [3][ 100/4688]  lr: 2.5000e-04  eta: 10:41:44  time: 0.4801  data_time: 0.0021  memory: 18277  loss: 1.6420  loss_ctc: 1.6420
+2026/01/06 13:53:52 - mmengine - INFO - Epoch(train)  [3][ 150/4688]  lr: 2.5000e-04  eta: 10:41:20  time: 0.4530  data_time: 0.0022  memory: 18277  loss: 1.5603  loss_ctc: 1.5603
+2026/01/06 13:54:14 - mmengine - INFO - Epoch(train)  [3][ 200/4688]  lr: 2.5000e-04  eta: 10:40:55  time: 0.4425  data_time: 0.0020  memory: 18277  loss: 1.5916  loss_ctc: 1.5916
+2026/01/06 13:54:37 - mmengine - INFO - Epoch(train)  [3][ 250/4688]  lr: 2.5000e-04  eta: 10:40:32  time: 0.4446  data_time: 0.0021  memory: 18277  loss: 1.7246  loss_ctc: 1.7246
+2026/01/06 13:55:00 - mmengine - INFO - Epoch(train)  [3][ 300/4688]  lr: 2.4999e-04  eta: 10:40:09  time: 0.4584  data_time: 0.0020  memory: 18277  loss: 1.7639  loss_ctc: 1.7639
+2026/01/06 13:55:22 - mmengine - INFO - Epoch(train)  [3][ 350/4688]  lr: 2.4999e-04  eta: 10:39:39  time: 0.4354  data_time: 0.0019  memory: 18277  loss: 1.6635  loss_ctc: 1.6635
+2026/01/06 13:55:45 - mmengine - INFO - Epoch(train)  [3][ 400/4688]  lr: 2.4999e-04  eta: 10:39:16  time: 0.4607  data_time: 0.0022  memory: 18277  loss: 1.5345  loss_ctc: 1.5345
+2026/01/06 13:56:08 - mmengine - INFO - Epoch(train)  [3][ 450/4688]  lr: 2.4998e-04  eta: 10:38:53  time: 0.4468  data_time: 0.0021  memory: 18277  loss: 1.5412  loss_ctc: 1.5412
+2026/01/06 13:56:30 - mmengine - INFO - Epoch(train)  [3][ 500/4688]  lr: 2.4998e-04  eta: 10:38:28  time: 0.4760  data_time: 0.0021  memory: 18277  loss: 1.5526  loss_ctc: 1.5526
+2026/01/06 13:56:53 - mmengine - INFO - Epoch(train)  [3][ 550/4688]  lr: 2.4998e-04  eta: 10:38:04  time: 0.4444  data_time: 0.0022  memory: 18277  loss: 1.4640  loss_ctc: 1.4640
+2026/01/06 13:57:15 - mmengine - INFO - Epoch(train)  [3][ 600/4688]  lr: 2.4997e-04  eta: 10:37:38  time: 0.4383  data_time: 0.0019  memory: 18277  loss: 1.4392  loss_ctc: 1.4392
+2026/01/06 13:57:26 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 13:57:39 - mmengine - INFO - Epoch(train)  [3][ 650/4688]  lr: 2.4997e-04  eta: 10:37:19  time: 0.4698  data_time: 0.0021  memory: 18277  loss: 1.7258  loss_ctc: 1.7258
+2026/01/06 13:58:01 - mmengine - INFO - Epoch(train)  [3][ 700/4688]  lr: 2.4996e-04  eta: 10:36:51  time: 0.4423  data_time: 0.0019  memory: 18277  loss: 1.5195  loss_ctc: 1.5195
+2026/01/06 13:58:24 - mmengine - INFO - Epoch(train)  [3][ 750/4688]  lr: 2.4996e-04  eta: 10:36:27  time: 0.4433  data_time: 0.0019  memory: 18277  loss: 1.5438  loss_ctc: 1.5438
+2026/01/06 13:58:46 - mmengine - INFO - Epoch(train)  [3][ 800/4688]  lr: 2.4995e-04  eta: 10:36:03  time: 0.4526  data_time: 0.0021  memory: 18277  loss: 1.5336  loss_ctc: 1.5336
+2026/01/06 13:59:09 - mmengine - INFO - Epoch(train)  [3][ 850/4688]  lr: 2.4994e-04  eta: 10:35:38  time: 0.4621  data_time: 0.0025  memory: 18277  loss: 1.6214  loss_ctc: 1.6214
+2026/01/06 13:59:32 - mmengine - INFO - Epoch(train)  [3][ 900/4688]  lr: 2.4994e-04  eta: 10:35:17  time: 0.4801  data_time: 0.0022  memory: 18277  loss: 1.4051  loss_ctc: 1.4051
+2026/01/06 13:59:54 - mmengine - INFO - Epoch(train)  [3][ 950/4688]  lr: 2.4993e-04  eta: 10:34:52  time: 0.4452  data_time: 0.0028  memory: 18277  loss: 1.5062  loss_ctc: 1.5062
+2026/01/06 14:00:17 - mmengine - INFO - Epoch(train)  [3][1000/4688]  lr: 2.4992e-04  eta: 10:34:29  time: 0.4674  data_time: 0.0022  memory: 18277  loss: 1.4965  loss_ctc: 1.4965
+2026/01/06 14:00:40 - mmengine - INFO - Epoch(train)  [3][1050/4688]  lr: 2.4991e-04  eta: 10:34:05  time: 0.4468  data_time: 0.0021  memory: 18277  loss: 1.4009  loss_ctc: 1.4009
+2026/01/06 14:01:03 - mmengine - INFO - Epoch(train)  [3][1100/4688]  lr: 2.4991e-04  eta: 10:33:43  time: 0.4632  data_time: 0.0020  memory: 18277  loss: 1.5048  loss_ctc: 1.5048
+2026/01/06 14:01:26 - mmengine - INFO - Epoch(train)  [3][1150/4688]  lr: 2.4990e-04  eta: 10:33:19  time: 0.4520  data_time: 0.0020  memory: 18277  loss: 1.3043  loss_ctc: 1.3043
+2026/01/06 14:01:49 - mmengine - INFO - Epoch(train)  [3][1200/4688]  lr: 2.4989e-04  eta: 10:33:00  time: 0.4736  data_time: 0.0022  memory: 18277  loss: 1.5392  loss_ctc: 1.5392
+2026/01/06 14:02:12 - mmengine - INFO - Epoch(train)  [3][1250/4688]  lr: 2.4988e-04  eta: 10:32:41  time: 0.4562  data_time: 0.0026  memory: 18277  loss: 1.4549  loss_ctc: 1.4549
+2026/01/06 14:02:35 - mmengine - INFO - Epoch(train)  [3][1300/4688]  lr: 2.4987e-04  eta: 10:32:18  time: 0.4533  data_time: 0.0021  memory: 18277  loss: 1.5308  loss_ctc: 1.5308
+2026/01/06 14:02:58 - mmengine - INFO - Epoch(train)  [3][1350/4688]  lr: 2.4986e-04  eta: 10:31:55  time: 0.4669  data_time: 0.0021  memory: 18277  loss: 1.4066  loss_ctc: 1.4066
+2026/01/06 14:03:21 - mmengine - INFO - Epoch(train)  [3][1400/4688]  lr: 2.4985e-04  eta: 10:31:34  time: 0.4580  data_time: 0.0019  memory: 18277  loss: 1.4863  loss_ctc: 1.4863
+2026/01/06 14:03:43 - mmengine - INFO - Epoch(train)  [3][1450/4688]  lr: 2.4984e-04  eta: 10:31:09  time: 0.4679  data_time: 0.0020  memory: 18277  loss: 1.3935  loss_ctc: 1.3935
+2026/01/06 14:04:06 - mmengine - INFO - Epoch(train)  [3][1500/4688]  lr: 2.4983e-04  eta: 10:30:43  time: 0.4393  data_time: 0.0019  memory: 18277  loss: 1.3231  loss_ctc: 1.3231
+2026/01/06 14:04:29 - mmengine - INFO - Epoch(train)  [3][1550/4688]  lr: 2.4981e-04  eta: 10:30:22  time: 0.4575  data_time: 0.0021  memory: 18277  loss: 1.3804  loss_ctc: 1.3804
+2026/01/06 14:04:52 - mmengine - INFO - Epoch(train)  [3][1600/4688]  lr: 2.4980e-04  eta: 10:29:58  time: 0.4422  data_time: 0.0021  memory: 18277  loss: 1.4436  loss_ctc: 1.4436
+2026/01/06 14:05:03 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 14:05:15 - mmengine - INFO - Epoch(train)  [3][1650/4688]  lr: 2.4979e-04  eta: 10:29:37  time: 0.4631  data_time: 0.0022  memory: 18277  loss: 1.4947  loss_ctc: 1.4947
+2026/01/06 14:05:38 - mmengine - INFO - Epoch(train)  [3][1700/4688]  lr: 2.4978e-04  eta: 10:29:14  time: 0.4537  data_time: 0.0024  memory: 18277  loss: 1.4351  loss_ctc: 1.4351
+2026/01/06 14:06:01 - mmengine - INFO - Epoch(train)  [3][1750/4688]  lr: 2.4976e-04  eta: 10:28:54  time: 0.4589  data_time: 0.0023  memory: 18277  loss: 1.6122  loss_ctc: 1.6122
+2026/01/06 14:06:24 - mmengine - INFO - Epoch(train)  [3][1800/4688]  lr: 2.4975e-04  eta: 10:28:33  time: 0.4607  data_time: 0.0023  memory: 18277  loss: 1.5718  loss_ctc: 1.5718
+2026/01/06 14:06:47 - mmengine - INFO - Epoch(train)  [3][1850/4688]  lr: 2.4973e-04  eta: 10:28:10  time: 0.4498  data_time: 0.0021  memory: 18277  loss: 1.3943  loss_ctc: 1.3943
+2026/01/06 14:07:09 - mmengine - INFO - Epoch(train)  [3][1900/4688]  lr: 2.4972e-04  eta: 10:27:45  time: 0.4517  data_time: 0.0019  memory: 18277  loss: 1.4052  loss_ctc: 1.4052
+2026/01/06 14:07:32 - mmengine - INFO - Epoch(train)  [3][1950/4688]  lr: 2.4970e-04  eta: 10:27:24  time: 0.4702  data_time: 0.0021  memory: 18277  loss: 1.2970  loss_ctc: 1.2970
+2026/01/06 14:07:55 - mmengine - INFO - Epoch(train)  [3][2000/4688]  lr: 2.4969e-04  eta: 10:27:02  time: 0.4729  data_time: 0.0018  memory: 18277  loss: 1.3939  loss_ctc: 1.3939
+2026/01/06 14:08:18 - mmengine - INFO - Epoch(train)  [3][2050/4688]  lr: 2.4967e-04  eta: 10:26:38  time: 0.4418  data_time: 0.0019  memory: 18277  loss: 1.5129  loss_ctc: 1.5129
+2026/01/06 14:08:41 - mmengine - INFO - Epoch(train)  [3][2100/4688]  lr: 2.4966e-04  eta: 10:26:18  time: 0.4673  data_time: 0.0019  memory: 18277  loss: 1.3076  loss_ctc: 1.3076
+2026/01/06 14:09:03 - mmengine - INFO - Epoch(train)  [3][2150/4688]  lr: 2.4964e-04  eta: 10:25:52  time: 0.4348  data_time: 0.0020  memory: 18277  loss: 1.3654  loss_ctc: 1.3654
+2026/01/06 14:09:27 - mmengine - INFO - Epoch(train)  [3][2200/4688]  lr: 2.4962e-04  eta: 10:25:31  time: 0.4633  data_time: 0.0020  memory: 18277  loss: 1.2564  loss_ctc: 1.2564
+2026/01/06 14:09:49 - mmengine - INFO - Epoch(train)  [3][2250/4688]  lr: 2.4961e-04  eta: 10:25:08  time: 0.4531  data_time: 0.0021  memory: 18277  loss: 1.3134  loss_ctc: 1.3134
+2026/01/06 14:10:12 - mmengine - INFO - Epoch(train)  [3][2300/4688]  lr: 2.4959e-04  eta: 10:24:44  time: 0.4586  data_time: 0.0019  memory: 18277  loss: 1.2410  loss_ctc: 1.2410
+2026/01/06 14:10:35 - mmengine - INFO - Epoch(train)  [3][2350/4688]  lr: 2.4957e-04  eta: 10:24:22  time: 0.4514  data_time: 0.0020  memory: 18277  loss: 1.2824  loss_ctc: 1.2824
+2026/01/06 14:10:58 - mmengine - INFO - Epoch(train)  [3][2400/4688]  lr: 2.4955e-04  eta: 10:24:02  time: 0.4880  data_time: 0.0021  memory: 18277  loss: 1.3583  loss_ctc: 1.3583
+2026/01/06 14:11:21 - mmengine - INFO - Epoch(train)  [3][2450/4688]  lr: 2.4953e-04  eta: 10:23:37  time: 0.4556  data_time: 0.0019  memory: 18277  loss: 1.2227  loss_ctc: 1.2227
+2026/01/06 14:11:43 - mmengine - INFO - Epoch(train)  [3][2500/4688]  lr: 2.4951e-04  eta: 10:23:12  time: 0.4613  data_time: 0.0019  memory: 18277  loss: 1.1789  loss_ctc: 1.1789
+2026/01/06 14:12:06 - mmengine - INFO - Epoch(train)  [3][2550/4688]  lr: 2.4950e-04  eta: 10:22:48  time: 0.4589  data_time: 0.0022  memory: 18277  loss: 1.2821  loss_ctc: 1.2821
+2026/01/06 14:12:29 - mmengine - INFO - Epoch(train)  [3][2600/4688]  lr: 2.4948e-04  eta: 10:22:25  time: 0.4710  data_time: 0.0022  memory: 18277  loss: 1.4256  loss_ctc: 1.4256
+2026/01/06 14:12:40 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 14:12:51 - mmengine - INFO - Epoch(train)  [3][2650/4688]  lr: 2.4945e-04  eta: 10:22:01  time: 0.4422  data_time: 0.0021  memory: 18277  loss: 1.2809  loss_ctc: 1.2809
+2026/01/06 14:13:14 - mmengine - INFO - Epoch(train)  [3][2700/4688]  lr: 2.4943e-04  eta: 10:21:38  time: 0.4750  data_time: 0.0021  memory: 18277  loss: 1.2081  loss_ctc: 1.2081
+2026/01/06 14:13:37 - mmengine - INFO - Epoch(train)  [3][2750/4688]  lr: 2.4941e-04  eta: 10:21:15  time: 0.4457  data_time: 0.0020  memory: 18277  loss: 1.3364  loss_ctc: 1.3364
+2026/01/06 14:14:00 - mmengine - INFO - Epoch(train)  [3][2800/4688]  lr: 2.4939e-04  eta: 10:20:51  time: 0.4342  data_time: 0.0019  memory: 18277  loss: 1.1636  loss_ctc: 1.1636
+2026/01/06 14:14:23 - mmengine - INFO - Epoch(train)  [3][2850/4688]  lr: 2.4937e-04  eta: 10:20:29  time: 0.4599  data_time: 0.0021  memory: 18277  loss: 1.2724  loss_ctc: 1.2724
+2026/01/06 14:14:46 - mmengine - INFO - Epoch(train)  [3][2900/4688]  lr: 2.4935e-04  eta: 10:20:08  time: 0.4722  data_time: 0.0021  memory: 18277  loss: 1.3051  loss_ctc: 1.3051
+2026/01/06 14:15:09 - mmengine - INFO - Epoch(train)  [3][2950/4688]  lr: 2.4932e-04  eta: 10:19:46  time: 0.4760  data_time: 0.0021  memory: 18277  loss: 1.1808  loss_ctc: 1.1808
+2026/01/06 14:15:31 - mmengine - INFO - Epoch(train)  [3][3000/4688]  lr: 2.4930e-04  eta: 10:19:23  time: 0.4436  data_time: 0.0022  memory: 18277  loss: 1.1770  loss_ctc: 1.1770
+2026/01/06 14:15:54 - mmengine - INFO - Epoch(train)  [3][3050/4688]  lr: 2.4928e-04  eta: 10:19:00  time: 0.4611  data_time: 0.0019  memory: 18277  loss: 1.2359  loss_ctc: 1.2359
+2026/01/06 14:16:17 - mmengine - INFO - Epoch(train)  [3][3100/4688]  lr: 2.4925e-04  eta: 10:18:39  time: 0.4659  data_time: 0.0020  memory: 18277  loss: 1.2354  loss_ctc: 1.2354
+2026/01/06 14:16:40 - mmengine - INFO - Epoch(train)  [3][3150/4688]  lr: 2.4923e-04  eta: 10:18:17  time: 0.4541  data_time: 0.0022  memory: 18277  loss: 1.3194  loss_ctc: 1.3194
+2026/01/06 14:17:03 - mmengine - INFO - Epoch(train)  [3][3200/4688]  lr: 2.4921e-04  eta: 10:17:55  time: 0.4474  data_time: 0.0021  memory: 18277  loss: 1.2353  loss_ctc: 1.2353
+2026/01/06 14:17:26 - mmengine - INFO - Epoch(train)  [3][3250/4688]  lr: 2.4918e-04  eta: 10:17:32  time: 0.4781  data_time: 0.0019  memory: 18277  loss: 1.1450  loss_ctc: 1.1450
+2026/01/06 14:17:49 - mmengine - INFO - Epoch(train)  [3][3300/4688]  lr: 2.4915e-04  eta: 10:17:10  time: 0.4603  data_time: 0.0021  memory: 18277  loss: 1.2450  loss_ctc: 1.2450
+2026/01/06 14:18:12 - mmengine - INFO - Epoch(train)  [3][3350/4688]  lr: 2.4913e-04  eta: 10:16:48  time: 0.4737  data_time: 0.0020  memory: 18277  loss: 1.2556  loss_ctc: 1.2556
+2026/01/06 14:18:35 - mmengine - INFO - Epoch(train)  [3][3400/4688]  lr: 2.4910e-04  eta: 10:16:25  time: 0.4526  data_time: 0.0020  memory: 18277  loss: 1.2693  loss_ctc: 1.2693
+2026/01/06 14:18:58 - mmengine - INFO - Epoch(train)  [3][3450/4688]  lr: 2.4908e-04  eta: 10:16:01  time: 0.4500  data_time: 0.0022  memory: 18277  loss: 1.2964  loss_ctc: 1.2964
+2026/01/06 14:19:20 - mmengine - INFO - Epoch(train)  [3][3500/4688]  lr: 2.4905e-04  eta: 10:15:36  time: 0.4618  data_time: 0.0019  memory: 18277  loss: 1.2250  loss_ctc: 1.2250
+2026/01/06 14:19:43 - mmengine - INFO - Epoch(train)  [3][3550/4688]  lr: 2.4902e-04  eta: 10:15:14  time: 0.4582  data_time: 0.0020  memory: 18277  loss: 1.3151  loss_ctc: 1.3151
+2026/01/06 14:20:06 - mmengine - INFO - Epoch(train)  [3][3600/4688]  lr: 2.4899e-04  eta: 10:14:50  time: 0.4386  data_time: 0.0019  memory: 18277  loss: 1.1710  loss_ctc: 1.1710
+2026/01/06 14:20:17 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 14:20:29 - mmengine - INFO - Epoch(train)  [3][3650/4688]  lr: 2.4897e-04  eta: 10:14:29  time: 0.4579  data_time: 0.0022  memory: 18277  loss: 1.2061  loss_ctc: 1.2061
+2026/01/06 14:20:52 - mmengine - INFO - Epoch(train)  [3][3700/4688]  lr: 2.4894e-04  eta: 10:14:08  time: 0.4814  data_time: 0.0021  memory: 18277  loss: 1.3025  loss_ctc: 1.3025
+2026/01/06 14:21:15 - mmengine - INFO - Epoch(train)  [3][3750/4688]  lr: 2.4891e-04  eta: 10:13:47  time: 0.4531  data_time: 0.0021  memory: 18277  loss: 1.1678  loss_ctc: 1.1678
+2026/01/06 14:21:38 - mmengine - INFO - Epoch(train)  [3][3800/4688]  lr: 2.4888e-04  eta: 10:13:25  time: 0.4450  data_time: 0.0024  memory: 18277  loss: 1.2980  loss_ctc: 1.2980
+2026/01/06 14:22:01 - mmengine - INFO - Epoch(train)  [3][3850/4688]  lr: 2.4885e-04  eta: 10:13:01  time: 0.4517  data_time: 0.0021  memory: 18277  loss: 1.1090  loss_ctc: 1.1090
+2026/01/06 14:22:23 - mmengine - INFO - Epoch(train)  [3][3900/4688]  lr: 2.4882e-04  eta: 10:12:37  time: 0.4676  data_time: 0.0021  memory: 18277  loss: 1.1309  loss_ctc: 1.1309
+2026/01/06 14:22:46 - mmengine - INFO - Epoch(train)  [3][3950/4688]  lr: 2.4879e-04  eta: 10:12:14  time: 0.4630  data_time: 0.0018  memory: 18277  loss: 1.2158  loss_ctc: 1.2158
+2026/01/06 14:23:09 - mmengine - INFO - Epoch(train)  [3][4000/4688]  lr: 2.4876e-04  eta: 10:11:52  time: 0.4492  data_time: 0.0019  memory: 18277  loss: 1.2491  loss_ctc: 1.2491
+2026/01/06 14:23:32 - mmengine - INFO - Epoch(train)  [3][4050/4688]  lr: 2.4873e-04  eta: 10:11:29  time: 0.4562  data_time: 0.0021  memory: 18277  loss: 1.1503  loss_ctc: 1.1503
+2026/01/06 14:23:55 - mmengine - INFO - Epoch(train)  [3][4100/4688]  lr: 2.4870e-04  eta: 10:11:05  time: 0.4535  data_time: 0.0020  memory: 18277  loss: 1.2111  loss_ctc: 1.2111
+2026/01/06 14:24:17 - mmengine - INFO - Epoch(train)  [3][4150/4688]  lr: 2.4866e-04  eta: 10:10:41  time: 0.4568  data_time: 0.0021  memory: 18277  loss: 1.2377  loss_ctc: 1.2377
+2026/01/06 14:24:40 - mmengine - INFO - Epoch(train)  [3][4200/4688]  lr: 2.4863e-04  eta: 10:10:15  time: 0.4388  data_time: 0.0020  memory: 18277  loss: 1.1227  loss_ctc: 1.1227
+2026/01/06 14:25:02 - mmengine - INFO - Epoch(train)  [3][4250/4688]  lr: 2.4860e-04  eta: 10:09:50  time: 0.4561  data_time: 0.0019  memory: 18277  loss: 1.3163  loss_ctc: 1.3163
+2026/01/06 14:25:25 - mmengine - INFO - Epoch(train)  [3][4300/4688]  lr: 2.4857e-04  eta: 10:09:27  time: 0.4385  data_time: 0.0020  memory: 18277  loss: 1.1680  loss_ctc: 1.1680
+2026/01/06 14:25:47 - mmengine - INFO - Epoch(train)  [3][4350/4688]  lr: 2.4853e-04  eta: 10:09:03  time: 0.4766  data_time: 0.0020  memory: 18277  loss: 1.2066  loss_ctc: 1.2066
+2026/01/06 14:26:10 - mmengine - INFO - Epoch(train)  [3][4400/4688]  lr: 2.4850e-04  eta: 10:08:41  time: 0.4548  data_time: 0.0021  memory: 18277  loss: 1.2678  loss_ctc: 1.2678
+2026/01/06 14:26:33 - mmengine - INFO - Epoch(train)  [3][4450/4688]  lr: 2.4846e-04  eta: 10:08:17  time: 0.4497  data_time: 0.0020  memory: 18277  loss: 1.1834  loss_ctc: 1.1834
+2026/01/06 14:26:56 - mmengine - INFO - Epoch(train)  [3][4500/4688]  lr: 2.4843e-04  eta: 10:07:52  time: 0.4405  data_time: 0.0020  memory: 18277  loss: 1.0990  loss_ctc: 1.0990
+2026/01/06 14:27:18 - mmengine - INFO - Epoch(train)  [3][4550/4688]  lr: 2.4839e-04  eta: 10:07:29  time: 0.4554  data_time: 0.0021  memory: 18277  loss: 1.1496  loss_ctc: 1.1496
+2026/01/06 14:27:41 - mmengine - INFO - Epoch(train)  [3][4600/4688]  lr: 2.4836e-04  eta: 10:07:04  time: 0.4357  data_time: 0.0020  memory: 18277  loss: 1.1120  loss_ctc: 1.1120
+2026/01/06 14:27:52 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 14:28:04 - mmengine - INFO - Epoch(train)  [3][4650/4688]  lr: 2.4832e-04  eta: 10:06:43  time: 0.4726  data_time: 0.0021  memory: 18277  loss: 1.0111  loss_ctc: 1.0111
+2026/01/06 14:28:21 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 14:28:21 - mmengine - INFO - Saving checkpoint at 3 epochs
+2026/01/06 14:28:31 - mmengine - INFO - Epoch(val) [3][20/20]    PretrainCN/recog/word_acc: 0.6718  PretrainCN/recog/1-N.E.D: 0.8759  data_time: 0.0192  time: 0.3494
+2026/01/06 14:28:57 - mmengine - INFO - Epoch(train)  [4][  50/4688]  lr: 2.4826e-04  eta: 10:06:22  time: 0.4391  data_time: 0.0020  memory: 18277  loss: 1.0675  loss_ctc: 1.0675
+2026/01/06 14:29:20 - mmengine - INFO - Epoch(train)  [4][ 100/4688]  lr: 2.4822e-04  eta: 10:05:58  time: 0.4600  data_time: 0.0022  memory: 18277  loss: 1.1995  loss_ctc: 1.1995
+2026/01/06 14:29:43 - mmengine - INFO - Epoch(train)  [4][ 150/4688]  lr: 2.4819e-04  eta: 10:05:37  time: 0.4467  data_time: 0.0021  memory: 18277  loss: 1.2210  loss_ctc: 1.2210
+2026/01/06 14:30:06 - mmengine - INFO - Epoch(train)  [4][ 200/4688]  lr: 2.4815e-04  eta: 10:05:14  time: 0.4586  data_time: 0.0020  memory: 18277  loss: 1.0795  loss_ctc: 1.0795
+2026/01/06 14:30:29 - mmengine - INFO - Epoch(train)  [4][ 250/4688]  lr: 2.4811e-04  eta: 10:04:50  time: 0.4393  data_time: 0.0021  memory: 18277  loss: 1.1103  loss_ctc: 1.1103
+2026/01/06 14:30:51 - mmengine - INFO - Epoch(train)  [4][ 300/4688]  lr: 2.4807e-04  eta: 10:04:26  time: 0.4589  data_time: 0.0020  memory: 18277  loss: 1.1548  loss_ctc: 1.1548
+2026/01/06 14:31:14 - mmengine - INFO - Epoch(train)  [4][ 350/4688]  lr: 2.4803e-04  eta: 10:04:04  time: 0.4653  data_time: 0.0021  memory: 18277  loss: 1.1724  loss_ctc: 1.1724
+2026/01/06 14:31:37 - mmengine - INFO - Epoch(train)  [4][ 400/4688]  lr: 2.4799e-04  eta: 10:03:39  time: 0.4453  data_time: 0.0019  memory: 18277  loss: 1.0315  loss_ctc: 1.0315
+2026/01/06 14:32:00 - mmengine - INFO - Epoch(train)  [4][ 450/4688]  lr: 2.4795e-04  eta: 10:03:17  time: 0.4537  data_time: 0.0021  memory: 18277  loss: 1.0766  loss_ctc: 1.0766
+2026/01/06 14:32:22 - mmengine - INFO - Epoch(train)  [4][ 500/4688]  lr: 2.4791e-04  eta: 10:02:53  time: 0.4609  data_time: 0.0022  memory: 18277  loss: 1.1042  loss_ctc: 1.1042
+2026/01/06 14:32:45 - mmengine - INFO - Epoch(train)  [4][ 550/4688]  lr: 2.4787e-04  eta: 10:02:29  time: 0.4623  data_time: 0.0020  memory: 18277  loss: 1.0654  loss_ctc: 1.0654
+2026/01/06 14:33:07 - mmengine - INFO - Epoch(train)  [4][ 600/4688]  lr: 2.4783e-04  eta: 10:02:04  time: 0.4396  data_time: 0.0021  memory: 18277  loss: 1.2200  loss_ctc: 1.2200
+2026/01/06 14:33:30 - mmengine - INFO - Epoch(train)  [4][ 650/4688]  lr: 2.4779e-04  eta: 10:01:40  time: 0.4344  data_time: 0.0019  memory: 18277  loss: 1.0537  loss_ctc: 1.0537
+2026/01/06 14:33:53 - mmengine - INFO - Epoch(train)  [4][ 700/4688]  lr: 2.4775e-04  eta: 10:01:17  time: 0.4554  data_time: 0.0022  memory: 18277  loss: 1.0490  loss_ctc: 1.0490
+2026/01/06 14:34:16 - mmengine - INFO - Epoch(train)  [4][ 750/4688]  lr: 2.4771e-04  eta: 10:00:54  time: 0.4624  data_time: 0.0020  memory: 18277  loss: 1.0295  loss_ctc: 1.0295
+2026/01/06 14:34:38 - mmengine - INFO - Epoch(train)  [4][ 800/4688]  lr: 2.4767e-04  eta: 10:00:31  time: 0.4543  data_time: 0.0020  memory: 18277  loss: 1.0381  loss_ctc: 1.0381
+2026/01/06 14:35:01 - mmengine - INFO - Epoch(train)  [4][ 850/4688]  lr: 2.4762e-04  eta: 10:00:07  time: 0.4415  data_time: 0.0022  memory: 18277  loss: 1.0202  loss_ctc: 1.0202
+2026/01/06 14:35:23 - mmengine - INFO - Epoch(train)  [4][ 900/4688]  lr: 2.4758e-04  eta: 9:59:42  time: 0.4458  data_time: 0.0021  memory: 18277  loss: 1.1993  loss_ctc: 1.1993
+2026/01/06 14:35:40 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 14:35:46 - mmengine - INFO - Epoch(train)  [4][ 950/4688]  lr: 2.4754e-04  eta: 9:59:18  time: 0.4610  data_time: 0.0019  memory: 18277  loss: 1.1152  loss_ctc: 1.1152
+2026/01/06 14:36:09 - mmengine - INFO - Epoch(train)  [4][1000/4688]  lr: 2.4749e-04  eta: 9:58:57  time: 0.4718  data_time: 0.0020  memory: 18277  loss: 1.2218  loss_ctc: 1.2218
+2026/01/06 14:36:32 - mmengine - INFO - Epoch(train)  [4][1050/4688]  lr: 2.4745e-04  eta: 9:58:34  time: 0.4593  data_time: 0.0024  memory: 18277  loss: 1.1268  loss_ctc: 1.1268
+2026/01/06 14:36:55 - mmengine - INFO - Epoch(train)  [4][1100/4688]  lr: 2.4741e-04  eta: 9:58:11  time: 0.4413  data_time: 0.0020  memory: 18277  loss: 1.0680  loss_ctc: 1.0680
+2026/01/06 14:37:18 - mmengine - INFO - Epoch(train)  [4][1150/4688]  lr: 2.4736e-04  eta: 9:57:47  time: 0.4671  data_time: 0.0020  memory: 18277  loss: 1.0053  loss_ctc: 1.0053
+2026/01/06 14:37:40 - mmengine - INFO - Epoch(train)  [4][1200/4688]  lr: 2.4732e-04  eta: 9:57:24  time: 0.4600  data_time: 0.0023  memory: 18277  loss: 1.1455  loss_ctc: 1.1455
+2026/01/06 14:38:03 - mmengine - INFO - Epoch(train)  [4][1250/4688]  lr: 2.4727e-04  eta: 9:57:00  time: 0.4363  data_time: 0.0019  memory: 18277  loss: 1.0900  loss_ctc: 1.0900
+2026/01/06 14:38:26 - mmengine - INFO - Epoch(train)  [4][1300/4688]  lr: 2.4722e-04  eta: 9:56:36  time: 0.4385  data_time: 0.0020  memory: 18277  loss: 1.1092  loss_ctc: 1.1092
+2026/01/06 14:38:48 - mmengine - INFO - Epoch(train)  [4][1350/4688]  lr: 2.4718e-04  eta: 9:56:11  time: 0.4529  data_time: 0.0021  memory: 18277  loss: 1.0606  loss_ctc: 1.0606
+2026/01/06 14:39:11 - mmengine - INFO - Epoch(train)  [4][1400/4688]  lr: 2.4713e-04  eta: 9:55:47  time: 0.4723  data_time: 0.0022  memory: 18277  loss: 1.0469  loss_ctc: 1.0469
+2026/01/06 14:39:33 - mmengine - INFO - Epoch(train)  [4][1450/4688]  lr: 2.4708e-04  eta: 9:55:24  time: 0.4506  data_time: 0.0020  memory: 18277  loss: 1.0331  loss_ctc: 1.0331
+2026/01/06 14:39:56 - mmengine - INFO - Epoch(train)  [4][1500/4688]  lr: 2.4704e-04  eta: 9:55:00  time: 0.4507  data_time: 0.0022  memory: 18277  loss: 1.0352  loss_ctc: 1.0352
+2026/01/06 14:40:18 - mmengine - INFO - Epoch(train)  [4][1550/4688]  lr: 2.4699e-04  eta: 9:54:35  time: 0.4350  data_time: 0.0019  memory: 18277  loss: 1.0755  loss_ctc: 1.0755
+2026/01/06 14:40:41 - mmengine - INFO - Epoch(train)  [4][1600/4688]  lr: 2.4694e-04  eta: 9:54:13  time: 0.4389  data_time: 0.0019  memory: 18277  loss: 1.2261  loss_ctc: 1.2261
+2026/01/06 14:41:04 - mmengine - INFO - Epoch(train)  [4][1650/4688]  lr: 2.4689e-04  eta: 9:53:51  time: 0.4584  data_time: 0.0020  memory: 18277  loss: 1.1331  loss_ctc: 1.1331
+2026/01/06 14:41:27 - mmengine - INFO - Epoch(train)  [4][1700/4688]  lr: 2.4684e-04  eta: 9:53:27  time: 0.4685  data_time: 0.0021  memory: 18277  loss: 1.0886  loss_ctc: 1.0886
+2026/01/06 14:41:49 - mmengine - INFO - Epoch(train)  [4][1750/4688]  lr: 2.4679e-04  eta: 9:53:01  time: 0.4519  data_time: 0.0019  memory: 18277  loss: 1.2584  loss_ctc: 1.2584
+2026/01/06 14:42:12 - mmengine - INFO - Epoch(train)  [4][1800/4688]  lr: 2.4674e-04  eta: 9:52:38  time: 0.4484  data_time: 0.0020  memory: 18277  loss: 0.9933  loss_ctc: 0.9933
+2026/01/06 14:42:35 - mmengine - INFO - Epoch(train)  [4][1850/4688]  lr: 2.4669e-04  eta: 9:52:15  time: 0.4406  data_time: 0.0020  memory: 18277  loss: 1.0933  loss_ctc: 1.0933
+2026/01/06 14:42:58 - mmengine - INFO - Epoch(train)  [4][1900/4688]  lr: 2.4664e-04  eta: 9:51:52  time: 0.4476  data_time: 0.0019  memory: 18277  loss: 1.0432  loss_ctc: 1.0432
+2026/01/06 14:43:14 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 14:43:21 - mmengine - INFO - Epoch(train)  [4][1950/4688]  lr: 2.4659e-04  eta: 9:51:30  time: 0.4524  data_time: 0.0019  memory: 18277  loss: 1.0299  loss_ctc: 1.0299
+2026/01/06 14:43:43 - mmengine - INFO - Epoch(train)  [4][2000/4688]  lr: 2.4654e-04  eta: 9:51:07  time: 0.4410  data_time: 0.0019  memory: 18277  loss: 1.0076  loss_ctc: 1.0076
+2026/01/06 14:44:06 - mmengine - INFO - Epoch(train)  [4][2050/4688]  lr: 2.4649e-04  eta: 9:50:43  time: 0.4539  data_time: 0.0022  memory: 18277  loss: 1.1061  loss_ctc: 1.1061
+2026/01/06 14:44:29 - mmengine - INFO - Epoch(train)  [4][2100/4688]  lr: 2.4644e-04  eta: 9:50:19  time: 0.4446  data_time: 0.0020  memory: 18277  loss: 1.0947  loss_ctc: 1.0947
+2026/01/06 14:44:52 - mmengine - INFO - Epoch(train)  [4][2150/4688]  lr: 2.4638e-04  eta: 9:49:57  time: 0.4795  data_time: 0.0020  memory: 18277  loss: 0.9876  loss_ctc: 0.9876
+2026/01/06 14:45:14 - mmengine - INFO - Epoch(train)  [4][2200/4688]  lr: 2.4633e-04  eta: 9:49:33  time: 0.4506  data_time: 0.0020  memory: 18277  loss: 0.9521  loss_ctc: 0.9521
+2026/01/06 14:45:37 - mmengine - INFO - Epoch(train)  [4][2250/4688]  lr: 2.4628e-04  eta: 9:49:11  time: 0.4761  data_time: 0.0020  memory: 18277  loss: 0.9623  loss_ctc: 0.9623
+2026/01/06 14:46:00 - mmengine - INFO - Epoch(train)  [4][2300/4688]  lr: 2.4622e-04  eta: 9:48:49  time: 0.4756  data_time: 0.0023  memory: 18277  loss: 1.0701  loss_ctc: 1.0701
+2026/01/06 14:46:23 - mmengine - INFO - Epoch(train)  [4][2350/4688]  lr: 2.4617e-04  eta: 9:48:26  time: 0.4506  data_time: 0.0019  memory: 18277  loss: 0.9340  loss_ctc: 0.9340
+2026/01/06 14:46:46 - mmengine - INFO - Epoch(train)  [4][2400/4688]  lr: 2.4612e-04  eta: 9:48:03  time: 0.4520  data_time: 0.0020  memory: 18277  loss: 1.0955  loss_ctc: 1.0955
+2026/01/06 14:47:08 - mmengine - INFO - Epoch(train)  [4][2450/4688]  lr: 2.4606e-04  eta: 9:47:39  time: 0.4456  data_time: 0.0024  memory: 18277  loss: 0.9306  loss_ctc: 0.9306
+2026/01/06 14:47:31 - mmengine - INFO - Epoch(train)  [4][2500/4688]  lr: 2.4601e-04  eta: 9:47:17  time: 0.4638  data_time: 0.0022  memory: 18277  loss: 1.0212  loss_ctc: 1.0212
+2026/01/06 14:47:54 - mmengine - INFO - Epoch(train)  [4][2550/4688]  lr: 2.4595e-04  eta: 9:46:53  time: 0.4383  data_time: 0.0019  memory: 18277  loss: 1.1327  loss_ctc: 1.1327
+2026/01/06 14:48:17 - mmengine - INFO - Epoch(train)  [4][2600/4688]  lr: 2.4589e-04  eta: 9:46:31  time: 0.4634  data_time: 0.0021  memory: 18277  loss: 0.9620  loss_ctc: 0.9620
+2026/01/06 14:48:39 - mmengine - INFO - Epoch(train)  [4][2650/4688]  lr: 2.4584e-04  eta: 9:46:07  time: 0.4756  data_time: 0.0020  memory: 18277  loss: 1.0048  loss_ctc: 1.0048
+2026/01/06 14:49:02 - mmengine - INFO - Epoch(train)  [4][2700/4688]  lr: 2.4578e-04  eta: 9:45:42  time: 0.4443  data_time: 0.0021  memory: 18277  loss: 0.9625  loss_ctc: 0.9625
+2026/01/06 14:49:24 - mmengine - INFO - Epoch(train)  [4][2750/4688]  lr: 2.4572e-04  eta: 9:45:18  time: 0.4461  data_time: 0.0019  memory: 18277  loss: 0.9473  loss_ctc: 0.9473
+2026/01/06 14:49:47 - mmengine - INFO - Epoch(train)  [4][2800/4688]  lr: 2.4567e-04  eta: 9:44:54  time: 0.4435  data_time: 0.0025  memory: 18277  loss: 0.9063  loss_ctc: 0.9063
+2026/01/06 14:50:10 - mmengine - INFO - Epoch(train)  [4][2850/4688]  lr: 2.4561e-04  eta: 9:44:32  time: 0.4583  data_time: 0.0020  memory: 18277  loss: 0.8437  loss_ctc: 0.8437
+2026/01/06 14:50:33 - mmengine - INFO - Epoch(train)  [4][2900/4688]  lr: 2.4555e-04  eta: 9:44:11  time: 0.4555  data_time: 0.0021  memory: 18277  loss: 0.9120  loss_ctc: 0.9120
+2026/01/06 14:50:50 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_20260106_124025
+2026/01/06 14:50:56 - mmengine - INFO - Epoch(train)  [4][2950/4688]  lr: 2.4549e-04  eta: 9:43:49  time: 0.4464  data_time: 0.0020  memory: 18277  loss: 1.1315  loss_ctc: 1.1315
+2026/01/06 14:51:19 - mmengine - INFO - Epoch(train)  [4][3000/4688]  lr: 2.4543e-04  eta: 9:43:26  time: 0.4434  data_time: 0.0019  memory: 18277  loss: 0.9824  loss_ctc: 0.9824
+2026/01/06 14:51:42 - mmengine - INFO - Epoch(train)  [4][3050/4688]  lr: 2.4537e-04  eta: 9:43:05  time: 0.4651  data_time: 0.0021  memory: 18277  loss: 0.9152  loss_ctc: 0.9152
+2026/01/06 14:52:05 - mmengine - INFO - Epoch(train)  [4][3100/4688]  lr: 2.4532e-04  eta: 9:42:43  time: 0.4451  data_time: 0.0022  memory: 18277  loss: 0.9367  loss_ctc: 0.9367
+2026/01/06 14:52:28 - mmengine - INFO - Epoch(train)  [4][3150/4688]  lr: 2.4526e-04  eta: 9:42:20  time: 0.4705  data_time: 0.0022  memory: 18277  loss: 0.9265  loss_ctc: 0.9265
+2026/01/06 14:52:51 - mmengine - INFO - Epoch(train)  [4][3200/4688]  lr: 2.4519e-04  eta: 9:41:58  time: 0.4498  data_time: 0.0022  memory: 18277  loss: 0.9399  loss_ctc: 0.9399
+2026/01/06 14:53:14 - mmengine - INFO - Epoch(train)  [4][3250/4688]  lr: 2.4513e-04  eta: 9:41:34  time: 0.4568  data_time: 0.0022  memory: 18277  loss: 0.9644  loss_ctc: 0.9644
+2026/01/06 14:53:36 - mmengine - INFO - Epoch(train)  [4][3300/4688]  lr: 2.4507e-04  eta: 9:41:09  time: 0.4325  data_time: 0.0020  memory: 18277  loss: 0.9372  loss_ctc: 0.9372
+2026/01/06 14:53:59 - mmengine - INFO - Epoch(train)  [4][3350/4688]  lr: 2.4501e-04  eta: 9:40:47  time: 0.4764  data_time: 0.0021  memory: 18277  loss: 1.0006  loss_ctc: 1.0006
+2026/01/06 14:54:21 - mmengine - INFO - Epoch(train)  [4][3400/4688]  lr: 2.4495e-04  eta: 9:40:21  time: 0.4622  data_time: 0.0021  memory: 18277  loss: 0.9950  loss_ctc: 0.9950
+2026/01/06 14:54:44 - mmengine - INFO - Epoch(train)  [4][3450/4688]  lr: 2.4489e-04  eta: 9:39:59  time: 0.4492  data_time: 0.0021  memory: 18277  loss: 0.9433  loss_ctc: 0.9433
+2026/01/06 14:55:07 - mmengine - INFO - Epoch(train)  [4][3500/4688]  lr: 2.4482e-04  eta: 9:39:35  time: 0.4493  data_time: 0.0021  memory: 18277  loss: 0.8885  loss_ctc: 0.8885
+2026/01/06 14:55:30 - mmengine - INFO - Epoch(train)  [4][3550/4688]  lr: 2.4476e-04  eta: 9:39:13  time: 0.4699  data_time: 0.0019  memory: 18277  loss: 1.0321  loss_ctc: 1.0321
+2026/01/06 14:55:52 - mmengine - INFO - Epoch(train)  [4][3600/4688]  lr: 2.4470e-04  eta: 9:38:50  time: 0.4444  data_time: 0.0020  memory: 18277  loss: 1.0490  loss_ctc: 1.0490

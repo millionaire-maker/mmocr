@@ -82,6 +82,18 @@ def parse_args():
         help='Stage-2 映射回原图后，与 coarse polygon 的最小 IoU；低于则 fallback。'
     )
     parser.add_argument(
+        '--match-metric',
+        choices=['iou', 'ioa', 'iou_or_ioa'],
+        default='ioa',
+        help='coarse→refine 的匹配指标：'
+        'iou=按 IoU 选 best；ioa=按 IoA(inter/area(mapped)) 选 best；'
+        'iou_or_ioa=先按 IoU，若 best_iou<min_match_iou 再按 IoA 重选。')
+    parser.add_argument(
+        '--min-ioa',
+        type=float,
+        default=0.30,
+        help='weak accept 的最小 IoA：ioa = inter_area / area(mapped)。')
+    parser.add_argument(
         '--match-filter',
         choices=['none', 'center', 'bbox_iou'],
         default='center',
@@ -98,7 +110,8 @@ def parse_args():
         '--accept-weak-match',
         dest='accept_weak_match',
         action='store_true',
-        help='当 best_iou < min_match_iou 时，若满足 weak match 仍允许接受 refined（默认开启）。'
+        help='当 best_iou < min_match_iou 时，若 best_ioa>=min_ioa 且通过 area sanity，'
+        '仍允许接受 refined（默认开启）。'
     )
     parser.add_argument(
         '--no-accept-weak-match',
@@ -179,6 +192,20 @@ def _order_points_clockwise(pts: np.ndarray) -> np.ndarray:
 def _safe_poly_iou(poly_a: np.ndarray, poly_b: np.ndarray) -> float:
     try:
         return float(poly_iou(poly2shapely(poly_a), poly2shapely(poly_b)))
+    except Exception:
+        return 0.0
+
+
+def _safe_poly_ioa(poly_a: np.ndarray, poly_b: np.ndarray) -> float:
+    """IoA(intersection over area of poly_b): inter_area / area(poly_b)."""
+    try:
+        shp_a = poly2shapely(poly_a)
+        shp_b = poly2shapely(poly_b)
+        area_b = float(getattr(shp_b, 'area', 0.0))
+        if area_b <= 1e-6:
+            return 0.0
+        inter = float(shp_a.intersection(shp_b).area)
+        return float(inter / area_b)
     except Exception:
         return 0.0
 
@@ -757,15 +784,29 @@ def main():
                 fallback_reasons['match_filter_empty'] += 1
                 continue
 
-            # choose the best polygon for this coarse instance: max IoU
-            best_j = -1
-            best_iou = -1.0
+            cand_scores: List[Tuple[int, float, float]] = []
             for j in filtered_js:
                 mp = mapped_polys[j]
                 iou = _safe_poly_iou(coarse_poly, mp)
-                if iou > best_iou:
-                    best_iou = iou
-                    best_j = j
+                ioa = _safe_poly_ioa(coarse_poly, mp)
+                cand_scores.append((j, float(iou), float(ioa)))
+
+            best_j = -1
+            best_iou = -1.0
+            best_ioa = -1.0
+            if cand_scores:
+                if args.match_metric == 'iou':
+                    best_j, best_iou, best_ioa = max(
+                        cand_scores, key=lambda x: (x[1], x[2]))
+                elif args.match_metric == 'ioa':
+                    best_j, best_iou, best_ioa = max(
+                        cand_scores, key=lambda x: (x[2], x[1]))
+                else:  # iou_or_ioa
+                    best_j, best_iou, best_ioa = max(
+                        cand_scores, key=lambda x: (x[1], x[2]))
+                    if best_iou < float(args.min_match_iou):
+                        best_j, best_iou, best_ioa = max(
+                            cand_scores, key=lambda x: (x[2], x[1]))
 
             # If the best polygon is largely out-of-bounds (patch valid region
             # or original image), classify fallback as `bounds`.
@@ -787,48 +828,23 @@ def main():
 
             if best_j < 0:
                 refine_fallback += 1
-                fallback_reasons['bounds' if bounds_flag else 'match_iou'] += 1
+                fallback_reasons['bounds' if bounds_flag else 'match_fail'] += 1
                 continue
+
+            accepted_by_ioa = False
             if best_iou < float(args.min_match_iou):
-                if (not bounds_flag) and bool(args.accept_weak_match):
-                    rect_w = float(stats[i]['rect_w'])
-                    rect_h = float(stats[i]['rect_h'])
-                    rect_area = max(rect_w * rect_h, 1.0)
-                    mp = mapped_polys[best_j]
-
-                    center_in_rect = False
-                    if coarse_box is not None:
-                        try:
-                            cx, cy = _poly_centroid(mp)
-                            center_in_rect = cv2.pointPolygonTest(
-                                coarse_box, (float(cx), float(cy)),
-                                False) >= 0
-                        except Exception:
-                            center_in_rect = False
-
-                    biou = 0.0
-                    try:
-                        biou = _bbox_iou(_bbox_from_poly(mp), coarse_bbox)
-                    except Exception:
-                        biou = 0.0
-
-                    mp_clip = _clip_polygon(
-                        mp, w=img.shape[1], h=img.shape[0])
-                    area = _poly_area(mp_clip)
-                    area_ok = (area >= float(args.min_refined_area)) and (
-                        area <= rect_area *
-                        float(args.max_refined_area_ratio))
-
-                    weak_ok = area_ok and (center_in_rect or
-                                           (biou >= float(args.min_bbox_iou)))
-                    if not weak_ok:
-                        refine_fallback += 1
-                        fallback_reasons['match_iou'] += 1
-                        continue
+                if (not bounds_flag) and bool(args.accept_weak_match) and (
+                        best_ioa >= float(args.min_ioa)):
+                    accepted_by_ioa = True
                 else:
                     refine_fallback += 1
-                    fallback_reasons['bounds'
-                                     if bounds_flag else 'match_iou'] += 1
+                    if bounds_flag:
+                        fallback_reasons['bounds'] += 1
+                    else:
+                        if best_ioa >= float(args.min_ioa):
+                            fallback_reasons['match_iou_fail'] += 1
+                        else:
+                            fallback_reasons['match_ioa_fail'] += 1
                     continue
 
             refined_poly = mapped_polys[best_j]
@@ -858,6 +874,8 @@ def main():
             refined_map[i] = (refined_poly.astype(np.float32), refined_score)
             refine_success += 1
             fallback_reasons['success'] += 1
+            if accepted_by_ioa:
+                fallback_reasons['weak_accept_ioa'] += 1
 
         total_refine_success += refine_success
         total_refine_fallback += refine_fallback
@@ -938,6 +956,8 @@ def main():
         ),
         fallback=dict(
             min_match_iou=float(args.min_match_iou),
+            match_metric=str(args.match_metric),
+            min_ioa=float(args.min_ioa),
             match_filter=dict(
                 mode=str(args.match_filter),
                 min_bbox_iou=float(args.min_bbox_iou),

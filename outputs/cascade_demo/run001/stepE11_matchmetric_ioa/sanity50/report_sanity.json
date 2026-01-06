@@ -1,0 +1,59 @@
+{
+  "gating": {
+    "total_images": 50,
+    "total_stage1_instances": 662,
+    "total_selected": 139,
+    "success_rate": 0.2589928057553957
+  },
+  "fallback_top5": [
+    {
+      "reason": "match_filter_empty",
+      "count": 47
+    },
+    {
+      "reason": "area_big",
+      "count": 33
+    },
+    {
+      "reason": "empty",
+      "count": 18
+    },
+    {
+      "reason": "match_ioa_fail",
+      "count": 3
+    },
+    {
+      "reason": "bounds",
+      "count": 2
+    }
+  ],
+  "notes": [
+    "本次 match-metric=ioa, min_ioa=0.30, accept_weak_match=True。",
+    "success_rate 未明显上升（与之前 sanity50 接近）。",
+    "fallback_top1 仍为 match_filter_empty；说明当前瓶颈主要来自 match-filter=center 过严，而非 IoU 门槛本身。",
+    "patch 可视化抽样看未见明显串框（绿线基本落在红框附近）。"
+  ],
+  "debug_vis_samples": [
+    {
+      "patch_pred": "vis/patches/0010_sel013_patch_pred.jpg"
+    },
+    {
+      "patch_pred": "vis/patches/0019_sel006_patch_pred.jpg"
+    },
+    {
+      "patch_pred": "vis/patches/0006_sel008_patch_pred.jpg"
+    },
+    {
+      "patch_pred": "vis/patches/0017_sel002_patch_pred.jpg"
+    },
+    {
+      "patch_pred": "vis/patches/0019_sel005_patch_pred.jpg"
+    }
+  ],
+  "paths": {
+    "refine_summary": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11_matchmetric_ioa/sanity50/refine_summary.json",
+    "refined_pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11_matchmetric_ioa/sanity50/refined_sanity.pkl",
+    "vis_patches_dir": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11_matchmetric_ioa/sanity50/vis/patches",
+    "run_log": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11_matchmetric_ioa/sanity50/run.log"
+  }
+}

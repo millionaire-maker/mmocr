@@ -124,11 +124,28 @@ def sort_labels(tmp_label_fname, label_fname):
 
 
 def restore_exist_labels(label_path):
-    # 如果目标目录存在 labels.txt 则向该目录中追加图片
+    tmp_label_path = os.path.join(os.path.dirname(label_path), 'tmp_labels.txt')
+    return restore_exist_labels_v2(tmp_label_path, label_path)
+
+
+def _count_nonempty_lines(path):
+    n = 0
+    with open(path, mode="r", encoding="utf-8", errors="ignore") as f:
+        for line in f:
+            if line.strip():
+                n += 1
+    return n
+
+
+def restore_exist_labels_v2(tmp_label_path, label_path):
+    # 如果目标目录存在 tmp_labels.txt/labels.txt 则向该目录中追加图片
     start_index = 0
-    if os.path.exists(label_path):
-        start_index = len(utils.load_chars(label_path))
-        print('Generate more text images in %s. Start index %d' % (flags.save_dir, start_index))
+    if os.path.exists(tmp_label_path):
+        start_index = _count_nonempty_lines(tmp_label_path)
+        print('Generate more text images in %s. Start index %d (from tmp_labels.txt)' % (flags.save_dir, start_index))
+    elif os.path.exists(label_path):
+        start_index = _count_nonempty_lines(label_path)
+        print('Generate more text images in %s. Start index %d (from labels.txt)' % (flags.save_dir, start_index))
     else:
         print('Generate text images in %s' % flags.save_dir)
     return start_index
@@ -157,7 +174,7 @@ if __name__ == "__main__":
     manager = mp.Manager()
     q = manager.Queue()
 
-    start_index = restore_exist_labels(label_path)
+    start_index = restore_exist_labels_v2(tmp_label_path, label_path)
 
     timer = Timer(Timer.SECOND)
     timer.start()

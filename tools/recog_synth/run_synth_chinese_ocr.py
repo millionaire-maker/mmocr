@@ -246,6 +246,8 @@ def main():
     save_dir = os.path.join(args.out_root, args.tag)
     if args.clean and os.path.exists(save_dir):
         shutil.rmtree(save_dir)
+    if args.clean and os.path.exists(args.out_txt):
+        os.remove(args.out_txt)
     os.makedirs(save_dir, exist_ok=True)
 
     if int(getattr(args, "target_num_images", 0)) > 0:

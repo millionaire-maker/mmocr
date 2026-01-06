@@ -44,6 +44,8 @@ class Renderer(object):
 
         if self.strict:
             self.font_unsupport_chars = font_utils.get_unsupported_chars(self.fonts, corpus.chars_file)
+            # Speed up membership test: list -> set
+            self.font_unsupport_chars = {k: set(v) for k, v in self.font_unsupport_chars.items()}
 
     def gen_img(self, img_index):
         word, font, word_size = self.pick_font(img_index)
@@ -198,9 +200,24 @@ class Renderer(object):
             self.int_around(self.out_height * scale)
         )
 
-        # It's important do crop first and than do resize for speed consider
-        dst = img[dst_bbox[1]:dst_bbox[1] + dst_bbox[3], dst_bbox[0]:dst_bbox[0] + dst_bbox[2]]
+        # It's important do crop first and than do resize for speed consider.
+        # NOTE: dst_bbox may be out of image range (negative or overflow) due to random offsets and perspective.
+        # Python slice with negative start can yield empty arrays -> cv2.resize asserts !ssize.empty().
+        img_h, img_w = img.shape[:2]
+        x0 = int(dst_bbox[0])
+        y0 = int(dst_bbox[1])
+        x1 = x0 + int(dst_bbox[2])
+        y1 = y0 + int(dst_bbox[3])
 
+        if img_w <= 0 or img_h <= 0:
+            raise Exception("empty image before crop")
+
+        x0 = max(0, min(x0, img_w - 1))
+        y0 = max(0, min(y0, img_h - 1))
+        x1 = max(x0 + 1, min(x1, img_w))
+        y1 = max(y0 + 1, min(y1, img_h))
+
+        dst = img[y0:y1, x0:x1]
         dst = cv2.resize(dst, (dst_width, self.out_height), interpolation=cv2.INTER_CUBIC)
 
         return dst, dst_bbox
@@ -415,13 +432,17 @@ class Renderer(object):
 
         if light_or_dark == 0:
             if self.is_bgr():
+                # Avoid "high <= 0" when text_color channel is already 255/near 255.
+                def _inc(v):
+                    return np.random.randint(0, 256 - v) if v < 255 else 0
+
                 border_color = (
-                    text_color[0] + np.random.randint(0, 255 - text_color[0] - 1),
-                    text_color[1] + np.random.randint(0, 255 - text_color[1] - 1),
-                    text_color[2] + np.random.randint(0, 255 - text_color[2] - 1)
+                    text_color[0] + _inc(text_color[0]),
+                    text_color[1] + _inc(text_color[1]),
+                    text_color[2] + _inc(text_color[2])
                 )
             else:
-                border_color = text_color + np.random.randint(0, 255 - text_color - 1)
+                border_color = text_color + (np.random.randint(0, 256 - text_color) if text_color < 255 else 0)
         elif light_or_dark == 1:
             if self.is_bgr():
                 border_color = (
@@ -508,17 +529,28 @@ class Renderer(object):
         if self.clip_max_chars and len(word) > self.max_chars:
             word = word[:self.max_chars]
 
-        font_path = random.choice(self.fonts)
-
         if self.strict:
-            unsupport_chars = self.font_unsupport_chars[font_path]
-            for c in word:
-                if c == ' ':
+            # Choose a font that supports all chars in this word to avoid excessive retries.
+            candidates = []
+            for fp in self.fonts:
+                unsupport = self.font_unsupport_chars.get(fp)
+                if unsupport is None:
+                    candidates.append(fp)
                     continue
-                if c in unsupport_chars:
-                    print('Retry pick_font(), \'%s\' contains chars \'%s\' not supported by font %s' % (
-                        word, c, font_path))
-                    raise Exception
+                ok = True
+                for c in word:
+                    if c == ' ':
+                        continue
+                    if c in unsupport:
+                        ok = False
+                        break
+                if ok:
+                    candidates.append(fp)
+            if len(candidates) == 0:
+                raise Exception(f"No font supports word: {word}")
+            font_path = random.choice(candidates)
+        else:
+            font_path = random.choice(self.fonts)
 
         # Font size in point
         font_size = random.randint(self.cfg.font_size.min, self.cfg.font_size.max)
