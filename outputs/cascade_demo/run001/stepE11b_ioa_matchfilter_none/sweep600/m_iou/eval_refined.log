@@ -1,0 +1,21 @@
+01/06 21:23:27 - mmengine - INFO - Evaluating hmean-iou...
+01/06 21:23:27 - mmengine - INFO - prediction score threshold: 0.30, recall: 0.7506, precision: 0.5836, hmean: 0.6567
+
+01/06 21:23:27 - mmengine - INFO - prediction score threshold: 0.40, recall: 0.7481, precision: 0.7372, hmean: 0.7426
+
+01/06 21:23:27 - mmengine - INFO - prediction score threshold: 0.50, recall: 0.7412, precision: 0.7703, hmean: 0.7555
+
+01/06 21:23:27 - mmengine - INFO - prediction score threshold: 0.60, recall: 0.7282, precision: 0.7931, hmean: 0.7593
+
+01/06 21:23:27 - mmengine - INFO - prediction score threshold: 0.70, recall: 0.6609, precision: 0.8198, hmean: 0.7318
+
+01/06 21:23:27 - mmengine - INFO - prediction score threshold: 0.80, recall: 0.3751, precision: 0.8636, hmean: 0.5231
+
+01/06 21:23:27 - mmengine - INFO - prediction score threshold: 0.90, recall: 0.0409, precision: 0.9244, hmean: 0.0784
+
+[EVAL] missing_pred_samples=0
+{
+  "icdar/precision": 0.7931404072883173,
+  "icdar/recall": 0.7282031096240897,
+  "icdar/hmean": 0.7592858608659963
+}

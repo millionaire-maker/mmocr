@@ -1,0 +1,63 @@
+{
+  "selected_match_metric": "iou_or_ioa",
+  "criterion": "max(refined_hmean) then max(success_rate) then min(match_ioa_fail) (tie prefer iou_or_ioa)",
+  "rows": [
+    {
+      "match_metric": "iou_or_ioa",
+      "refined_hmean": 0.7592858608659963,
+      "refined_recall": 0.7282031096240897,
+      "refined_precision": 0.7931404072883173,
+      "delta_hmean": 0.006124557278045284,
+      "trigger_rate": 0.20849472418859355,
+      "success_rate": 0.33696348494554773,
+      "total_selected": 1561,
+      "refine_success": 526,
+      "weak_accept_ioa": 0,
+      "match_iou_fail": 0,
+      "match_ioa_fail": 350,
+      "match_fail": 0,
+      "match_filter_empty": 0,
+      "avg_ms_per_image": 237.8618730107943,
+      "stage2_avg_ms_per_patch": 81.53984754477652,
+      "dir": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11b_ioa_matchfilter_none/sweep600/m_iou_or_ioa"
+    },
+    {
+      "match_metric": "iou",
+      "refined_hmean": 0.7592858608659963,
+      "refined_recall": 0.7282031096240897,
+      "refined_precision": 0.7931404072883173,
+      "delta_hmean": 0.006124557278045284,
+      "trigger_rate": 0.20849472418859355,
+      "success_rate": 0.33696348494554773,
+      "total_selected": 1561,
+      "refine_success": 526,
+      "weak_accept_ioa": 0,
+      "match_iou_fail": 0,
+      "match_ioa_fail": 350,
+      "match_fail": 0,
+      "match_filter_empty": 0,
+      "avg_ms_per_image": 234.29653651857126,
+      "stage2_avg_ms_per_patch": 80.13483802071558,
+      "dir": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11b_ioa_matchfilter_none/sweep600/m_iou"
+    },
+    {
+      "match_metric": "ioa",
+      "refined_hmean": 0.7588048054215012,
+      "refined_recall": 0.7272190513678409,
+      "refined_precision": 0.7932589094031773,
+      "delta_hmean": 0.005643501833550224,
+      "trigger_rate": 0.20849472418859355,
+      "success_rate": 0.3376040999359385,
+      "total_selected": 1561,
+      "refine_success": 527,
+      "weak_accept_ioa": 5,
+      "match_iou_fail": 0,
+      "match_ioa_fail": 350,
+      "match_fail": 0,
+      "match_filter_empty": 0,
+      "avg_ms_per_image": 213.69490544932586,
+      "stage2_avg_ms_per_patch": 72.74632899580189,
+      "dir": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11b_ioa_matchfilter_none/sweep600/m_ioa"
+    }
+  ]
+}

@@ -143,7 +143,7 @@ val_evaluator = dict(
         dict(type='WordMetric', mode=['exact']),
         dict(type='OneMinusNEDMetric'),
     ],
-    dataset_prefixes=['PretrainCN'],
+    dataset_prefixes=['PretrainCN_holdout'],
 )
 test_evaluator = val_evaluator
 
@@ -152,7 +152,10 @@ default_hooks = dict(
     checkpoint=dict(
         type='CheckpointHook',
         interval=1,
-        save_best='PretrainCN/recog/word_acc',
+        save_best=[
+            'PretrainCN_holdout/recog/word_acc',
+            'PretrainCN_holdout/recog/1-N.E.D',
+        ],
         rule='greater',
         max_keep_ckpts=2,
     ),

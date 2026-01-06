@@ -1,0 +1,76 @@
+{
+  "metrics": {
+    "stage1": {
+      "icdar/precision": 0.7884201463624624,
+      "icdar/recall": 0.7209210785278488,
+      "icdar/hmean": 0.753161303587951
+    },
+    "refined": {
+      "icdar/precision": 0.7932589094031773,
+      "icdar/recall": 0.7272190513678409,
+      "icdar/hmean": 0.7588048054215012
+    },
+    "delta_hmean": 0.005643501833550224
+  },
+  "gating": {
+    "total_images": 600,
+    "total_stage1_instances": 7487,
+    "total_selected": 1561,
+    "trigger_rate": 0.20849472418859355,
+    "avg_patches_per_image": 2.6016666666666666,
+    "success_rate": 0.3376040999359385
+  },
+  "timing_ms": {
+    "avg_per_image": 213.69490544932586,
+    "stage2_avg_per_patch": 72.74632899580189,
+    "stage2_patches": 1560
+  },
+  "fallback_top5": [
+    {
+      "reason": "area_big",
+      "count": 448
+    },
+    {
+      "reason": "match_ioa_fail",
+      "count": 350
+    },
+    {
+      "reason": "empty",
+      "count": 221
+    },
+    {
+      "reason": "bounds",
+      "count": 15
+    }
+  ],
+  "patch": {
+    "expand_ratio": 0.3,
+    "max_patch_long_edge": 1024,
+    "min_crop_short_edge": 64.0,
+    "pad_divisor": 32
+  },
+  "stage2_overrides": {
+    "score_thr": 0.05,
+    "nms_thr": -1.0
+  },
+  "fallback_cfg": {
+    "min_match_iou": 0.1,
+    "match_metric": "ioa",
+    "min_ioa": 0.3,
+    "match_filter": {
+      "mode": "none",
+      "min_bbox_iou": 0.2,
+      "accept_weak_match": true
+    },
+    "min_refined_area": 50.0,
+    "max_refined_area_ratio": 1.5,
+    "reasons": {
+      "area_big": 448,
+      "bounds": 15,
+      "empty": 221,
+      "match_ioa_fail": 350,
+      "success": 527,
+      "weak_accept_ioa": 5
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "metrics": {
+    "stage1_baseline": {
+      "icdar/precision": 0.7430224816920162,
+      "icdar/recall": 0.7320752812957263,
+      "icdar/hmean": 0.7375082600518476
+    },
+    "stage1_highrecall": {
+      "icdar/precision": 0.7430224816920162,
+      "icdar/recall": 0.7320752812957263,
+      "icdar/hmean": 0.7375082600518476
+    },
+    "refined": {
+      "icdar/precision": 0.7429688293227739,
+      "icdar/recall": 0.7384328169937938,
+      "icdar/hmean": 0.7406938785839005
+    },
+    "delta": {
+      "stage1_highrecall_minus_baseline": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "hmean": 0.0
+      },
+      "refined_minus_stage1_baseline": {
+        "precision": -5.365236924237404e-05,
+        "recall": 0.006357535698067518,
+        "hmean": 0.003185618532052903
+      },
+      "refined_minus_stage1_highrecall": {
+        "precision": -5.365236924237404e-05,
+        "recall": 0.006357535698067518,
+        "hmean": 0.003185618532052903
+      }
+    }
+  },
+  "gating": {
+    "total_images": 3363,
+    "total_stage1_instances": 60137,
+    "total_selected": 12919,
+    "trigger_rate": 0.21482614696443122,
+    "avg_patches_per_image": 3.8415105560511447,
+    "success_rate": 0.19924142735505845
+  },
+  "timing_ms": {
+    "refine_avg_ms": 299.2404610801454,
+    "stage2_avg_ms_per_patch": 68.49417141697094,
+    "stage2_patches": 12918
+  },
+  "fallback_top5": [
+    {
+      "reason": "match_ioa_fail",
+      "count": 4468
+    },
+    {
+      "reason": "empty",
+      "count": 3537
+    },
+    {
+      "reason": "area_big",
+      "count": 2238
+    },
+    {
+      "reason": "bounds",
+      "count": 102
+    }
+  ],
+  "patch": {
+    "expand_ratio": 0.3,
+    "max_patch_long_edge": 1024,
+    "min_crop_short_edge": 64.0,
+    "pad_divisor": 32
+  },
+  "stage2_overrides": {
+    "score_thr": 0.05,
+    "nms_thr": -1.0
+  },
+  "fallback_cfg": {
+    "min_match_iou": 0.1,
+    "match_metric": "iou_or_ioa",
+    "min_ioa": 0.3,
+    "match_filter": {
+      "mode": "none",
+      "min_bbox_iou": 0.2,
+      "accept_weak_match": true
+    },
+    "min_refined_area": 50.0,
+    "max_refined_area_ratio": 1.5,
+    "reasons": {
+      "area_big": 2238,
+      "bounds": 102,
+      "empty": 3537,
+      "match_ioa_fail": 4468,
+      "success": 2574,
+      "weak_accept_ioa": 7
+    }
+  },
+  "paths": {
+    "stage1_pred_highrecall": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE8_stage1_sweep/stage1_pred_highrecall.pkl",
+    "refined_pkl": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11b_ioa_matchfilter_none/full_best/refined_full.pkl",
+    "refine_summary": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11b_ioa_matchfilter_none/full_best/refine_summary.json",
+    "metrics_stage1_highrecall": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11b_ioa_matchfilter_none/full_best/metrics_stage1_highrecall.json",
+    "metrics_refined": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE11b_ioa_matchfilter_none/full_best/metrics_refined.json",
+    "metrics_stage1_baseline": "/root/lanyun-tmp/mmocr/outputs/cascade_demo/run001/stepE2_full_mincrop64/metrics_stage1.json"
+  },
+  "compare_to_E10": {
+    "E10_refined": {
+      "icdar/precision": 0.7430065492206935,
+      "icdar/recall": 0.7384328169937938,
+      "icdar/hmean": 0.7407126227350946
+    },
+    "delta_refined_minus_E10": {
+      "precision": -3.771989791967467e-05,
+      "recall": 0.0,
+      "hmean": -1.8744151194183267e-05
+    },
+    "delta_success_rate_minus_E10": -7.740537193279273e-05,
+    "delta_refine_avg_ms_minus_E10": 99.65051431568864,
+    "E10_fallback_top1": {
+      "reason": "match_iou",
+      "count": 4467
+    }
+  },
+  "conclusion": "对齐 match-filter=none 下，match-metric=iou_or_ioa(min_ioa=0.30)+weak-accept：weak_accept_ioa=7，match_ioa_fail=4468（旧 match_iou-like≈4475）；refined vs Stage-1：Recall 0.636pp / Precision -0.005pp / Hmean 0.319pp；success_rate=2574/12919=19.924%；top1 fallback=match_ioa_fail。对比 E-10：match_iou=4467，本次对应 match_ioa_fail=4468，未显著下降；weak_accept_ioa 仅 7，整体收益≈0（Hmean/Recall 几乎不变）。"
+}
