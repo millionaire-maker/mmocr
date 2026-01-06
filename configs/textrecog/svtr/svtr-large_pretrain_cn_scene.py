@@ -124,6 +124,8 @@ default_hooks = dict(
     checkpoint=dict(
         type='CheckpointHook',
         interval=1,
+        save_best='PretrainCN/recog/word_acc',
+        rule='greater',
         max_keep_ckpts=2,
     ),
 )
