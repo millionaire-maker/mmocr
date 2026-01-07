@@ -255,6 +255,98 @@ class PadToWidth(BaseTransform):
 
 
 @TRANSFORMS.register_module()
+class RandomResizeWidth(BaseTransform):
+    """Randomly resize image width while keeping height unchanged.
+
+    This transform is mainly used to simulate the wide raw aspect-ratio
+    distribution of real recognition crops (e.g. LMDB word images), especially
+    when the training set (such as synthetic data) has a fixed raw width.
+
+    By applying this transform before the final fixed ``Resize(scale=(W, H))``
+    step, the effective horizontal stretching factor ``W / raw_width`` becomes
+    diverse, which can significantly reduce the domain gap to real datasets.
+
+    Args:
+        min_width (int): Minimum target width. Defaults to 16.
+        max_width (int): Maximum target width. Defaults to 512.
+        prob (float): Probability to apply this transform. Defaults to 1.0.
+        backend (str): Resize backend. Choices are 'cv2' and 'pillow'.
+            Defaults to 'cv2'.
+        interpolation (str): Interpolation method. Accepted values are
+            "nearest", "bilinear", "bicubic", "area", "lanczos" for 'cv2'
+            backend, and "nearest", "bilinear" for 'pillow' backend.
+            Defaults to 'bilinear'.
+    """
+
+    def __init__(self,
+                 min_width: int = 16,
+                 max_width: int = 512,
+                 prob: float = 1.0,
+                 backend: str = 'cv2',
+                 interpolation: str = 'bilinear') -> None:
+        super().__init__()
+        if not isinstance(min_width, int) or min_width <= 0:
+            raise TypeError('`min_width` should be a positive int, '
+                            f'but got {min_width!r}')
+        if not isinstance(max_width, int) or max_width <= 0:
+            raise TypeError('`max_width` should be a positive int, '
+                            f'but got {max_width!r}')
+        if min_width > max_width:
+            raise ValueError('`min_width` should not be larger than '
+                             f'`max_width`, but got {min_width}>{max_width}')
+        if not isinstance(prob, float) or not (0.0 <= prob <= 1.0):
+            raise TypeError('`prob` should be a float in [0, 1], '
+                            f'but got {prob!r}')
+        if backend not in ['cv2', 'pillow']:
+            raise ValueError("`backend` should be 'cv2' or 'pillow', "
+                             f'but got {backend!r}')
+        self.min_width = min_width
+        self.max_width = max_width
+        self.prob = prob
+        self.backend = backend
+        self.interpolation = interpolation
+
+    @cache_randomness
+    def _sample_width(self) -> int:
+        """Sample target width with log-uniform distribution."""
+        log_min = math.log(self.min_width)
+        log_max = math.log(self.max_width)
+        return int(round(math.exp(np.random.uniform(log_min, log_max))))
+
+    def transform(self, results: Dict) -> Dict:
+        """Randomly resize width for ``results['img']``."""
+        assert 'img' in results, '`img` is not found in results'
+        if self.prob < 1.0 and np.random.rand() > self.prob:
+            return results
+
+        img = results['img']
+        h, w = img.shape[:2]
+        target_w = self._sample_width()
+        target_w = max(1, target_w)
+        if target_w == w:
+            return results
+
+        img = mmcv.imresize(
+            img,
+            size=(target_w, h),
+            backend=self.backend,
+            interpolation=self.interpolation,
+        )
+        results['img'] = img
+        results['img_shape'] = img.shape[:2]
+        return results
+
+    def __repr__(self) -> str:
+        repr_str = self.__class__.__name__
+        repr_str += f'(min_width={self.min_width}, '
+        repr_str += f'max_width={self.max_width}, '
+        repr_str += f'prob={self.prob}, '
+        repr_str += f'backend={self.backend}, '
+        repr_str += f'interpolation={self.interpolation})'
+        return repr_str
+
+
+@TRANSFORMS.register_module()
 class TextRecogGeneralAug(BaseTransform):
     """A general geometric augmentation tool for text images in the CVPR 2020
     paper "Learn to Augment: Joint Data Augmentation and Network Optimization
