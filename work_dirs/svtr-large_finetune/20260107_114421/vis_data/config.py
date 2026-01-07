@@ -78,7 +78,7 @@ fudan_scene_val_dataloader = dict(
     pin_memory=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 launcher = 'pytorch'
-load_from = None
+load_from = 'work_dirs/svtr-large_pretrain/best_PretrainCN_holdout_recog_word_acc_epoch_20.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
 model = dict(
