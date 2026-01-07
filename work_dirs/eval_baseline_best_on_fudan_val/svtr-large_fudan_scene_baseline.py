@@ -78,7 +78,7 @@ fudan_scene_val_dataloader = dict(
     pin_memory=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 launcher = 'none'
-load_from = 'work_dirs/svtr-large_pretrain/best_PretrainCN_holdout_recog_word_acc_epoch_20.pth'
+load_from = 'work_dirs/svtr_direct_fudan_scene/best_Fudan_recog_word_acc_epoch_29.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
 model = dict(
@@ -534,4 +534,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = 'work_dirs/eval_pretrain_on_fudan_val'
+work_dir = 'work_dirs/eval_baseline_best_on_fudan_val'
