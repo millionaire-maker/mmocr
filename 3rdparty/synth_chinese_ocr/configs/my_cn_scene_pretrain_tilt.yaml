@@ -1,0 +1,150 @@
+# 中文自然场景预训练（倾斜更强）：在 my_cn_scene_pretrain.yaml 基础上
+# 增强透视/旋转幅度，用于生成更多“倾斜/拍摄角度偏”的街景文本。
+#
+# 说明：
+# - synth_chinese_ocr 的 perspective_transform 在每张图都会应用；
+#   max_x/max_y/max_z 越大，倾斜/旋转越明显，但过大可能导致文本过小或裁切更激进。
+# - 你也可以仅调大 max_z（平面内旋转）来增强“斜着的店招/标牌”场景。
+
+font_size:
+  min: 14
+  max: 30
+
+font_color:
+  enable: true
+  black:
+    fraction: 0.38
+    l_boundary: [0, 0, 0]
+    h_boundary: [60, 60, 60]
+  dark_gray:
+    fraction: 0.22
+    l_boundary: [40, 40, 40]
+    h_boundary: [120, 120, 120]
+  white:
+    fraction: 0.05
+    l_boundary: [210, 210, 210]
+    h_boundary: [255, 255, 255]
+  red:
+    fraction: 0.12
+    l_boundary: [140, 0, 0]
+    h_boundary: [255, 90, 90]
+  blue:
+    fraction: 0.12
+    l_boundary: [0, 0, 120]
+    h_boundary: [90, 90, 255]
+  brown:
+    fraction: 0.11
+    l_boundary: [120, 60, 20]
+    h_boundary: [200, 130, 90]
+
+random_space:
+  enable: false
+  fraction: 0.3
+  min: -0.1
+  max: 0.1
+
+curve:
+  enable: true
+  fraction: 0.30
+  period: 720
+  min: 1
+  max: 6
+
+crop:
+  enable: true
+  fraction: 0.15
+  top:
+    min: 1
+    max: 3
+  bottom:
+    min: 1
+    max: 3
+
+img_bg:
+  enable: true
+  fraction: 0.98
+
+text_border:
+  enable: true
+  fraction: 0.18
+  light:
+    enable: true
+    fraction: 0.4
+  dark:
+    enable: true
+    fraction: 0.6
+
+seamless_clone:
+  enable: true
+  fraction: 0.12
+
+# 更强的倾斜/旋转（相比 my_cn_scene_pretrain.yaml）
+perspective_transform:
+  max_x: 20
+  max_y: 20
+  max_z: 12
+
+blur:
+  enable: true
+  fraction: 0.07
+
+prydown:
+  enable: true
+  fraction: 0.18
+  max_scale: 1.8
+
+noise:
+  enable: true
+  fraction: 0.28
+  gauss:
+    enable: true
+    fraction: 0.40
+  uniform:
+    enable: true
+    fraction: 0.35
+  salt_pepper:
+    enable: true
+    fraction: 0.15
+  poisson:
+    enable: true
+    fraction: 0.10
+
+line:
+  enable: false
+  fraction: 0.05
+  random_over:
+    enable: true
+    fraction: 0.2
+  under_line:
+    enable: false
+    fraction: 0.2
+  table_line:
+    enable: false
+    fraction: 0.3
+  middle_line:
+    enable: false
+    fraction: 0.3
+
+line_color:
+  enable: false
+  black:
+    fraction: 0.5
+    l_boundary: [0, 0, 0]
+    h_boundary: [64, 64, 64]
+  blue:
+    fraction: 0.5
+    l_boundary: [0, 0, 150]
+    h_boundary: [60, 60, 255]
+
+reverse_color:
+  enable: false
+  fraction: 0.05
+
+emboss:
+  enable: false
+  fraction: 0.05
+
+sharp:
+  enable: false
+  fraction: 0.05
+
