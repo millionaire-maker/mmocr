@@ -1,3 +1,46 @@
+2026/01/07 20:17:58 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+    CUDA available: True
+    MUSA available: False
+    numpy_random_seed: 2031284896
+    GPU 0,1: NVIDIA GeForce RTX 3090
+    CUDA_HOME: /usr/local/cuda
+    NVCC: Cuda compilation tools, release 11.1, V11.1.105
+    GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+    PyTorch: 1.10.2+cu111
+    PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.2.3 (Git Hash 7336ca9f055cf1bfa13efb658fe15dc9b41f0740)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.0.5
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.1, CUDNN_VERSION=8.0.5, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.10.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+    TorchVision: 0.11.3+cu111
+    OpenCV: 4.12.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: True
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 2031284896
+    Distributed launcher: pytorch
+    Distributed training: True
+    GPU number: 2
+------------------------------------------------------------
+
+2026/01/07 20:18:00 - mmengine - INFO - Config:
 auto_scale_lr = dict(base_batch_size=256, enable=True)
 default_hooks = dict(
     checkpoint=dict(
@@ -5624,3 +5667,1060 @@ visualizer = dict(
         dict(type='LocalVisBackend'),
     ])
 work_dir = 'work_dirs/svtr-large_new_pretrain'
+
+2026/01/07 20:18:04 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2026/01/07 20:18:20 - mmengine - INFO - LR is set based on batch size of 256 and the current batch size is 256. Scaling the original LR by 1.0.
+Name of parameter - Initialization information
+
+preprocessor.stn_convnet.0.conv.weight - torch.Size([32, 3, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.0.bn.weight - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.0.bn.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.2.conv.weight - torch.Size([64, 32, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.2.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.2.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.4.conv.weight - torch.Size([128, 64, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.4.bn.weight - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.4.bn.bias - torch.Size([128]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.6.conv.weight - torch.Size([256, 128, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.6.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.6.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.8.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.8.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.8.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.10.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=normal, bias=0 
+
+preprocessor.stn_convnet.10.bn.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_convnet.10.bn.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.0.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.0.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc1.1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc2.weight - torch.Size([40, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+preprocessor.stn_fc2.bias - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.absolute_pos_embed - torch.Size([1, 480, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.conv.weight - torch.Size([96, 3, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.bn.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule0.bn.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.conv.weight - torch.Size([192, 96, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.bn.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.patch_embed.net.ConvModule1.bn.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.0.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.1.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.qkv.weight - torch.Size([576, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.qkv.bias - torch.Size([576]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.proj.weight - torch.Size([192, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mixer.proj.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm2.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.norm2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc1.weight - torch.Size([768, 192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc1.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc2.weight - torch.Size([192, 768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks1.2.mlp.fc2.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.conv.weight - torch.Size([256, 192, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.norm.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample1.norm.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.0.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.1.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.2.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.3.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.4.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.5.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.6.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.7.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm1.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm1.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.qkv.weight - torch.Size([768, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.qkv.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.proj.weight - torch.Size([256, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mixer.proj.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm2.weight - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.norm2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc1.weight - torch.Size([1024, 256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc1.bias - torch.Size([1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc2.weight - torch.Size([256, 1024]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks2.8.mlp.fc2.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.conv.weight - torch.Size([512, 256, 3, 3]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.conv.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.norm.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.downsample2.norm.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.0.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.1.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.2.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.3.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.4.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.5.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.6.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.7.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm1.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm1.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.qkv.weight - torch.Size([1536, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.qkv.bias - torch.Size([1536]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.proj.weight - torch.Size([512, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mixer.proj.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm2.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.norm2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc1.weight - torch.Size([2048, 512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc1.bias - torch.Size([2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc2.weight - torch.Size([512, 2048]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.blocks3.8.mlp.fc2.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.layer_norm.weight - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.layer_norm.bias - torch.Size([512]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+encoder.last_conv.weight - torch.Size([384, 512, 1, 1]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+decoder.decoder.weight - torch.Size([5885, 384]): 
+The value is the same before and after calling `init_weights` of SVTR  
+
+decoder.decoder.bias - torch.Size([5885]): 
+The value is the same before and after calling `init_weights` of SVTR  
+2026/01/07 20:18:23 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2026/01/07 20:18:23 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2026/01/07 20:18:23 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/svtr-large_new_pretrain.
+2026/01/07 20:18:50 - mmengine - INFO - Epoch(train)  [1][  50/4668]  lr: 1.2566e-04  eta: 13:45:51  time: 0.4374  data_time: 0.0020  memory: 18262  loss: 7.9593  loss_ctc: 7.9593
+2026/01/07 20:19:13 - mmengine - INFO - Epoch(train)  [1][ 100/4668]  lr: 1.2633e-04  eta: 12:43:08  time: 0.4297  data_time: 0.0020  memory: 18262  loss: 7.3422  loss_ctc: 7.3422
+2026/01/07 20:19:35 - mmengine - INFO - Epoch(train)  [1][ 150/4668]  lr: 1.2700e-04  eta: 12:23:09  time: 0.4462  data_time: 0.0020  memory: 18262  loss: 7.3864  loss_ctc: 7.3864
+2026/01/07 20:19:58 - mmengine - INFO - Epoch(train)  [1][ 200/4668]  lr: 1.2766e-04  eta: 12:12:54  time: 0.4753  data_time: 0.0019  memory: 18262  loss: 7.3283  loss_ctc: 7.3283
+2026/01/07 20:20:20 - mmengine - INFO - Epoch(train)  [1][ 250/4668]  lr: 1.2833e-04  eta: 12:03:47  time: 0.4294  data_time: 0.0017  memory: 18262  loss: 7.3050  loss_ctc: 7.3050
+2026/01/07 20:20:42 - mmengine - INFO - Epoch(train)  [1][ 300/4668]  lr: 1.2900e-04  eta: 11:58:34  time: 0.4517  data_time: 0.0017  memory: 18262  loss: 7.2886  loss_ctc: 7.2886
+2026/01/07 20:21:05 - mmengine - INFO - Epoch(train)  [1][ 350/4668]  lr: 1.2967e-04  eta: 11:56:16  time: 0.4330  data_time: 0.0018  memory: 18262  loss: 7.1983  loss_ctc: 7.1983
+2026/01/07 20:21:28 - mmengine - INFO - Epoch(train)  [1][ 400/4668]  lr: 1.3034e-04  eta: 11:53:43  time: 0.4344  data_time: 0.0017  memory: 18262  loss: 7.1349  loss_ctc: 7.1349
+2026/01/07 20:21:50 - mmengine - INFO - Epoch(train)  [1][ 450/4668]  lr: 1.3101e-04  eta: 11:51:17  time: 0.4503  data_time: 0.0017  memory: 18262  loss: 7.1443  loss_ctc: 7.1443
+2026/01/07 20:22:13 - mmengine - INFO - Epoch(train)  [1][ 500/4668]  lr: 1.3168e-04  eta: 11:50:03  time: 0.4431  data_time: 0.0017  memory: 18262  loss: 7.0572  loss_ctc: 7.0572
+2026/01/07 20:22:36 - mmengine - INFO - Epoch(train)  [1][ 550/4668]  lr: 1.3235e-04  eta: 11:50:43  time: 0.4641  data_time: 0.0019  memory: 18262  loss: 7.1501  loss_ctc: 7.1501
+2026/01/07 20:22:59 - mmengine - INFO - Epoch(train)  [1][ 600/4668]  lr: 1.3302e-04  eta: 11:49:43  time: 0.4787  data_time: 0.0020  memory: 18262  loss: 7.0800  loss_ctc: 7.0800
+2026/01/07 20:23:22 - mmengine - INFO - Epoch(train)  [1][ 650/4668]  lr: 1.3369e-04  eta: 11:49:05  time: 0.4554  data_time: 0.0020  memory: 18262  loss: 7.0357  loss_ctc: 7.0357
+2026/01/07 20:23:44 - mmengine - INFO - Epoch(train)  [1][ 700/4668]  lr: 1.3436e-04  eta: 11:47:12  time: 0.4454  data_time: 0.0017  memory: 18262  loss: 7.0279  loss_ctc: 7.0279
+2026/01/07 20:24:07 - mmengine - INFO - Epoch(train)  [1][ 750/4668]  lr: 1.3503e-04  eta: 11:46:28  time: 0.4412  data_time: 0.0018  memory: 18262  loss: 6.9792  loss_ctc: 6.9792
+2026/01/07 20:24:29 - mmengine - INFO - Epoch(train)  [1][ 800/4668]  lr: 1.3570e-04  eta: 11:45:41  time: 0.4297  data_time: 0.0017  memory: 18262  loss: 7.0011  loss_ctc: 7.0011
+2026/01/07 20:24:52 - mmengine - INFO - Epoch(train)  [1][ 850/4668]  lr: 1.3637e-04  eta: 11:45:21  time: 0.4571  data_time: 0.0017  memory: 18262  loss: 6.9787  loss_ctc: 6.9787
+2026/01/07 20:25:15 - mmengine - INFO - Epoch(train)  [1][ 900/4668]  lr: 1.3704e-04  eta: 11:44:38  time: 0.4590  data_time: 0.0018  memory: 18262  loss: 6.8947  loss_ctc: 6.8947
+2026/01/07 20:25:38 - mmengine - INFO - Epoch(train)  [1][ 950/4668]  lr: 1.3771e-04  eta: 11:43:48  time: 0.4430  data_time: 0.0017  memory: 18262  loss: 6.9488  loss_ctc: 6.9488
+2026/01/07 20:26:01 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_val_fudan_20260107_201751
+2026/01/07 20:26:01 - mmengine - INFO - Epoch(train)  [1][1000/4668]  lr: 1.3838e-04  eta: 11:43:36  time: 0.4518  data_time: 0.0019  memory: 18262  loss: 6.8725  loss_ctc: 6.8725
+2026/01/07 20:26:23 - mmengine - INFO - Epoch(train)  [1][1050/4668]  lr: 1.3905e-04  eta: 11:42:50  time: 0.4316  data_time: 0.0017  memory: 18262  loss: 6.8779  loss_ctc: 6.8779
+2026/01/07 20:26:46 - mmengine - INFO - Epoch(train)  [1][1100/4668]  lr: 1.3972e-04  eta: 11:42:12  time: 0.4377  data_time: 0.0018  memory: 18262  loss: 6.8582  loss_ctc: 6.8582
+2026/01/07 20:27:08 - mmengine - INFO - Epoch(train)  [1][1150/4668]  lr: 1.4039e-04  eta: 11:41:21  time: 0.4522  data_time: 0.0018  memory: 18262  loss: 6.6841  loss_ctc: 6.6841
+2026/01/07 20:27:31 - mmengine - INFO - Epoch(train)  [1][1200/4668]  lr: 1.4106e-04  eta: 11:40:59  time: 0.4635  data_time: 0.0017  memory: 18262  loss: 6.8388  loss_ctc: 6.8388
+2026/01/07 20:27:54 - mmengine - INFO - Epoch(train)  [1][1250/4668]  lr: 1.4172e-04  eta: 11:40:40  time: 0.4605  data_time: 0.0018  memory: 18262  loss: 6.8231  loss_ctc: 6.8231
+2026/01/07 20:28:17 - mmengine - INFO - Epoch(train)  [1][1300/4668]  lr: 1.4239e-04  eta: 11:40:29  time: 0.4818  data_time: 0.0018  memory: 18262  loss: 6.7094  loss_ctc: 6.7094
+2026/01/07 20:28:39 - mmengine - INFO - Epoch(train)  [1][1350/4668]  lr: 1.4306e-04  eta: 11:39:39  time: 0.4529  data_time: 0.0017  memory: 18262  loss: 6.7092  loss_ctc: 6.7092
+2026/01/07 20:29:02 - mmengine - INFO - Epoch(train)  [1][1400/4668]  lr: 1.4373e-04  eta: 11:39:16  time: 0.4602  data_time: 0.0018  memory: 18262  loss: 6.7278  loss_ctc: 6.7278
+2026/01/07 20:29:24 - mmengine - INFO - Epoch(train)  [1][1450/4668]  lr: 1.4440e-04  eta: 11:38:20  time: 0.4296  data_time: 0.0017  memory: 18262  loss: 6.6455  loss_ctc: 6.6455
+2026/01/07 20:29:47 - mmengine - INFO - Epoch(train)  [1][1500/4668]  lr: 1.4507e-04  eta: 11:37:49  time: 0.4563  data_time: 0.0017  memory: 18262  loss: 6.6684  loss_ctc: 6.6684
+2026/01/07 20:30:10 - mmengine - INFO - Epoch(train)  [1][1550/4668]  lr: 1.4574e-04  eta: 11:37:37  time: 0.4601  data_time: 0.0017  memory: 18262  loss: 6.6347  loss_ctc: 6.6347
+2026/01/07 20:30:33 - mmengine - INFO - Epoch(train)  [1][1600/4668]  lr: 1.4641e-04  eta: 11:36:53  time: 0.4648  data_time: 0.0019  memory: 18262  loss: 6.5904  loss_ctc: 6.5904
+2026/01/07 20:30:55 - mmengine - INFO - Epoch(train)  [1][1650/4668]  lr: 1.4708e-04  eta: 11:36:12  time: 0.4391  data_time: 0.0018  memory: 18262  loss: 6.6720  loss_ctc: 6.6720
+2026/01/07 20:31:18 - mmengine - INFO - Epoch(train)  [1][1700/4668]  lr: 1.4775e-04  eta: 11:35:44  time: 0.4363  data_time: 0.0017  memory: 18262  loss: 6.6534  loss_ctc: 6.6534
+2026/01/07 20:31:40 - mmengine - INFO - Epoch(train)  [1][1750/4668]  lr: 1.4842e-04  eta: 11:35:14  time: 0.4408  data_time: 0.0018  memory: 18262  loss: 6.6271  loss_ctc: 6.6271
+2026/01/07 20:32:03 - mmengine - INFO - Epoch(train)  [1][1800/4668]  lr: 1.4909e-04  eta: 11:34:42  time: 0.4541  data_time: 0.0017  memory: 18262  loss: 6.5940  loss_ctc: 6.5940
+2026/01/07 20:32:25 - mmengine - INFO - Epoch(train)  [1][1850/4668]  lr: 1.4976e-04  eta: 11:34:04  time: 0.4479  data_time: 0.0017  memory: 18262  loss: 6.5734  loss_ctc: 6.5734
+2026/01/07 20:32:48 - mmengine - INFO - Epoch(train)  [1][1900/4668]  lr: 1.5043e-04  eta: 11:33:41  time: 0.4522  data_time: 0.0017  memory: 18262  loss: 6.6956  loss_ctc: 6.6956
+2026/01/07 20:33:11 - mmengine - INFO - Epoch(train)  [1][1950/4668]  lr: 1.5110e-04  eta: 11:33:25  time: 0.4372  data_time: 0.0017  memory: 18262  loss: 6.5087  loss_ctc: 6.5087
+2026/01/07 20:33:34 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_val_fudan_20260107_201751
+2026/01/07 20:33:34 - mmengine - INFO - Epoch(train)  [1][2000/4668]  lr: 1.5177e-04  eta: 11:32:58  time: 0.4369  data_time: 0.0018  memory: 18262  loss: 6.5739  loss_ctc: 6.5739
+2026/01/07 20:33:56 - mmengine - INFO - Epoch(train)  [1][2050/4668]  lr: 1.5244e-04  eta: 11:32:20  time: 0.4403  data_time: 0.0016  memory: 18262  loss: 6.5915  loss_ctc: 6.5915
+2026/01/07 20:34:19 - mmengine - INFO - Epoch(train)  [1][2100/4668]  lr: 1.5311e-04  eta: 11:31:51  time: 0.4369  data_time: 0.0017  memory: 18262  loss: 6.5175  loss_ctc: 6.5175
+2026/01/07 20:34:41 - mmengine - INFO - Epoch(train)  [1][2150/4668]  lr: 1.5378e-04  eta: 11:31:19  time: 0.4433  data_time: 0.0018  memory: 18262  loss: 6.4877  loss_ctc: 6.4877
+2026/01/07 20:35:04 - mmengine - INFO - Epoch(train)  [1][2200/4668]  lr: 1.5445e-04  eta: 11:30:47  time: 0.4593  data_time: 0.0018  memory: 18262  loss: 6.5799  loss_ctc: 6.5799
+2026/01/07 20:35:27 - mmengine - INFO - Epoch(train)  [1][2250/4668]  lr: 1.5512e-04  eta: 11:30:26  time: 0.4546  data_time: 0.0017  memory: 18262  loss: 6.4589  loss_ctc: 6.4589
+2026/01/07 20:35:49 - mmengine - INFO - Epoch(train)  [1][2300/4668]  lr: 1.5578e-04  eta: 11:30:04  time: 0.4637  data_time: 0.0017  memory: 18262  loss: 6.4514  loss_ctc: 6.4514
+2026/01/07 20:36:12 - mmengine - INFO - Epoch(train)  [1][2350/4668]  lr: 1.5645e-04  eta: 11:29:37  time: 0.4570  data_time: 0.0019  memory: 18262  loss: 6.4758  loss_ctc: 6.4758
+2026/01/07 20:36:35 - mmengine - INFO - Epoch(train)  [1][2400/4668]  lr: 1.5712e-04  eta: 11:29:10  time: 0.4425  data_time: 0.0019  memory: 18262  loss: 6.4995  loss_ctc: 6.4995
+2026/01/07 20:36:57 - mmengine - INFO - Epoch(train)  [1][2450/4668]  lr: 1.5779e-04  eta: 11:28:51  time: 0.4585  data_time: 0.0018  memory: 18262  loss: 6.4683  loss_ctc: 6.4683
+2026/01/07 20:37:20 - mmengine - INFO - Epoch(train)  [1][2500/4668]  lr: 1.5846e-04  eta: 11:28:14  time: 0.4420  data_time: 0.0017  memory: 18262  loss: 6.4325  loss_ctc: 6.4325
+2026/01/07 20:37:42 - mmengine - INFO - Epoch(train)  [1][2550/4668]  lr: 1.5913e-04  eta: 11:27:41  time: 0.4468  data_time: 0.0017  memory: 18262  loss: 6.4564  loss_ctc: 6.4564
+2026/01/07 20:38:05 - mmengine - INFO - Epoch(train)  [1][2600/4668]  lr: 1.5980e-04  eta: 11:27:09  time: 0.4577  data_time: 0.0019  memory: 18262  loss: 6.3405  loss_ctc: 6.3405
+2026/01/07 20:38:27 - mmengine - INFO - Epoch(train)  [1][2650/4668]  lr: 1.6047e-04  eta: 11:26:42  time: 0.4484  data_time: 0.0017  memory: 18262  loss: 6.3707  loss_ctc: 6.3707
+2026/01/07 20:38:50 - mmengine - INFO - Epoch(train)  [1][2700/4668]  lr: 1.6114e-04  eta: 11:26:14  time: 0.4309  data_time: 0.0017  memory: 18262  loss: 6.3671  loss_ctc: 6.3671
+2026/01/07 20:39:13 - mmengine - INFO - Epoch(train)  [1][2750/4668]  lr: 1.6181e-04  eta: 11:25:55  time: 0.4599  data_time: 0.0019  memory: 18262  loss: 6.3995  loss_ctc: 6.3995
+2026/01/07 20:39:35 - mmengine - INFO - Epoch(train)  [1][2800/4668]  lr: 1.6248e-04  eta: 11:25:28  time: 0.4433  data_time: 0.0018  memory: 18262  loss: 6.2444  loss_ctc: 6.2444
+2026/01/07 20:39:58 - mmengine - INFO - Epoch(train)  [1][2850/4668]  lr: 1.6315e-04  eta: 11:24:57  time: 0.4357  data_time: 0.0018  memory: 18262  loss: 6.3430  loss_ctc: 6.3430
+2026/01/07 20:40:20 - mmengine - INFO - Epoch(train)  [1][2900/4668]  lr: 1.6382e-04  eta: 11:24:38  time: 0.4671  data_time: 0.0019  memory: 18262  loss: 6.3268  loss_ctc: 6.3268
+2026/01/07 20:40:43 - mmengine - INFO - Epoch(train)  [1][2950/4668]  lr: 1.6449e-04  eta: 11:24:10  time: 0.4710  data_time: 0.0017  memory: 18262  loss: 6.3408  loss_ctc: 6.3408
+2026/01/07 20:41:06 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_val_fudan_20260107_201751
+2026/01/07 20:41:06 - mmengine - INFO - Epoch(train)  [1][3000/4668]  lr: 1.6516e-04  eta: 11:23:51  time: 0.4574  data_time: 0.0020  memory: 18262  loss: 6.2976  loss_ctc: 6.2976
+2026/01/07 20:41:29 - mmengine - INFO - Epoch(train)  [1][3050/4668]  lr: 1.6583e-04  eta: 11:23:40  time: 0.4706  data_time: 0.0017  memory: 18262  loss: 6.2859  loss_ctc: 6.2859
+2026/01/07 20:41:51 - mmengine - INFO - Epoch(train)  [1][3100/4668]  lr: 1.6650e-04  eta: 11:23:13  time: 0.4548  data_time: 0.0018  memory: 18262  loss: 6.2878  loss_ctc: 6.2878
+2026/01/07 20:42:14 - mmengine - INFO - Epoch(train)  [1][3150/4668]  lr: 1.6717e-04  eta: 11:22:53  time: 0.4493  data_time: 0.0018  memory: 18262  loss: 6.2656  loss_ctc: 6.2656
+2026/01/07 20:42:37 - mmengine - INFO - Epoch(train)  [1][3200/4668]  lr: 1.6784e-04  eta: 11:22:23  time: 0.4562  data_time: 0.0018  memory: 18262  loss: 6.1678  loss_ctc: 6.1678
+2026/01/07 20:42:59 - mmengine - INFO - Epoch(train)  [1][3250/4668]  lr: 1.6851e-04  eta: 11:21:56  time: 0.4555  data_time: 0.0019  memory: 18262  loss: 6.2497  loss_ctc: 6.2497
+2026/01/07 20:43:22 - mmengine - INFO - Epoch(train)  [1][3300/4668]  lr: 1.6918e-04  eta: 11:21:38  time: 0.4655  data_time: 0.0018  memory: 18262  loss: 6.2394  loss_ctc: 6.2394
+2026/01/07 20:43:45 - mmengine - INFO - Epoch(train)  [1][3350/4668]  lr: 1.6984e-04  eta: 11:21:13  time: 0.4565  data_time: 0.0018  memory: 18262  loss: 6.1879  loss_ctc: 6.1879
+2026/01/07 20:44:07 - mmengine - INFO - Epoch(train)  [1][3400/4668]  lr: 1.7051e-04  eta: 11:20:47  time: 0.4453  data_time: 0.0017  memory: 18262  loss: 6.1488  loss_ctc: 6.1488
+2026/01/07 20:44:30 - mmengine - INFO - Epoch(train)  [1][3450/4668]  lr: 1.7118e-04  eta: 11:20:30  time: 0.4741  data_time: 0.0018  memory: 18262  loss: 6.1568  loss_ctc: 6.1568
+2026/01/07 20:44:53 - mmengine - INFO - Epoch(train)  [1][3500/4668]  lr: 1.7185e-04  eta: 11:20:09  time: 0.4426  data_time: 0.0019  memory: 18262  loss: 6.0816  loss_ctc: 6.0816
+2026/01/07 20:45:16 - mmengine - INFO - Epoch(train)  [1][3550/4668]  lr: 1.7252e-04  eta: 11:19:46  time: 0.4408  data_time: 0.0018  memory: 18262  loss: 6.0758  loss_ctc: 6.0758
+2026/01/07 20:45:38 - mmengine - INFO - Epoch(train)  [1][3600/4668]  lr: 1.7319e-04  eta: 11:19:13  time: 0.4589  data_time: 0.0018  memory: 18262  loss: 6.0937  loss_ctc: 6.0937
+2026/01/07 20:46:01 - mmengine - INFO - Epoch(train)  [1][3650/4668]  lr: 1.7386e-04  eta: 11:18:59  time: 0.4621  data_time: 0.0017  memory: 18262  loss: 6.0875  loss_ctc: 6.0875
+2026/01/07 20:46:24 - mmengine - INFO - Epoch(train)  [1][3700/4668]  lr: 1.7453e-04  eta: 11:18:35  time: 0.4463  data_time: 0.0018  memory: 18262  loss: 6.0872  loss_ctc: 6.0872
