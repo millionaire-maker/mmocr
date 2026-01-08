@@ -13,11 +13,13 @@ from .sar_decoder import ParallelSARDecoder, SequentialSARDecoder
 from .sar_decoder_with_bs import ParallelSARDecoderWithBS
 from .sequence_attention_decoder import SequenceAttentionDecoder
 from .svtr_decoder import SVTRDecoder
+from .svtrv2_ctc_decoder import SVTRv2CTCDecoder
 
 __all__ = [
     'CRNNDecoder', 'ParallelSARDecoder', 'SequentialSARDecoder',
     'ParallelSARDecoderWithBS', 'NRTRDecoder', 'BaseDecoder',
     'SequenceAttentionDecoder', 'PositionAttentionDecoder',
     'ABILanguageDecoder', 'ABIVisionDecoder', 'MasterDecoder',
-    'RobustScannerFuser', 'ABIFuser', 'SVTRDecoder', 'ASTERDecoder'
+    'RobustScannerFuser', 'ABIFuser', 'SVTRDecoder', 'SVTRv2CTCDecoder',
+    'ASTERDecoder'
 ]

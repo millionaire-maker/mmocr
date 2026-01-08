@@ -11,7 +11,8 @@ from .textdet_transforms import (BoundedScaleAspectJitter, RandomFlip,
                                  TextDetRandomCrop, TextDetRandomCropFlip)
 from .textrecog_transforms import (CropHeight, ImageContentJitter, PadToWidth,
                                    PyramidRescale, RescaleToHeight,
-                                   ReversePixels, TextRecogGeneralAug)
+                                   ReversePixels, SVTRv2AdaptiveResize,
+                                   TextRecogGeneralAug)
 from .wrappers import ConditionApply, ImgAugWrapper, TorchVisionWrapper
 
 __all__ = [
@@ -23,5 +24,6 @@ __all__ = [
     'PackKIEInputs', 'LoadKIEAnnotations', 'FixInvalidPolygon', 'MMDet2MMOCR',
     'MMOCR2MMDet', 'LoadImageFromFile', 'LoadImageFromNDArray', 'CropHeight',
     'InferencerLoader', 'RemoveIgnored', 'ConditionApply', 'CropHeight',
-    'TextRecogGeneralAug', 'ImageContentJitter', 'ReversePixels'
+    'TextRecogGeneralAug', 'ImageContentJitter', 'ReversePixels',
+    'SVTRv2AdaptiveResize'
 ]
