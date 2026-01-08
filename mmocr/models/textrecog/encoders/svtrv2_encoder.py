@@ -590,3 +590,35 @@ class SVTRv2Backbone(BaseModule):
             x, sz = stage(x, sz)
         return x
 
+
+@MODELS.register_module()
+class SVTRFlexibleEncoder(BaseModule):
+    """A switchable encoder wrapper to enable SVTR ↔ SVTRv2 ablations by config.
+
+    It builds exactly one encoder at initialization time based on
+    ``use_svtrv2_backbone``. This makes the SVTRv2 backbone toggle-able via
+    ``--cfg-options`` without editing config code.
+
+    Args:
+        use_svtrv2_backbone (bool): If True, build ``svtrv2_encoder`` else
+            build ``svtr_encoder``.
+        svtr_encoder (dict): Encoder config for legacy SVTR.
+        svtrv2_encoder (dict): Encoder config for SVTRv2 backbone.
+    """
+
+    def __init__(self,
+                 use_svtrv2_backbone: bool,
+                 svtr_encoder: dict,
+                 svtrv2_encoder: dict,
+                 init_cfg: Optional[dict] = None) -> None:
+        super().__init__(init_cfg=init_cfg)
+        self.use_svtrv2_backbone = bool(use_svtrv2_backbone)
+        encoder_cfg = svtrv2_encoder if self.use_svtrv2_backbone else svtr_encoder
+        self.encoder = MODELS.build(encoder_cfg)
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        data_samples: Optional[List[TextRecogDataSample]] = None
+    ) -> torch.Tensor:
+        return self.encoder(x, data_samples)
