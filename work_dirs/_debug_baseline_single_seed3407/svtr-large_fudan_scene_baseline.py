@@ -77,7 +77,7 @@ fudan_scene_val_dataloader = dict(
     persistent_workers=True,
     pin_memory=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
-launcher = 'pytorch'
+launcher = 'none'
 load_from = None
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
@@ -208,7 +208,7 @@ param_scheduler = [
         type='CosineAnnealingLR',
         verbose=False),
 ]
-randomness = dict(seed=3407)
+randomness = dict(deterministic=True, seed=3407)
 resume = False
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
@@ -216,6 +216,7 @@ test_dataloader = dict(
     dataset=dict(
         ann_file='scene_test',
         data_root='data/fudan/scene',
+        indices=64,
         pipeline=[
             dict(type='LoadImageFromNDArray'),
             dict(scale=(
@@ -233,7 +234,7 @@ test_dataloader = dict(
                 type='PackTextRecogInputs'),
         ],
         type='RecogLMDBDataset'),
-    num_workers=4,
+    num_workers=0,
     persistent_workers=True,
     pin_memory=True,
     prefetch_factor=2,
@@ -265,12 +266,13 @@ test_pipeline = [
         ),
         type='PackTextRecogInputs'),
 ]
-train_cfg = dict(max_epochs=30, type='EpochBasedTrainLoop', val_interval=1)
+train_cfg = dict(max_epochs=1, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
-    batch_size=128,
+    batch_size=4,
     dataset=dict(
         ann_file='scene_train',
         data_root='data/fudan/scene',
+        indices=64,
         pipeline=[
             dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
             dict(type='LoadOCRAnnotations', with_text=True),
@@ -349,7 +351,7 @@ train_dataloader = dict(
                 type='PackTextRecogInputs'),
         ],
         type='RecogLMDBDataset'),
-    num_workers=4,
+    num_workers=0,
     persistent_workers=True,
     pin_memory=True,
     prefetch_factor=2,
@@ -493,6 +495,7 @@ val_dataloader = dict(
     dataset=dict(
         ann_file='scene_val',
         data_root='data/fudan/scene',
+        indices=64,
         pipeline=[
             dict(type='LoadImageFromNDArray'),
             dict(scale=(
@@ -510,7 +513,7 @@ val_dataloader = dict(
                 type='PackTextRecogInputs'),
         ],
         type='RecogLMDBDataset'),
-    num_workers=4,
+    num_workers=0,
     persistent_workers=True,
     pin_memory=True,
     prefetch_factor=2,
@@ -535,4 +538,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = 'work_dirs/svtr-large_fudan_baseline_seed3407'
+work_dir = 'work_dirs/_debug_baseline_single_seed3407'

@@ -208,7 +208,7 @@ param_scheduler = [
         type='CosineAnnealingLR',
         verbose=False),
 ]
-randomness = dict(seed=3407)
+randomness = dict(deterministic=True, seed=3407)
 resume = False
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
@@ -216,6 +216,7 @@ test_dataloader = dict(
     dataset=dict(
         ann_file='scene_test',
         data_root='data/fudan/scene',
+        indices=128,
         pipeline=[
             dict(type='LoadImageFromNDArray'),
             dict(scale=(
@@ -265,12 +266,13 @@ test_pipeline = [
         ),
         type='PackTextRecogInputs'),
 ]
-train_cfg = dict(max_epochs=30, type='EpochBasedTrainLoop', val_interval=1)
+train_cfg = dict(max_epochs=1, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=128,
     dataset=dict(
         ann_file='scene_train',
         data_root='data/fudan/scene',
+        indices=128,
         pipeline=[
             dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
             dict(type='LoadOCRAnnotations', with_text=True),
@@ -493,6 +495,7 @@ val_dataloader = dict(
     dataset=dict(
         ann_file='scene_val',
         data_root='data/fudan/scene',
+        indices=128,
         pipeline=[
             dict(type='LoadImageFromNDArray'),
             dict(scale=(
@@ -535,4 +538,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = 'work_dirs/svtr-large_fudan_baseline_seed3407'
+work_dir = 'work_dirs/_debug_dist_baseline_seed3407_short'
