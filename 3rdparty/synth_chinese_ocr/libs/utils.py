@@ -86,6 +86,13 @@ def load_bgs(bg_dir):
             # For load non-ascii image_path on Windows
             bg = cv2.imdecode(np.fromfile(image_path, dtype=np.uint8), cv2.IMREAD_COLOR)
 
+            if bg is None or getattr(bg, "size", 0) == 0:
+                print(f"[WARN] skip invalid bg (decode failed): {image_path}")
+                continue
+            if bg.shape[0] <= 0 or bg.shape[1] <= 0:
+                print(f"[WARN] skip invalid bg (empty shape): {image_path} shape={bg.shape}")
+                continue
+
             dst.append(bg)
 
     print("Background num: %d" % len(dst))

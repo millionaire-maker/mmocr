@@ -491,10 +491,12 @@ class Renderer(object):
         draw.text((x, y), text, font=font, fill=text_color)
 
     def gen_bg(self, width, height):
+        width = max(1, int(width))
+        height = max(1, int(height))
         if apply(self.cfg.img_bg):
-            bg = self.gen_bg_from_image(int(width), int(height))
+            bg = self.gen_bg_from_image(width, height)
         else:
-            bg = self.gen_rand_bg(int(width), int(height))
+            bg = self.gen_rand_bg(width, height)
         return bg
 
     def gen_rand_bg(self, width, height):
@@ -518,14 +520,28 @@ class Renderer(object):
         Resize background, let bg_width>=width, bg_height >=height, and random crop from resized background
         """
         bg = random.choice(self.bgs)
+        if bg is None or getattr(bg, "size", 0) == 0 or bg.shape[0] <= 0 or bg.shape[1] <= 0:
+            # Fallback to random background if a bad image slipped in.
+            return self.gen_rand_bg(width, height)
 
-        scale = max(width / bg.shape[1], height / bg.shape[0])
+        try:
+            scale = max(width / bg.shape[1], height / bg.shape[0])
+        except Exception:
+            return self.gen_rand_bg(width, height)
+        if not np.isfinite(scale) or scale <= 0:
+            return self.gen_rand_bg(width, height)
 
         out = cv2.resize(bg, None, fx=scale, fy=scale)
+        if out is None or out.size == 0 or out.shape[0] <= 0 or out.shape[1] <= 0:
+            return self.gen_rand_bg(width, height)
 
         x_offset, y_offset = self.random_xy_offset(height, width, out.shape[0], out.shape[1])
 
         out = out[y_offset:y_offset + height, x_offset:x_offset + width]
+        if out is None or out.size == 0 or out.shape[0] <= 0 or out.shape[1] <= 0:
+            return self.gen_rand_bg(width, height)
+        if out.shape[0] != height or out.shape[1] != width:
+            out = cv2.resize(out, (width, height), interpolation=cv2.INTER_AREA)
 
         # out = self.apply_gauss_blur(out, ks=[7, 11, 13, 15, 17])
 

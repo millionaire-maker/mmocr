@@ -74,7 +74,16 @@ def gen_img_retry(renderer, img_index):
     try:
         return renderer.gen_img(img_index)
     except Exception as e:
-        print("Retry gen_img: %s" % str(e))
+        msg = str(e)
+        print("Retry gen_img: %s" % msg)
+        # Common transient errors during synth: avoid flooding logs with full tracebacks.
+        if isinstance(e, cv2.error) and (
+            "_src.total() > 0" in msg
+            or "!ssize.empty" in msg
+            or "warpPerspective" in msg
+            or "resize" in msg
+        ):
+            raise Exception
         traceback.print_exc()
         raise Exception
 
