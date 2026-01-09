@@ -48,7 +48,10 @@ class Liner(object):
         return b, g, r
 
     def get_random_point(self, img):
-        return (int(np.random.randint(img.shape[1])), int(np.random.randint(img.shape[0])))
+        h, w = img.shape[:2]
+        if h <= 1 or w <= 1:
+            return (0, 0)
+        return (int(np.random.randint(w)), int(np.random.randint(h)))
 
 
     def apply(self, word_img, text_box_pnts, word_color):
@@ -57,6 +60,14 @@ class Liner(object):
         :param text_box_pnts: left-top, right-top, right-bottom, left-bottom of text word
         :return:
         """
+        if word_img is None:
+            return word_img, text_box_pnts
+        if len(word_img.shape) < 2:
+            return word_img, text_box_pnts
+        h, w = word_img.shape[:2]
+        if h <= 1 or w <= 1:
+            return word_img, text_box_pnts
+
         line_p = []
         funcs = []
 

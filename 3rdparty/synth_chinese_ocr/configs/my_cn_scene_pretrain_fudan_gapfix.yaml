@@ -1,0 +1,159 @@
+# 更贴近 Fudan(Scene) 的中文自然场景合成配置（用于“补齐域差”子集）
+#
+# 设计依据（来自 tools/synth_prep/analyze_recog_lmdb.py 的统计）：
+# - Fudan 的短文本（len=1/2/3/4）占比很高：len=1 约 9.5%，len<=4 超过 60%
+# - Fudan 原图尺寸更小、更分散，warp 到 (256,64) 时横向缩放更激进：
+#   sx(p50)≈3.12，而当前合成数据 sx(p50)≈1.90
+# - Fudan 更暗（mean_intensity≈117 vs 合成≈141），更“糊/低分辨率”（lap_var p10 更低）
+#
+# 策略：
+# - 保持自然背景为主（img_bg≈1.0），但增加“低分辨率/模糊/噪声/裁切误差”的比例
+# - 适度提高 reverse_color（模拟亮字暗底/夜间/室内），并保留描边以免大量样本人眼不可读
+# - 透视/旋转略增强，帮助覆盖偏斜/拍摄角度
+#
+# 备注：弯曲比例建议仍用 wrapper 的 --curve-ratio 覆盖；这里给一个偏低默认值。
+
+font_size:
+  min: 12
+  max: 30
+
+font_color:
+  enable: true
+  black:
+    fraction: 0.32
+    l_boundary: [0, 0, 0]
+    h_boundary: [60, 60, 60]
+  dark_gray:
+    fraction: 0.18
+    l_boundary: [40, 40, 40]
+    h_boundary: [120, 120, 120]
+  white:
+    fraction: 0.15
+    l_boundary: [210, 210, 210]
+    h_boundary: [255, 255, 255]
+  red:
+    fraction: 0.12
+    l_boundary: [140, 0, 0]
+    h_boundary: [255, 90, 90]
+  blue:
+    fraction: 0.12
+    l_boundary: [0, 0, 120]
+    h_boundary: [90, 90, 255]
+  brown:
+    fraction: 0.11
+    l_boundary: [120, 60, 20]
+    h_boundary: [200, 130, 90]
+
+random_space:
+  enable: false
+  fraction: 0.3
+  min: -0.1
+  max: 0.1
+
+curve:
+  enable: true
+  fraction: 0.15
+  period: 720
+  min: 1
+  max: 6
+
+# 裁切误差：略提高，让边缘更贴近真实检测裁切
+crop:
+  enable: true
+  fraction: 0.25
+  top:
+    min: 1
+    max: 4
+  bottom:
+    min: 1
+    max: 4
+
+img_bg:
+  enable: true
+  fraction: 0.99
+
+text_border:
+  enable: true
+  fraction: 0.25
+  light:
+    enable: true
+    fraction: 0.45
+  dark:
+    enable: true
+    fraction: 0.55
+
+seamless_clone:
+  enable: true
+  fraction: 0.18
+
+perspective_transform:
+  max_x: 16
+  max_y: 16
+  max_z: 8
+
+# 更贴近“低清/糊”的真实街景：提高 blur + prydown
+blur:
+  enable: true
+  fraction: 0.15
+
+prydown:
+  enable: true
+  fraction: 0.35
+  max_scale: 3.0
+
+noise:
+  enable: true
+  fraction: 0.35
+  gauss:
+    enable: true
+    fraction: 0.40
+  uniform:
+    enable: true
+    fraction: 0.35
+  salt_pepper:
+    enable: true
+    fraction: 0.15
+  poisson:
+    enable: true
+    fraction: 0.10
+
+# 轻度遮挡/干扰线：模拟电线/栏杆/反光边缘
+line:
+  enable: true
+  fraction: 0.06
+  random_over:
+    enable: true
+    fraction: 1.0
+  under_line:
+    enable: false
+    fraction: 0.1
+  table_line:
+    enable: false
+    fraction: 0.1
+  middle_line:
+    enable: false
+    fraction: 0.1
+
+line_color:
+  enable: true
+  black:
+    fraction: 0.7
+    l_boundary: [0, 0, 0]
+    h_boundary: [80, 80, 80]
+  blue:
+    fraction: 0.3
+    l_boundary: [0, 0, 150]
+    h_boundary: [60, 60, 255]
+
+# 亮字暗底/夜景风格：提高该比例让整体亮度分布更接近 Fudan
+reverse_color:
+  enable: true
+  fraction: 0.15
+
+emboss:
+  enable: false
+  fraction: 0.05
+
+sharp:
+  enable: false
+  fraction: 0.05
