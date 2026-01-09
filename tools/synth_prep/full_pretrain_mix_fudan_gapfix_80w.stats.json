@@ -1,0 +1,101 @@
+{
+  "fudan_lmdb": "/root/lanyun-tmp/mmocr/data/fudan/scene/scene_train",
+  "hard_txt": "/root/lanyun-tmp/mmocr/data/synth_assets/list_corpus/hard_curve.cleaned.filtered.fontok_nocal.txt",
+  "out_txt": "/root/lanyun-tmp/mmocr/data/synth_assets/list_corpus/full_pretrain_mix_fudan_gapfix_80w/mixed_pretrain.txt",
+  "total": 800000,
+  "hard_ratio": 0.12,
+  "seed": 3407,
+  "normalize": "nfkc_lower",
+  "max_len": 30,
+  "strip_leading_punct": true,
+  "charset_path": "/root/lanyun-tmp/mmocr/data/charset/charset_rec_cn_en.txt",
+  "fudan_total": 509164,
+  "fudan_kept": 506849,
+  "fudan_skipped_oov": 11,
+  "fudan_skipped_too_long": 2294,
+  "fudan_skipped_empty": 10,
+  "hard_in": 352,
+  "hard_usable": 352,
+  "out_len_hist_top20": [
+    [
+      1,
+      67541
+    ],
+    [
+      2,
+      130618
+    ],
+    [
+      3,
+      98621
+    ],
+    [
+      4,
+      146135
+    ],
+    [
+      5,
+      63235
+    ],
+    [
+      6,
+      57537
+    ],
+    [
+      7,
+      50723
+    ],
+    [
+      8,
+      49561
+    ],
+    [
+      9,
+      25750
+    ],
+    [
+      10,
+      41341
+    ],
+    [
+      11,
+      19550
+    ],
+    [
+      12,
+      9454
+    ],
+    [
+      13,
+      9396
+    ],
+    [
+      14,
+      7510
+    ],
+    [
+      15,
+      4431
+    ],
+    [
+      16,
+      3974
+    ],
+    [
+      17,
+      2473
+    ],
+    [
+      18,
+      1811
+    ],
+    [
+      19,
+      1629
+    ],
+    [
+      20,
+      1268
+    ]
+  ]
+}

@@ -121,7 +121,29 @@ class Renderer(object):
             word_img = self.apply_sharp(word_img)
             self.dmsg("After sharp")
 
+        if hasattr(self.cfg, "brightness") and apply(self.cfg.brightness):
+            word_img = self.apply_brightness(word_img, self.cfg.brightness)
+            self.dmsg("After brightness")
+
         return word_img, word
+
+    def apply_brightness(self, img, cfg):
+        """
+        Apply a global brightness scaling on the final output image.
+        Expected cfg fields:
+            brightness:
+                enable: true
+                fraction: 0.7
+                min: 0.65
+                max: 1.0
+        """
+        scale_min = float(getattr(cfg, "min", 1.0))
+        scale_max = float(getattr(cfg, "max", 1.0))
+        if scale_max < scale_min:
+            scale_min, scale_max = scale_max, scale_min
+        scale = random.uniform(scale_min, scale_max)
+        img = img * scale
+        return np.clip(img, 0.0, 255.0)
 
     def dmsg(self, msg):
         if self.debug:
