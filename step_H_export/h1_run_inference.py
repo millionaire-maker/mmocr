@@ -1,5 +1,6 @@
 
 import os
+import argparse
 import random
 import json
 import time
@@ -126,13 +127,76 @@ def to_shapely(poly):
     if not p.is_valid: p = p.buffer(0)
     return p
 
-def run_model_inference(model, img):
-    inputs = torch.from_numpy(img).permute(2, 0, 1).float().unsqueeze(0).cuda()
+def _is_cuda_oom(err: BaseException) -> bool:
+    if not isinstance(err, RuntimeError):
+        return False
+    msg = str(err).lower()
+    return ('out of memory' in msg) or ('cuda error: out of memory' in msg)
+
+def _get_model_device(model) -> torch.device:
+    try:
+        return next(model.parameters()).device
+    except StopIteration:
+        return torch.device('cpu')
+
+def _test_step_in_microbatches(model, inputs, data_samples, microbatch_size: int):
+    if microbatch_size <= 0:
+        raise ValueError(f"microbatch_size must be > 0, got {microbatch_size}")
+
+    outs = []
+    start = 0
+    while start < len(inputs):
+        cur_inputs = inputs[start:start + microbatch_size]
+        cur_samples = data_samples[start:start + microbatch_size]
+        try:
+            with torch.inference_mode():
+                cur_outs = model.test_step(dict(inputs=cur_inputs, data_samples=cur_samples))
+        except Exception as e:
+            if _is_cuda_oom(e) and microbatch_size > 1:
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                microbatch_size = max(1, microbatch_size // 2)
+                continue
+            raise
+        outs.extend(cur_outs)
+        start += len(cur_inputs)
+    return outs
+
+def run_model_inference(model, img, device=None):
+    if device is None:
+        device = _get_model_device(model)
+    device = torch.device(device)
+    inputs = torch.from_numpy(img).permute(2, 0, 1).float().unsqueeze(0).to(device)
     data_sample = TextDetDataSample()
     data_sample.set_metainfo(dict(img_shape=img.shape[:2], ori_shape=img.shape[:2], scale_factor=(1.0, 1.0)))
-    with torch.no_grad():
+    with torch.inference_mode():
         out = model.test_step(dict(inputs=inputs, data_samples=[data_sample]))[0]
     return out.pred_instances.polygons, out.pred_instances.scores
+
+def run_model_inference_batch(
+    model,
+    imgs,
+    device=None,
+    microbatch_size: int = 1,
+):
+    if not imgs:
+        return [], []
+    if device is None:
+        device = _get_model_device(model)
+    device = torch.device(device)
+
+    inputs = []
+    data_samples = []
+    for img in imgs:
+        inputs.append(torch.from_numpy(img).permute(2, 0, 1).float().to(device))
+        ds = TextDetDataSample()
+        ds.set_metainfo(dict(img_shape=img.shape[:2], ori_shape=img.shape[:2], scale_factor=(1.0, 1.0)))
+        data_samples.append(ds)
+
+    outs = _test_step_in_microbatches(model, inputs, data_samples, microbatch_size=microbatch_size)
+    polygons = [o.pred_instances.polygons for o in outs]
+    scores = [o.pred_instances.scores for o in outs]
+    return polygons, scores
 
 def clean_s1_polygons(polys, scores):
     removed_tiny = 0
@@ -195,9 +259,10 @@ def clean_s1_polygons(polys, scores):
 
 # Helper class for Policy execution (Shared Logic)
 class PolicyRunner:
-    def __init__(self, mode, model_s2):
+    def __init__(self, mode, model_s2, device=None):
         self.mode = mode
         self.model_s2 = model_s2
+        self.device = torch.device(device) if device is not None else _get_model_device(model_s2)
         # Toggles
         self.full_iou_thr = 0.2 if mode == 'G3' else 0.05
         self.check_neighbor = True # Both use it
@@ -282,10 +347,10 @@ class PolicyRunner:
         patch, mat_o2p, mat_p2o = _crop_rotated_patch(img, poly, expand_ratio=expand_ratio, max_long_edge=MAX_LONG_EDGE)
         h, w = patch.shape[:2]
         if h == 0 or w == 0: return [], [], patch
-        inputs = torch.from_numpy(patch).permute(2, 0, 1).float().unsqueeze(0).cuda()
+        inputs = torch.from_numpy(patch).permute(2, 0, 1).float().unsqueeze(0).to(self.device)
         data_sample = TextDetDataSample()
         data_sample.set_metainfo(dict(img_shape=patch.shape[:2], ori_shape=patch.shape[:2], scale_factor=(1.0, 1.0)))
-        with torch.no_grad():
+        with torch.inference_mode():
             out = self.model_s2.test_step(dict(inputs=inputs, data_samples=[data_sample]))[0] 
         s2_raw = out.pred_instances.polygons
         s2_raw_scores = out.pred_instances.scores
@@ -304,6 +369,61 @@ class PolicyRunner:
                 if hasattr(sc, 'item'): sc = sc.item()
                 s2_filtered_scores.append(sc)
         return s2_filtered, s2_filtered_scores, patch
+
+    def run_fce_patch_batch(self, img, polys, expand_ratio, batch_size=8):
+        if not polys:
+            return []
+
+        results = [([], []) for _ in polys]
+        inputs = []
+        data_samples = []
+        metas = []
+        valid_map = []
+
+        for i, poly in enumerate(polys):
+            patch, _, mat_p2o = _crop_rotated_patch(
+                img, poly, expand_ratio=expand_ratio, max_long_edge=MAX_LONG_EDGE
+            )
+            h, w = patch.shape[:2]
+            if h == 0 or w == 0:
+                continue
+            inputs.append(torch.from_numpy(patch).permute(2, 0, 1).float().to(self.device))
+            ds = TextDetDataSample()
+            ds.set_metainfo(
+                dict(img_shape=patch.shape[:2], ori_shape=patch.shape[:2], scale_factor=(1.0, 1.0))
+            )
+            data_samples.append(ds)
+            metas.append((mat_p2o, _bbox_from_poly(poly)))
+            valid_map.append(i)
+
+        if not inputs:
+            return results
+
+        outs = _test_step_in_microbatches(self.model_s2, inputs, data_samples, microbatch_size=batch_size)
+        for out, (mat_p2o, s1_bbox), idx in zip(outs, metas, valid_map):
+            s2_raw = out.pred_instances.polygons
+            s2_raw_scores = out.pred_instances.scores
+
+            s2_np = []
+            for p in s2_raw:
+                if hasattr(p, 'cpu'):
+                    s2_np.append(p.cpu().numpy())
+                else:
+                    s2_np.append(p)
+            mapped_s2 = _transform_polygons(s2_np, mat_p2o)
+
+            s2_filtered = []
+            s2_filtered_scores = []
+            for j, mp in enumerate(mapped_s2):
+                if _bbox_iou(s1_bbox, _bbox_from_poly(mp)) >= 0.2:
+                    s2_filtered.append(to_shapely(mp))
+                    sc = s2_raw_scores[j]
+                    if hasattr(sc, 'item'):
+                        sc = sc.item()
+                    s2_filtered_scores.append(sc)
+            results[idx] = (s2_filtered, s2_filtered_scores)
+
+        return results
 
     def apply_endcap(self, s2_poly, s1_poly):
         s1_shapely = to_shapely(s1_poly)
@@ -333,246 +453,375 @@ class PolicyRunner:
         if miss_area / s1_area <= self.TUNED_ENDCAP_MISSING_THR: return None
         return s2_poly.union(missing_ends)
 
-    def process_image(self, img, s1_polys, s1_scores, s2_polys_full):
-        final_polys = []
-        final_scores = []
-        
-        s2_accepted_count = 0
-        s1_fallback_count = 0
-        
-        for idx in range(len(s1_polys)):
+    def process_image(self, img, s1_polys, s1_scores, s2_polys_full, patch_batch_size=8):
+        n = len(s1_polys)
+        final_polys = [None] * n
+        final_scores = [None] * n
+        is_s2_flags = [False] * n
+
+        s1_quads = [None] * n
+        s1_shapely_list = [None] * n
+        ratios = [0.0] * n
+        accepted_polys = [None] * n
+        current_scores_list = [None] * n
+
+        need_patch_indices = []
+
+        for idx in range(n):
             s1_poly = s1_polys[idx]
             s1_score = s1_scores[idx]
-            
+
             pts_raw = _poly_points(s1_poly)
             try:
                 rect = cv2.minAreaRect(pts_raw)
-            except: 
-                final_polys.append(s1_poly)
-                final_scores.append(s1_score)
-                s1_fallback_count += 1
+            except:
+                final_polys[idx] = s1_poly
+                final_scores[idx] = s1_score
                 continue
-                
+
             box = cv2.boxPoints(rect)
             box = _order_points_clockwise(box)
             s1_quad = box.flatten().tolist()
-            s1_shapely = to_shapely(s1_poly)
-            area_rect = rect[1][0]*rect[1][1] + 1e-6
-            ratio = 1.0 - (s1_shapely.area / area_rect)
-            
-            final_poly_obj = None
-            final_sc = s1_score
-            is_s2 = False
-            
-            if ratio >= self.DEFAULT_RATIO_THR: # Curved
-                accepted_poly = None
-                current_scores = []
-                
-                # Full Match
-                full_cands = self.filtered_full_candidates(s2_polys_full, s1_poly)
-                if full_cands:
-                    s2_union_full = unary_union(full_cands)
-                    if self.check_safety_gate(s2_union_full, s1_shapely, s1_poly):
-                        accepted_poly = s2_union_full
-                        self.stats['sum_s2_full_hit'] += 1
-                        current_scores = [s1_score]
-                
-                # Patch Fallback
-                if not accepted_poly:
-                    self.stats['sum_s2_patch_fallback'] += 1
-                    s2_filtered, s2_scores_list, _ = self.run_fce_patch(img, s1_poly, 0.2)
-                    if not s2_filtered:
-                        self.stats['sum_s2_raw_empty'] += 1
-                        s2_filtered, s2_scores_list, _ = self.run_fce_patch(img, s1_poly, self.DEFAULT_RETRY_EXPAND_RATIO)
-                    
-                    if s2_filtered:
-                        s2_union = unary_union(s2_filtered)
-                        if self.check_safety_gate(s2_union, s1_shapely, s1_poly):
-                            accepted_poly = s2_union
-                            current_scores = s2_scores_list
-                
-                # Pad Retry
-                if accepted_poly:
-                    ioa_base = accepted_poly.intersection(s1_shapely).area / (s1_shapely.area+1e-6)
-                    uncovered = 1.0 - ioa_base
-                    if ioa_base < 0.95 or uncovered > self.TUNED_PAD_UNCOVERED_THR:
-                        s2_pad, s2_pad_sc, _ = self.run_fce_patch(img, s1_poly, self.DEFAULT_ENDPAD_EXPAND_RATIO)
-                        if s2_pad:
-                            u_pad = unary_union(s2_pad)
-                            if self.check_safety_gate(u_pad, s1_shapely, s1_poly):
-                                ioa_pad = u_pad.intersection(s1_shapely).area / (s1_shapely.area+1e-6)
-                                if ioa_pad > ioa_base + 0.005:
-                                    accepted_poly = u_pad
-                                    current_scores = s2_pad_sc
-                
-                # Endcap
-                if accepted_poly:
-                    s2_fixed = self.apply_endcap(accepted_poly, s1_poly)
-                    if s2_fixed:
-                        if self.check_safety_gate(s2_fixed, s1_shapely, s1_poly):
-                            accepted_poly = s2_fixed
-                
-                # Selection
-                if accepted_poly:
-                    # G4/G5 Fix: Pick best component if Multi
-                    final_geom = accepted_poly
-                    if accepted_poly.geom_type in ['MultiPolygon', 'GeometryCollection']:
-                        parts = []
-                        if accepted_poly.geom_type == 'MultiPolygon': parts = list(accepted_poly.geoms)
-                        else:
-                            for g in accepted_poly.geoms:
-                                if g.geom_type in ['Polygon', 'MultiPolygon']: 
-                                    if g.geom_type == 'Polygon': parts.append(g)
-                                    else: parts.extend(list(g.geoms))
-                        best_part = None
-                        best_inter = -1.0
-                        for part in parts:
-                            if not part.is_valid or part.is_empty: continue
-                            inter_v = part.intersection(s1_shapely).area
-                            if inter_v > best_inter:
-                                best_inter = inter_v
-                                best_part = part
-                        if best_part is not None: final_geom = best_part
-                        else: final_geom = None
-                    
-                    if final_geom and final_geom.geom_type == 'Polygon':
-                        final_poly_obj = np.array(final_geom.exterior.coords)[:-1].flatten().tolist()
-                        s2_max_sc = max(current_scores) if current_scores else s1_score
-                        final_sc = max(float(s1_score), float(s2_max_sc))
-                        is_s2 = True
+            s1_quads[idx] = s1_quad
 
-            if is_s2:
-                final_polys.append(final_poly_obj)
-                final_scores.append(final_sc)
-                s2_accepted_count += 1
+            s1_shapely = to_shapely(s1_poly)
+            s1_shapely_list[idx] = s1_shapely
+
+            area_rect = rect[1][0] * rect[1][1] + 1e-6
+            ratio = 1.0 - (s1_shapely.area / area_rect)
+            ratios[idx] = ratio
+
+            if ratio < self.DEFAULT_RATIO_THR:
+                continue
+
+            accepted_poly = None
+            current_scores = None
+
+            full_cands = self.filtered_full_candidates(s2_polys_full, s1_poly)
+            if full_cands:
+                s2_union_full = unary_union(full_cands)
+                if self.check_safety_gate(s2_union_full, s1_shapely, s1_poly):
+                    accepted_poly = s2_union_full
+                    self.stats['sum_s2_full_hit'] += 1
+                    current_scores = [s1_score]
+
+            if accepted_poly is None:
+                self.stats['sum_s2_patch_fallback'] += 1
+                need_patch_indices.append(idx)
             else:
-                # Use S1 Quad if fallback
-                final_polys.append(s1_quad)
-                final_scores.append(s1_score)
-                s1_fallback_count += 1
+                accepted_polys[idx] = accepted_poly
+                current_scores_list[idx] = current_scores
+
+        if need_patch_indices:
+            polys_need = [s1_polys[i] for i in need_patch_indices]
+            patch_results = self.run_fce_patch_batch(
+                img, polys_need, 0.2, batch_size=patch_batch_size
+            )
+
+            retry_indices = []
+            for local_i, global_i in enumerate(need_patch_indices):
+                s2_filtered, s2_scores_list = patch_results[local_i]
+                if not s2_filtered:
+                    self.stats['sum_s2_raw_empty'] += 1
+                    retry_indices.append(global_i)
+                    continue
+                s2_union = unary_union(s2_filtered)
+                if self.check_safety_gate(
+                    s2_union, s1_shapely_list[global_i], s1_polys[global_i]
+                ):
+                    accepted_polys[global_i] = s2_union
+                    current_scores_list[global_i] = s2_scores_list
+
+            if retry_indices:
+                polys_retry = [s1_polys[i] for i in retry_indices]
+                retry_results = self.run_fce_patch_batch(
+                    img,
+                    polys_retry,
+                    self.DEFAULT_RETRY_EXPAND_RATIO,
+                    batch_size=patch_batch_size,
+                )
+                for local_i, global_i in enumerate(retry_indices):
+                    s2_filtered, s2_scores_list = retry_results[local_i]
+                    if not s2_filtered:
+                        continue
+                    s2_union = unary_union(s2_filtered)
+                    if self.check_safety_gate(
+                        s2_union, s1_shapely_list[global_i], s1_polys[global_i]
+                    ):
+                        accepted_polys[global_i] = s2_union
+                        current_scores_list[global_i] = s2_scores_list
+
+        pad_indices = []
+        ioa_bases = {}
+        for idx in range(n):
+            if final_polys[idx] is not None:
+                continue
+            if ratios[idx] < self.DEFAULT_RATIO_THR:
+                continue
+            accepted_poly = accepted_polys[idx]
+            if not accepted_poly:
+                continue
+            s1_shapely = s1_shapely_list[idx]
+            ioa_base = accepted_poly.intersection(s1_shapely).area / (s1_shapely.area + 1e-6)
+            uncovered = 1.0 - ioa_base
+            if ioa_base < 0.95 or uncovered > self.TUNED_PAD_UNCOVERED_THR:
+                pad_indices.append(idx)
+                ioa_bases[idx] = ioa_base
+
+        if pad_indices:
+            polys_pad = [s1_polys[i] for i in pad_indices]
+            pad_results = self.run_fce_patch_batch(
+                img,
+                polys_pad,
+                self.DEFAULT_ENDPAD_EXPAND_RATIO,
+                batch_size=patch_batch_size,
+            )
+            for local_i, global_i in enumerate(pad_indices):
+                s2_pad, s2_pad_sc = pad_results[local_i]
+                if not s2_pad:
+                    continue
+                u_pad = unary_union(s2_pad)
+                s1_shapely = s1_shapely_list[global_i]
+                if self.check_safety_gate(u_pad, s1_shapely, s1_polys[global_i]):
+                    ioa_pad = u_pad.intersection(s1_shapely).area / (s1_shapely.area + 1e-6)
+                    if ioa_pad > ioa_bases[global_i] + 0.005:
+                        accepted_polys[global_i] = u_pad
+                        current_scores_list[global_i] = s2_pad_sc
+
+        for idx in range(n):
+            if final_polys[idx] is not None:
+                continue
+
+            s1_poly = s1_polys[idx]
+            s1_score = s1_scores[idx]
+            s1_quad = s1_quads[idx]
+
+            if ratios[idx] < self.DEFAULT_RATIO_THR:
+                final_polys[idx] = s1_quad
+                final_scores[idx] = s1_score
+                continue
+
+            accepted_poly = accepted_polys[idx]
+            s1_shapely = s1_shapely_list[idx]
+            current_scores = current_scores_list[idx] or []
+
+            if accepted_poly:
+                s2_fixed = self.apply_endcap(accepted_poly, s1_poly)
+                if s2_fixed:
+                    if self.check_safety_gate(s2_fixed, s1_shapely, s1_poly):
+                        accepted_poly = s2_fixed
+
+                final_geom = accepted_poly
+                if accepted_poly.geom_type in ['MultiPolygon', 'GeometryCollection']:
+                    parts = []
+                    if accepted_poly.geom_type == 'MultiPolygon':
+                        parts = list(accepted_poly.geoms)
+                    else:
+                        for g in accepted_poly.geoms:
+                            if g.geom_type in ['Polygon', 'MultiPolygon']:
+                                if g.geom_type == 'Polygon':
+                                    parts.append(g)
+                                else:
+                                    parts.extend(list(g.geoms))
+
+                    best_part = None
+                    best_inter = -1.0
+                    for part in parts:
+                        if not part.is_valid or part.is_empty:
+                            continue
+                        inter_v = part.intersection(s1_shapely).area
+                        if inter_v > best_inter:
+                            best_inter = inter_v
+                            best_part = part
+                    if best_part is not None:
+                        final_geom = best_part
+                    else:
+                        final_geom = None
+
+                if final_geom and final_geom.geom_type == 'Polygon':
+                    final_poly_obj = np.array(final_geom.exterior.coords)[:-1].flatten().tolist()
+                    s2_max_sc = max(current_scores) if current_scores else s1_score
+                    final_sc = max(float(s1_score), float(s2_max_sc))
+                    final_polys[idx] = final_poly_obj
+                    final_scores[idx] = final_sc
+                    is_s2_flags[idx] = True
+                    continue
+
+            final_polys[idx] = s1_quad
+            final_scores[idx] = s1_score
+
+        s2_accepted_count = sum(1 for v in is_s2_flags if v)
+        s1_fallback_count = n - s2_accepted_count
         return final_polys, final_scores, s2_accepted_count, s1_fallback_count
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Cascade inference (G3/G5)')
+    parser.add_argument('--img-batch-size', type=int, default=2)
+    parser.add_argument('--patch-batch-size', type=int, default=8)
+    parser.add_argument('--num-workers', type=int, default=4)
+    parser.add_argument('--device-s1', type=str, default='cuda:0')
+    parser.add_argument('--device-s2', type=str, default=None)
+    return parser.parse_args()
+
+def _to_poly_list(polys_raw):
+    polys = []
+    for p in polys_raw:
+        if hasattr(p, 'cpu'):
+            polys.append(p.cpu().numpy().tolist())
+        elif isinstance(p, np.ndarray):
+            polys.append(p.tolist())
+        else:
+            polys.append(p)
+    return polys
+
+def _to_score_list(scores_raw):
+    if hasattr(scores_raw, 'cpu'):
+        return scores_raw.cpu().numpy().tolist()
+    if isinstance(scores_raw, np.ndarray):
+        return scores_raw.tolist()
+    return list(scores_raw)
+
 def main():
+    args = parse_args()
+
     register_all_modules(init_default_scope=True)
 
     os.makedirs(os.path.join(OUT_ROOT, "G3"), exist_ok=True)
     os.makedirs(os.path.join(OUT_ROOT, "G5"), exist_ok=True)
-    
+
+    device_s1 = torch.device(args.device_s1)
+    device_s2 = torch.device(args.device_s2) if args.device_s2 else device_s1
+
     # Load Config & Dataloader
     cfg = Config.fromfile(CONFIG_PATH)
+
     # Build models
-    print("Loading DBNet S1...")
+    print(f"Loading DBNet S1 on {device_s1}...")
     cfg_s1 = Config.fromfile(DBNET_CONFIG)
     model_s1 = MODELS.build(cfg_s1.model)
     load_checkpoint(model_s1, DBNET_CKPT, map_location='cpu')
     if hasattr(model_s1.det_head, 'postprocessor'):
         model_s1.det_head.postprocessor.text_repr_type = 'poly'
-    model_s1.cuda().eval()
-    
-    print("Loading FCENet S2...")
+    model_s1.to(device_s1).eval()
+
+    print(f"Loading FCENet S2 on {device_s2}...")
     model_s2 = MODELS.build(cfg.model)
     load_checkpoint(model_s2, FCENET_CKPT, map_location='cpu')
-    model_s2.cuda().eval() # Full config has postprocessor settings
-    
+    model_s2.to(device_s2).eval()  # Full config has postprocessor settings
+
     # Init Runners
-    g3_runner = PolicyRunner('G3', model_s2)
-    g5_runner = PolicyRunner('G5', model_s2)
-    
+    g3_runner = PolicyRunner('G3', model_s2, device=device_s2)
+    g5_runner = PolicyRunner('G5', model_s2, device=device_s2)
+
     # Init Results Containers
     g3_results = []
     g5_results = []
-    
+
     # Interest Lists
-    # Images with high S2 acceptance
-    # Images with high S1->Final difference (area change)
-    interest_candidates = [] 
-    
+    interest_candidates = []
+
     dataset = DATASETS.build(cfg.test_dataloader.dataset)
-    dataloader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=4, collate_fn=lambda x: x)
-    
-    print(f"Starting Inference on {len(dataset)} images...")
-    
+    dataloader = DataLoader(
+        dataset,
+        batch_size=args.img_batch_size,
+        shuffle=False,
+        num_workers=args.num_workers,
+        collate_fn=lambda x: x,
+    )
+
+    print(
+        f"Starting Inference on {len(dataset)} images "
+        f"(img_bs={args.img_batch_size}, patch_bs={args.patch_batch_size})..."
+    )
+
     t0 = time.time()
     for batch in tqdm(dataloader):
-        item = batch[0] 
-        data_sample = item['data_samples']
-        img_path = data_sample.img_path
-        img = cv2.imread(img_path)
-        
-        # S1 Inference
-        s1_polys_raw, s1_scores_raw = run_model_inference(model_s1, img)
-        s1_polys = []
-        for p in s1_polys_raw:
-             if hasattr(p, 'cpu'): s1_polys.append(p.cpu().numpy().tolist())
-             elif isinstance(p, np.ndarray): s1_polys.append(p.tolist())
-             else: s1_polys.append(p)
-        
-        if hasattr(s1_scores_raw, 'cpu'): s1_scores = s1_scores_raw.cpu().numpy().tolist()
-        elif isinstance(s1_scores_raw, np.ndarray): s1_scores = s1_scores_raw.tolist()
-        else: s1_scores = list(s1_scores_raw)
-        
-        g3_runner.stats['sum_s1_total'] += len(s1_polys)
-        g5_runner.stats['sum_s1_total'] += len(s1_polys)
-        
-        # S1 Denoise (Clean)
-        s1_clean, s1_clean_sc, rem_tiny, rem_con = clean_s1_polygons(s1_polys, s1_scores)
-        g3_runner.stats['sum_s1_after'] += len(s1_clean)
-        g3_runner.stats['tiny_removed'] += rem_tiny
-        g3_runner.stats['contained_removed'] += rem_con
-        g5_runner.stats.update({
-            'sum_s1_after': g3_runner.stats['sum_s1_after'],
-            'tiny_removed': g3_runner.stats['tiny_removed'],
-            'contained_removed': g3_runner.stats['contained_removed']
-        })
-        
-        # S2 Full Inference
-        s2_polys_full_raw, _ = run_model_inference(model_s2, img)
-        s2_polys_full = []
-        for p in s2_polys_full_raw:
-             if hasattr(p, 'cpu'): s2_polys_full.append(p.cpu().numpy().tolist())
-             elif isinstance(p, np.ndarray): s2_polys_full.append(p.tolist())
-             else: s2_polys_full.append(p)
-        
-        # Run G3
-        g3_polys, g3_scores, g3_acc, g3_fb = g3_runner.process_image(img, s1_clean, s1_clean_sc, s2_polys_full)
-        g3_runner.stats['sum_s2_accepted'] += g3_acc
-        g3_runner.stats['sum_s1_fallback'] += g3_fb
-        g3_runner.stats['final_instances'] += len(g3_polys)
-        
-        # Run G5
-        g5_polys, g5_scores, g5_acc, g5_fb = g5_runner.process_image(img, s1_clean, s1_clean_sc, s2_polys_full)
-        g5_runner.stats['sum_s2_accepted'] += g5_acc
-        g5_runner.stats['sum_s1_fallback'] += g5_fb
-        g5_runner.stats['final_instances'] += len(g5_polys)
-        
-        # Store Results (MMOCR Format)
-        # We store dicts to save space, will convert to TextDetDataSample during Eval
-        res_g3 = {
-            'img_path': img_path,
-            'polygons': g3_polys,
-            'scores': g3_scores,
-            'ori_shape': img.shape[:2],
-            'img_shape': img.shape[:2] # Assuming no resize in storage
-        }
-        g3_results.append(res_g3)
-        
-        res_g5 = {
-            'img_path': img_path,
-            'polygons': g5_polys,
-            'scores': g5_scores,
-            'ori_shape': img.shape[:2],
-            'img_shape': img.shape[:2]
-        }
-        g5_results.append(res_g5)
-        
-        # Interest Logic
-        # 1. Top S2 Acc (G5)
-        # 2. Large Diff G3 vs G5 (Optional, user asked for G3 vs G5 same image)
-        interest_candidates.append({
-            'img_path': img_path,
-            'g5_s2_acc': g5_acc,
-            'g3_s2_acc': g3_acc
-        })
+        img_paths = []
+        imgs = []
+        for item in batch:
+            data_sample = item['data_samples']
+            img_path = data_sample.img_path
+            img = cv2.imread(img_path)
+            if img is None:
+                print(f"[WARN] Failed to read image: {img_path}")
+                continue
+            img_paths.append(img_path)
+            imgs.append(img)
+
+        if not imgs:
+            continue
+
+        # S1 batch inference
+        s1_polys_raw_list, s1_scores_raw_list = run_model_inference_batch(
+            model_s1, imgs, device=device_s1, microbatch_size=args.img_batch_size
+        )
+        # S2 full batch inference
+        s2_polys_full_raw_list, _ = run_model_inference_batch(
+            model_s2, imgs, device=device_s2, microbatch_size=args.img_batch_size
+        )
+
+        for img_path, img, s1_polys_raw, s1_scores_raw, s2_polys_full_raw in zip(
+            img_paths, imgs, s1_polys_raw_list, s1_scores_raw_list, s2_polys_full_raw_list
+        ):
+            s1_polys = _to_poly_list(s1_polys_raw)
+            s1_scores = _to_score_list(s1_scores_raw)
+
+            g3_runner.stats['sum_s1_total'] += len(s1_polys)
+            g5_runner.stats['sum_s1_total'] += len(s1_polys)
+
+            # S1 Denoise (Clean)
+            s1_clean, s1_clean_sc, rem_tiny, rem_con = clean_s1_polygons(s1_polys, s1_scores)
+            g3_runner.stats['sum_s1_after'] += len(s1_clean)
+            g3_runner.stats['tiny_removed'] += rem_tiny
+            g3_runner.stats['contained_removed'] += rem_con
+            g5_runner.stats.update({
+                'sum_s1_after': g3_runner.stats['sum_s1_after'],
+                'tiny_removed': g3_runner.stats['tiny_removed'],
+                'contained_removed': g3_runner.stats['contained_removed']
+            })
+
+            s2_polys_full = _to_poly_list(s2_polys_full_raw)
+
+            # Run G3
+            g3_polys, g3_scores, g3_acc, g3_fb = g3_runner.process_image(
+                img, s1_clean, s1_clean_sc, s2_polys_full, patch_batch_size=args.patch_batch_size
+            )
+            g3_runner.stats['sum_s2_accepted'] += g3_acc
+            g3_runner.stats['sum_s1_fallback'] += g3_fb
+            g3_runner.stats['final_instances'] += len(g3_polys)
+
+            # Run G5
+            g5_polys, g5_scores, g5_acc, g5_fb = g5_runner.process_image(
+                img, s1_clean, s1_clean_sc, s2_polys_full, patch_batch_size=args.patch_batch_size
+            )
+            g5_runner.stats['sum_s2_accepted'] += g5_acc
+            g5_runner.stats['sum_s1_fallback'] += g5_fb
+            g5_runner.stats['final_instances'] += len(g5_polys)
+
+            # Store Results (MMOCR Format)
+            res_g3 = {
+                'img_path': img_path,
+                'polygons': g3_polys,
+                'scores': g3_scores,
+                'ori_shape': img.shape[:2],
+                'img_shape': img.shape[:2],  # Assuming no resize in storage
+            }
+            g3_results.append(res_g3)
+
+            res_g5 = {
+                'img_path': img_path,
+                'polygons': g5_polys,
+                'scores': g5_scores,
+                'ori_shape': img.shape[:2],
+                'img_shape': img.shape[:2],
+            }
+            g5_results.append(res_g5)
+
+            interest_candidates.append({
+                'img_path': img_path,
+                'g5_s2_acc': g5_acc,
+                'g3_s2_acc': g3_acc
+            })
 
     total_time = time.time() - t0
     print(f"Inference Done in {total_time:.2f}s")
