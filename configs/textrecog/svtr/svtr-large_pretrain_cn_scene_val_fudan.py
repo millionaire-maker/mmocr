@@ -8,10 +8,9 @@ _base_ = ['svtr-large_pretrain_cn_scene.py']
 # Additionally, evaluate on a small synthetic hold-out split for sanity check,
 # and save best checkpoints for both domains.
 fudan_val = dict(
-    # IMPORTANT: override the whole dataset dict, otherwise base config's
-    # `indices` (hold-out indices for synthetic LMDB) will be merged in and
-    # cause IndexError on Fudan.
-    _delete_=True,
+    # IMPORTANT: define from scratch to avoid inheriting base config's
+    # `indices` (hold-out indices for synthetic LMDB), which will cause
+    # IndexError on Fudan LMDB.
     type='RecogLMDBDataset',
     data_root='data/fudan/scene',
     ann_file='scene_val',
