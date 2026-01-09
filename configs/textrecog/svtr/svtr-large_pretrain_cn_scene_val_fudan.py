@@ -50,3 +50,9 @@ custom_hooks = [
         update_buffers=True,
     )
 ]
+
+# IMPORTANT:
+# Do NOT enable deterministic algorithms for SVTR+CTC on CUDA.
+# It will trigger CuBLAS determinism requirements (CUBLAS_WORKSPACE_CONFIG)
+# and may still fail later because CTC backward is non-deterministic on GPU.
+randomness = dict(seed=None, deterministic=False)

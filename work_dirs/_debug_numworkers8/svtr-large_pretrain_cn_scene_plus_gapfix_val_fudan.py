@@ -16,7 +16,7 @@ default_hooks = dict(
             'PretrainCN_holdout/recog/word_acc',
         ],
         type='CheckpointHook'),
-    logger=dict(interval=50, type='LoggerHook'),
+    logger=dict(interval=1, type='LoggerHook'),
     param_scheduler=dict(type='ParamSchedulerHook'),
     sampler_seed=dict(type='DistSamplerSeedHook'),
     sync_buffer=dict(type='SyncBuffersHook'),
@@ -59,7 +59,7 @@ fudan_val = dict(
     ],
     test_mode=True,
     type='RecogLMDBDataset')
-launcher = 'pytorch'
+launcher = 'none'
 load_from = None
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
@@ -15412,14 +15412,15 @@ test_pipeline = [
         ),
         type='PackTextRecogInputs'),
 ]
-train_cfg = dict(max_epochs=20, type='EpochBasedTrainLoop', val_interval=1)
+train_cfg = dict(max_epochs=1, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
-    batch_size=128,
+    batch_size=16,
     dataset=dict(
         datasets=[
             dict(
                 ann_file='pretrain_cn_scene',
                 data_root='data',
+                indices=512,
                 pipeline=[
                     dict(
                         ignore_empty=True,
@@ -15505,6 +15506,7 @@ train_dataloader = dict(
             dict(
                 ann_file='pretrain_cn_scene_gapfix_h24',
                 data_root='data',
+                indices=512,
                 pipeline=[
                     dict(
                         ignore_empty=True,
@@ -15728,7 +15730,7 @@ tta_pipeline = [
 ]
 val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
-    batch_size=128,
+    batch_size=16,
     dataset=dict(
         datasets=[
             dict(
@@ -20804,4 +20806,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = 'work_dirs/svtr-large_pretrain_plus_gapfix_seed3407'
+work_dir = 'work_dirs/_debug_numworkers8'
