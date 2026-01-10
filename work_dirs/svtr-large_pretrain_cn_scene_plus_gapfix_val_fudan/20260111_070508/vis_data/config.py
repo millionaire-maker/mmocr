@@ -60,7 +60,7 @@ fudan_val = dict(
     test_mode=True,
     type='RecogLMDBDataset')
 launcher = 'none'
-load_from = 'work_dirs/svtr-large_pretrain_plus_gapfix_seed3407/best_PretrainCN_holdout_recog_word_acc_epoch_20.pth'
+load_from = 'work_dirs/svtr-large_pretrain_plus_gapfix_seed3407/best_Fudan_recog_word_acc_epoch_13.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
 max_epochs = 20
