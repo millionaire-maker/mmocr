@@ -47,7 +47,12 @@ custom_hooks = [
         type='EMAHook',
         ema_type='ExponentialMovingAverage',
         momentum=0.0002,
-        update_buffers=True,
+        # IMPORTANT:
+        # Do NOT EMA-average buffers. Some buffers (e.g. attention masks with
+        # +/-inf) will become NaN after lerp_ (inf - inf), making validation
+        # collapse to constant predictions (often the first charset token '!').
+        # Keep buffers synced from the source model instead.
+        update_buffers=False,
     )
 ]
 
