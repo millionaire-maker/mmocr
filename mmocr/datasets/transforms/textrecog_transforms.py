@@ -497,9 +497,18 @@ class SVTRv2AdaptiveResize(BaseTransform):
             target_w, target_h = self.scale
             img = mmcv.imresize(
                 img, (target_w, target_h), interpolation=self.interpolation)
+            if self.pad_to_max and self.max_size is not None:
+                max_w, max_h = self.max_size
+                cur_h, cur_w = img.shape[:2]
+                pad_right = max(0, max_w - cur_w)
+                pad_bottom = max(0, max_h - cur_h)
+                img = self._pad_ndarray(img, 0, pad_right, 0, pad_bottom)
+                valid_ratio = min(1.0, float(target_w / max_w))
+            else:
+                valid_ratio = 1.0
             results['img'] = img
             results['img_shape'] = img.shape[:2]
-            results['valid_ratio'] = 1.0
+            results['valid_ratio'] = valid_ratio
             return results
 
         ratio = ori_w / float(max(ori_h, 1))
