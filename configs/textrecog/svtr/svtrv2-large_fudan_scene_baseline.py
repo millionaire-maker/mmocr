@@ -13,7 +13,7 @@ _base_ = [
 use_svtrv2_backbone = True
 use_msr = True
 use_frm = True
-use_sgm = False  # training-only auxiliary loss
+use_sgm = True  # training-only auxiliary loss (omitted at inference)
 
 # Rectifier (TPS / TPS++ / None)
 rectifier = None

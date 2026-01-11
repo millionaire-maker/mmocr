@@ -30,5 +30,4 @@ for _t in tta_pipeline:
 model = deepcopy(_base_.model)
 model['encoder']['use_svtrv2_backbone'] = True
 model['decoder']['frm']['enabled'] = True
-model['decoder']['sgm']['enabled'] = True
-
+model['decoder']['sgm']['enabled'] = False
