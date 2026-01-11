@@ -1,0 +1,1052 @@
+2026/01/11 11:44:16 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+    CUDA available: False
+    MUSA available: False
+    numpy_random_seed: 927897846
+    GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+    PyTorch: 1.10.2+cu111
+    PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.2.3 (Git Hash 7336ca9f055cf1bfa13efb658fe15dc9b41f0740)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.1, CUDNN_VERSION=8.0.5, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.10.2, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+    TorchVision: 0.11.3+cu111
+    OpenCV: 4.12.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: True
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 927897846
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2026/01/11 11:44:17 - mmengine - INFO - Config:
+_t = dict(
+    transforms=[
+        [
+            dict(
+                condition="results['img_shape'][1]<results['img_shape'][0]",
+                true_transforms=[
+                    dict(
+                        args=[
+                            dict(cls='Rot90', k=0, keep_size=False),
+                        ],
+                        type='ImgAugWrapper'),
+                ],
+                type='ConditionApply'),
+            dict(
+                condition="results['img_shape'][1]<results['img_shape'][0]",
+                true_transforms=[
+                    dict(
+                        args=[
+                            dict(cls='Rot90', k=1, keep_size=False),
+                        ],
+                        type='ImgAugWrapper'),
+                ],
+                type='ConditionApply'),
+            dict(
+                condition="results['img_shape'][1]<results['img_shape'][0]",
+                true_transforms=[
+                    dict(
+                        args=[
+                            dict(cls='Rot90', k=3, keep_size=False),
+                        ],
+                        type='ImgAugWrapper'),
+                ],
+                type='ConditionApply'),
+        ],
+        [
+            dict(scale=(
+                256,
+                64,
+            ), type='Resize'),
+        ],
+        [
+            dict(type='LoadOCRAnnotations', with_text=True),
+        ],
+        [
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'valid_ratio',
+                ),
+                type='PackTextRecogInputs'),
+        ],
+    ],
+    type='TestTimeAug')
+auto_scale_lr = dict(base_batch_size=256)
+default_hooks = dict(
+    checkpoint=dict(
+        interval=999999,
+        max_keep_ckpts=3,
+        rule='greater',
+        save_best='Fudan/recog/word_acc',
+        type='CheckpointHook'),
+    logger=dict(interval=1, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    sync_buffer=dict(type='SyncBuffersHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(
+        draw_gt=False,
+        draw_pred=False,
+        enable=False,
+        interval=1,
+        show=False,
+        type='VisualizationHook'))
+default_scope = 'mmocr'
+dictionary = dict(
+    dict_file='data/charset/charset_rec_cn_en.txt',
+    type='Dictionary',
+    with_padding=True,
+    with_unknown=True)
+env_cfg = dict(
+    cudnn_benchmark=True,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+fudan_scene_rec_root = 'data/fudan/scene'
+fudan_scene_test_dataloader = dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='scene_test',
+        data_root='data/fudan/scene',
+        pipeline=None,
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+fudan_scene_textrecog_test = dict(
+    ann_file='scene_test',
+    data_root='data/fudan/scene',
+    pipeline=None,
+    type='RecogLMDBDataset')
+fudan_scene_textrecog_train = dict(
+    ann_file='scene_train',
+    data_root='data/fudan/scene',
+    pipeline=None,
+    type='RecogLMDBDataset')
+fudan_scene_textrecog_val = dict(
+    ann_file='scene_val',
+    data_root='data/fudan/scene',
+    pipeline=None,
+    type='RecogLMDBDataset')
+fudan_scene_train_dataloader = dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='scene_train',
+        data_root='data/fudan/scene',
+        pipeline=None,
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+fudan_scene_val_dataloader = dict(
+    batch_size=64,
+    dataset=dict(
+        ann_file='scene_val',
+        data_root='data/fudan/scene',
+        pipeline=None,
+        type='RecogLMDBDataset'),
+    num_workers=8,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+launcher = 'none'
+load_from = None
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=10)
+model = dict(
+    data_preprocessor=dict(
+        mean=[
+            127.5,
+        ], std=[
+            127.5,
+        ], type='TextRecogDataPreprocessor'),
+    decoder=dict(
+        dictionary=dict(
+            dict_file='data/charset/charset_rec_cn_en.txt',
+            type='Dictionary',
+            with_padding=True,
+            with_unknown=True),
+        frm=dict(enabled=True, type='FeatureRearrangementModule'),
+        in_channels=384,
+        max_seq_len=40,
+        module_loss=dict(
+            letter_case='lower', type='CTCModuleLoss', zero_infinity=True),
+        postprocessor=dict(type='CTCPostProcessor'),
+        sgm=dict(
+            detach_visual=False,
+            drop_path_rate=0.1,
+            enabled=True,
+            loss_weight=0.1,
+            num_layer=1,
+            sub_str_len=5,
+            type='SemanticGuidanceModule'),
+        type='SVTRv2CTCDecoder'),
+    encoder=dict(
+        svtr_encoder=dict(
+            depth=[
+                3,
+                9,
+                9,
+            ],
+            embed_dims=[
+                192,
+                256,
+                512,
+            ],
+            img_size=[
+                48,
+                160,
+            ],
+            in_channels=3,
+            max_seq_len=40,
+            merging_types='Conv',
+            mixer_types=[
+                'Local',
+                'Local',
+                'Local',
+                'Local',
+                'Local',
+                'Local',
+                'Local',
+                'Local',
+                'Local',
+                'Local',
+                'Global',
+                'Global',
+                'Global',
+                'Global',
+                'Global',
+                'Global',
+                'Global',
+                'Global',
+                'Global',
+                'Global',
+                'Global',
+            ],
+            num_heads=[
+                6,
+                8,
+                16,
+            ],
+            out_channels=384,
+            prenorm=False,
+            type='SVTREncoder',
+            window_size=[
+                [
+                    7,
+                    11,
+                ],
+                [
+                    7,
+                    11,
+                ],
+                [
+                    7,
+                    11,
+                ],
+            ]),
+        svtrv2_encoder=dict(
+            depths=[
+                6,
+                6,
+                6,
+            ],
+            dims=[
+                128,
+                256,
+                384,
+            ],
+            feat2d=True,
+            in_channels=3,
+            kernel_sizes=[
+                [
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                ],
+                [
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                ],
+                [
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                ],
+            ],
+            last_stage=False,
+            max_sz=[
+                64,
+                384,
+            ],
+            mixer=[
+                [
+                    'Conv',
+                    'Conv',
+                    'Conv',
+                    'Conv',
+                    'Conv',
+                    'Conv',
+                ],
+                [
+                    'Conv',
+                    'Conv',
+                    'FGlobal',
+                    'Global',
+                    'Global',
+                    'Global',
+                ],
+                [
+                    'Global',
+                    'Global',
+                    'Global',
+                    'Global',
+                    'Global',
+                    'Global',
+                ],
+            ],
+            num_convs=[
+                [
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                ],
+                [
+                    2,
+                    2,
+                    3,
+                    3,
+                    3,
+                    3,
+                ],
+                [
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                ],
+            ],
+            num_heads=[
+                4,
+                8,
+                12,
+            ],
+            sub_k=[
+                [
+                    1,
+                    1,
+                ],
+                [
+                    2,
+                    1,
+                ],
+                [
+                    1,
+                    1,
+                ],
+            ],
+            type='SVTRv2Backbone',
+            use_pos_embed=False),
+        type='SVTRFlexibleEncoder',
+        use_svtrv2_backbone=True),
+    preprocessor=None,
+    type='SVTR')
+msr_base_h = 32
+msr_base_shape = [
+    [
+        64,
+        64,
+    ],
+    [
+        96,
+        48,
+    ],
+    [
+        112,
+        40,
+    ],
+    [
+        128,
+        32,
+    ],
+]
+msr_max_ratio = 12
+msr_max_size = None
+msr_pad_to_max = True
+optim_wrapper = dict(
+    optimizer=dict(
+        betas=(
+            0.9,
+            0.99,
+        ),
+        eps=8e-08,
+        lr=0.00025,
+        type='AdamW',
+        weight_decay=0.05),
+    type='OptimWrapper')
+param_scheduler = [
+    dict(
+        convert_to_iter_based=True,
+        end=2,
+        end_factor=1.0,
+        start_factor=0.5,
+        type='LinearLR',
+        verbose=False),
+    dict(
+        T_max=29,
+        begin=2,
+        convert_to_iter_based=True,
+        end=30,
+        type='CosineAnnealingLR',
+        verbose=False),
+]
+randomness = dict(seed=None)
+rectifier = None
+resume = False
+svtr_encoder = dict(
+    depth=[
+        3,
+        9,
+        9,
+    ],
+    embed_dims=[
+        192,
+        256,
+        512,
+    ],
+    img_size=[
+        48,
+        160,
+    ],
+    in_channels=3,
+    max_seq_len=40,
+    merging_types='Conv',
+    mixer_types=[
+        'Local',
+        'Local',
+        'Local',
+        'Local',
+        'Local',
+        'Local',
+        'Local',
+        'Local',
+        'Local',
+        'Local',
+        'Global',
+        'Global',
+        'Global',
+        'Global',
+        'Global',
+        'Global',
+        'Global',
+        'Global',
+        'Global',
+        'Global',
+        'Global',
+    ],
+    num_heads=[
+        6,
+        8,
+        16,
+    ],
+    out_channels=384,
+    prenorm=False,
+    type='SVTREncoder',
+    window_size=[
+        [
+            7,
+            11,
+        ],
+        [
+            7,
+            11,
+        ],
+        [
+            7,
+            11,
+        ],
+    ])
+svtrv2_encoder = dict(
+    depths=[
+        6,
+        6,
+        6,
+    ],
+    dims=[
+        128,
+        256,
+        384,
+    ],
+    feat2d=True,
+    in_channels=3,
+    kernel_sizes=[
+        [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+        ],
+        [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+        ],
+        [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+        ],
+    ],
+    last_stage=False,
+    max_sz=[
+        64,
+        384,
+    ],
+    mixer=[
+        [
+            'Conv',
+            'Conv',
+            'Conv',
+            'Conv',
+            'Conv',
+            'Conv',
+        ],
+        [
+            'Conv',
+            'Conv',
+            'FGlobal',
+            'Global',
+            'Global',
+            'Global',
+        ],
+        [
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+            'Global',
+        ],
+    ],
+    num_convs=[
+        [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+        ],
+        [
+            2,
+            2,
+            3,
+            3,
+            3,
+            3,
+        ],
+        [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+        ],
+    ],
+    num_heads=[
+        4,
+        8,
+        12,
+    ],
+    sub_k=[
+        [
+            1,
+            1,
+        ],
+        [
+            2,
+            1,
+        ],
+        [
+            1,
+            1,
+        ],
+    ],
+    type='SVTRv2Backbone',
+    use_pos_embed=False)
+test_cfg = None
+test_dataloader = None
+test_evaluator = None
+test_pipeline = [
+    dict(type='LoadImageFromNDArray'),
+    dict(
+        base_h=32,
+        base_shape=[
+            [
+                64,
+                64,
+            ],
+            [
+                96,
+                48,
+            ],
+            [
+                112,
+                40,
+            ],
+            [
+                128,
+                32,
+            ],
+        ],
+        interpolation='bicubic',
+        max_ratio=12,
+        max_size=None,
+        pad_to_max=True,
+        padding=False,
+        random_resize_factor=False,
+        scale=(
+            256,
+            64,
+        ),
+        type='SVTRv2AdaptiveResize',
+        use_msr=True),
+    dict(type='LoadOCRAnnotations', with_text=True),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'valid_ratio',
+        ),
+        type='PackTextRecogInputs'),
+]
+train_cfg = dict(max_epochs=1, type='EpochBasedTrainLoop', val_interval=1)
+train_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        ann_file='scene_train',
+        data_root='data/fudan/scene',
+        indices=2,
+        pipeline=[
+            dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
+            dict(type='LoadOCRAnnotations', with_text=True),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='TextRecogGeneralAug'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='CropHeight'),
+                ],
+                type='RandomApply'),
+            dict(
+                condition='min(results["img_shape"])>10',
+                true_transforms=dict(
+                    prob=0.4,
+                    transforms=[
+                        dict(
+                            kernel_size=5,
+                            op='GaussianBlur',
+                            sigma=1,
+                            type='TorchVisionWrapper'),
+                    ],
+                    type='RandomApply'),
+                type='ConditionApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(
+                        brightness=0.5,
+                        contrast=0.5,
+                        hue=0.1,
+                        op='ColorJitter',
+                        saturation=0.5,
+                        type='TorchVisionWrapper'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='ImageContentJitter'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(
+                        args=[
+                            dict(
+                                cls='AdditiveGaussianNoise',
+                                scale=0.31622776601683794),
+                        ],
+                        type='ImgAugWrapper'),
+                ],
+                type='RandomApply'),
+            dict(
+                prob=0.4,
+                transforms=[
+                    dict(type='ReversePixels'),
+                ],
+                type='RandomApply'),
+            dict(
+                base_h=32,
+                base_shape=[
+                    [
+                        64,
+                        64,
+                    ],
+                    [
+                        96,
+                        48,
+                    ],
+                    [
+                        112,
+                        40,
+                    ],
+                    [
+                        128,
+                        32,
+                    ],
+                ],
+                interpolation='bicubic',
+                max_ratio=12,
+                max_size=None,
+                pad_to_max=True,
+                padding=False,
+                padding_doub=True,
+                random_resize_factor=True,
+                scale=(
+                    256,
+                    64,
+                ),
+                type='SVTRv2AdaptiveResize',
+                use_msr=True),
+            dict(
+                meta_keys=(
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'valid_ratio',
+                ),
+                type='PackTextRecogInputs'),
+        ],
+        type='RecogLMDBDataset'),
+    num_workers=0,
+    persistent_workers=False,
+    pin_memory=False,
+    prefetch_factor=None,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(ignore_empty=True, min_size=5, type='LoadImageFromNDArray'),
+    dict(type='LoadOCRAnnotations', with_text=True),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='TextRecogGeneralAug'),
+        ],
+        type='RandomApply'),
+    dict(prob=0.4, transforms=[
+        dict(type='CropHeight'),
+    ], type='RandomApply'),
+    dict(
+        condition='min(results["img_shape"])>10',
+        true_transforms=dict(
+            prob=0.4,
+            transforms=[
+                dict(
+                    kernel_size=5,
+                    op='GaussianBlur',
+                    sigma=1,
+                    type='TorchVisionWrapper'),
+            ],
+            type='RandomApply'),
+        type='ConditionApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(
+                brightness=0.5,
+                contrast=0.5,
+                hue=0.1,
+                op='ColorJitter',
+                saturation=0.5,
+                type='TorchVisionWrapper'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='ImageContentJitter'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(
+                args=[
+                    dict(
+                        cls='AdditiveGaussianNoise',
+                        scale=0.31622776601683794),
+                ],
+                type='ImgAugWrapper'),
+        ],
+        type='RandomApply'),
+    dict(
+        prob=0.4,
+        transforms=[
+            dict(type='ReversePixels'),
+        ],
+        type='RandomApply'),
+    dict(
+        base_h=32,
+        base_shape=[
+            [
+                64,
+                64,
+            ],
+            [
+                96,
+                48,
+            ],
+            [
+                112,
+                40,
+            ],
+            [
+                128,
+                32,
+            ],
+        ],
+        interpolation='bicubic',
+        max_ratio=12,
+        max_size=None,
+        pad_to_max=True,
+        padding=False,
+        padding_doub=True,
+        random_resize_factor=True,
+        scale=(
+            256,
+            64,
+        ),
+        type='SVTRv2AdaptiveResize',
+        use_msr=True),
+    dict(
+        meta_keys=(
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'valid_ratio',
+        ),
+        type='PackTextRecogInputs'),
+]
+tta_model = dict(type='EncoderDecoderRecognizerTTAModel')
+tta_pipeline = [
+    dict(type='LoadImageFromNDArray'),
+    dict(
+        transforms=[
+            [
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=0, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=1, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+                dict(
+                    condition="results['img_shape'][1]<results['img_shape'][0]",
+                    true_transforms=[
+                        dict(
+                            args=[
+                                dict(cls='Rot90', k=3, keep_size=False),
+                            ],
+                            type='ImgAugWrapper'),
+                    ],
+                    type='ConditionApply'),
+            ],
+            [
+                dict(scale=(
+                    256,
+                    64,
+                ), type='Resize'),
+            ],
+            [
+                dict(type='LoadOCRAnnotations', with_text=True),
+            ],
+            [
+                dict(
+                    meta_keys=(
+                        'img_path',
+                        'ori_shape',
+                        'img_shape',
+                        'valid_ratio',
+                    ),
+                    type='PackTextRecogInputs'),
+            ],
+        ],
+        type='TestTimeAug'),
+]
+use_frm = True
+use_msr = True
+use_sgm = True
+use_svtrv2_backbone = True
+val_cfg = None
+val_dataloader = None
+val_evaluator = None
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    name='visualizer',
+    type='TextRecogLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'work_dirs/_smoke/svtrv2_fudan_baseline_cpu_ep1_small'
+
+2026/01/11 11:44:19 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2026/01/11 11:44:19 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) SyncBuffersHook                    
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
