@@ -25,6 +25,13 @@ msr_max_ratio = 12
 msr_pad_to_max = True
 msr_max_size = None  # computed from base_shape/base_h/max_ratio if None
 
+# Keep max_size consistent with SVTRv2 MSR implementation
+# (`SVTRv2AdaptiveResize` computes this when `pad_to_max=True`).
+if msr_pad_to_max and msr_max_size is None:
+    _max_w = max([w for w, _ in msr_base_shape] + [msr_base_h * msr_max_ratio])
+    _max_h = max([h for _, h in msr_base_shape] + [msr_base_h])
+    msr_max_size = (_max_w, _max_h)  # (w, h)
+
 train_pipeline = deepcopy(_base_.train_pipeline)
 test_pipeline = deepcopy(_base_.test_pipeline)
 tta_pipeline = deepcopy(_base_.tta_pipeline)
@@ -89,6 +96,11 @@ dictionary = deepcopy(_base_.dictionary)
 
 # Encoder configs for SVTR ↔ SVTRv2 switchable ablations.
 svtr_encoder = deepcopy(_base_.model.encoder)
+# When MSR pads every sample to a fixed `max_size`, keep SVTR encoder's
+# `img_size` in-sync so `--cfg-options model.encoder.use_svtrv2_backbone=False`
+# is actually runnable.
+if msr_pad_to_max and msr_max_size is not None:
+    svtr_encoder['img_size'] = [msr_max_size[1], msr_max_size[0]]  # (h, w)
 svtrv2_encoder = dict(
     type='SVTRv2Backbone',
     in_channels=3,
