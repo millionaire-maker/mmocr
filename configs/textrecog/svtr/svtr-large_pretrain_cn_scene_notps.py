@@ -34,6 +34,7 @@ train_dataloader['dataset'] = dict(
             type='RecogLMDBDataset',
             data_root='data',
             ann_file='pretrain_cn_scene',
+            indices=_base_.pretrain_train_size,
             pipeline=train_pipeline,
             test_mode=False,
         ),

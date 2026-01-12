@@ -1,80 +1,3 @@
-_aug = [
-    dict(
-        meta_keys=(
-            'img_path',
-            'ori_shape',
-            'img_shape',
-            'valid_ratio',
-        ),
-        type='PackTextRecogInputs'),
-]
-_sub_t = dict(
-    meta_keys=(
-        'img_path',
-        'ori_shape',
-        'img_shape',
-        'valid_ratio',
-    ),
-    type='PackTextRecogInputs')
-_t = dict(
-    transforms=[
-        [
-            dict(
-                condition="results['img_shape'][1]<results['img_shape'][0]",
-                true_transforms=[
-                    dict(
-                        args=[
-                            dict(cls='Rot90', k=0, keep_size=False),
-                        ],
-                        type='ImgAugWrapper'),
-                ],
-                type='ConditionApply'),
-            dict(
-                condition="results['img_shape'][1]<results['img_shape'][0]",
-                true_transforms=[
-                    dict(
-                        args=[
-                            dict(cls='Rot90', k=1, keep_size=False),
-                        ],
-                        type='ImgAugWrapper'),
-                ],
-                type='ConditionApply'),
-            dict(
-                condition="results['img_shape'][1]<results['img_shape'][0]",
-                true_transforms=[
-                    dict(
-                        args=[
-                            dict(cls='Rot90', k=3, keep_size=False),
-                        ],
-                        type='ImgAugWrapper'),
-                ],
-                type='ConditionApply'),
-        ],
-        [
-            dict(scale=(
-                160,
-                48,
-            ), type='Resize'),
-        ],
-        [
-            dict(type='LoadOCRAnnotations', with_text=True),
-        ],
-        [
-            dict(
-                meta_keys=(
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'valid_ratio',
-                ),
-                type='PackTextRecogInputs'),
-        ],
-    ],
-    type='TestTimeAug')
-_target_scale = (
-    160,
-    48,
-)
 auto_scale_lr = dict(base_batch_size=256, enable=True)
 default_hooks = dict(
     checkpoint=dict(
@@ -192,7 +115,17 @@ model = dict(
                 11,
             ],
         ]),
-    preprocessor=None,
+    preprocessor=dict(
+        in_channels=3,
+        output_image_size=(
+            48,
+            160,
+        ),
+        resized_image_size=(
+            32,
+            128,
+        ),
+        type='TPSPP'),
     type='SVTR')
 optim_wrapper = dict(
     loss_scale='dynamic',
@@ -10346,8 +10279,8 @@ test_dataloader = dict(
         pipeline=[
             dict(type='LoadImageFromNDArray'),
             dict(scale=(
-                160,
-                48,
+                256,
+                64,
             ), type='Resize'),
             dict(type='LoadOCRAnnotations', with_text=True),
             dict(
@@ -10380,8 +10313,8 @@ test_evaluator = dict(
 test_pipeline = [
     dict(type='LoadImageFromNDArray'),
     dict(scale=(
-        160,
-        48,
+        256,
+        64,
     ), type='Resize'),
     dict(type='LoadOCRAnnotations', with_text=True),
     dict(
@@ -10470,8 +10403,8 @@ train_dataloader = dict(
                         ],
                         type='RandomApply'),
                     dict(scale=(
-                        160,
-                        48,
+                        256,
+                        64,
                     ), type='Resize'),
                     dict(
                         meta_keys=(
@@ -10555,8 +10488,8 @@ train_dataloader = dict(
                         ],
                         type='RandomApply'),
                     dict(scale=(
-                        160,
-                        48,
+                        256,
+                        64,
                     ), type='Resize'),
                     dict(
                         meta_keys=(
@@ -10637,8 +10570,8 @@ train_pipeline = [
         ],
         type='RandomApply'),
     dict(scale=(
-        160,
-        48,
+        256,
+        64,
     ), type='Resize'),
     dict(
         meta_keys=(
@@ -10688,8 +10621,8 @@ tta_pipeline = [
             ],
             [
                 dict(scale=(
-                    160,
-                    48,
+                    256,
+                    64,
                 ), type='Resize'),
             ],
             [
@@ -15719,8 +15652,8 @@ val_dataloader = dict(
         pipeline=[
             dict(type='LoadImageFromNDArray'),
             dict(scale=(
-                160,
-                48,
+                256,
+                64,
             ), type='Resize'),
             dict(type='LoadOCRAnnotations', with_text=True),
             dict(
@@ -15759,4 +15692,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = 'work_dirs/svtr-large_pretrain_cn_scene_notps'
+work_dir = 'work_dirs/svtr-large_pretrain_cn_scene_tpspp'
