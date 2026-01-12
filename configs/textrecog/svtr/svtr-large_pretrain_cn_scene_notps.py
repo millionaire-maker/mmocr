@@ -26,7 +26,26 @@ for _t in tta_pipeline:
                     _sub_t['scale'] = _target_scale
 
 train_dataloader = deepcopy(_base_.train_dataloader)
-train_dataloader['dataset']['pipeline'] = train_pipeline
+train_dataloader['dataset'] = dict(
+    _delete_=True,
+    type='ConcatDataset',
+    datasets=[
+        dict(
+            type='RecogLMDBDataset',
+            data_root='data',
+            ann_file='pretrain_cn_scene',
+            pipeline=train_pipeline,
+            test_mode=False,
+        ),
+        dict(
+            type='RecogLMDBDataset',
+            data_root='data',
+            ann_file='pretrain_cn_scene_gapfix_h24',
+            pipeline=train_pipeline,
+            test_mode=False,
+        ),
+    ],
+)
 
 val_dataloader = deepcopy(_base_.val_dataloader)
 val_dataloader['dataset']['pipeline'] = test_pipeline

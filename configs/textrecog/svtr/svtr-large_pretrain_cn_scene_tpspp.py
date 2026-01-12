@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 _base_ = ['svtr-large_pretrain_cn_scene.py']
 
 model = dict(
@@ -11,3 +13,25 @@ model = dict(
         # point_size=(2, 16),
         # p_stride=2,
     ))
+
+train_dataloader = deepcopy(_base_.train_dataloader)
+train_dataloader['dataset'] = dict(
+    _delete_=True,
+    type='ConcatDataset',
+    datasets=[
+        dict(
+            type='RecogLMDBDataset',
+            data_root='data',
+            ann_file='pretrain_cn_scene',
+            pipeline=deepcopy(_base_.train_pipeline),
+            test_mode=False,
+        ),
+        dict(
+            type='RecogLMDBDataset',
+            data_root='data',
+            ann_file='pretrain_cn_scene_gapfix_h24',
+            pipeline=deepcopy(_base_.train_pipeline),
+            test_mode=False,
+        ),
+    ],
+)
