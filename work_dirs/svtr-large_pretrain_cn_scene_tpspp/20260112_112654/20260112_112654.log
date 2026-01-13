@@ -20167,3 +20167,15 @@ The value is the same before and after calling `init_weights` of SVTR
 2026/01/13 08:23:21 - mmengine - INFO - Epoch(train) [20][7200/7793]  lr: 1.9739e-06  eta: 0:04:44  time: 0.4704  data_time: 0.0023  memory: 18954  loss: 0.3085  loss_ctc: 0.3085
 2026/01/13 08:23:46 - mmengine - INFO - Epoch(train) [20][7250/7793]  lr: 1.9505e-06  eta: 0:04:20  time: 0.4704  data_time: 0.0024  memory: 18954  loss: 0.2931  loss_ctc: 0.2931
 2026/01/13 08:24:10 - mmengine - INFO - Epoch(train) [20][7300/7793]  lr: 1.9273e-06  eta: 0:03:56  time: 0.4861  data_time: 0.0023  memory: 18954  loss: 0.3135  loss_ctc: 0.3135
+2026/01/13 08:24:35 - mmengine - INFO - Epoch(train) [20][7350/7793]  lr: 1.9041e-06  eta: 0:03:32  time: 0.4970  data_time: 0.0026  memory: 18954  loss: 0.3840  loss_ctc: 0.3840
+2026/01/13 08:24:59 - mmengine - INFO - Epoch(train) [20][7400/7793]  lr: 1.8811e-06  eta: 0:03:08  time: 0.4807  data_time: 0.0023  memory: 18954  loss: 0.3416  loss_ctc: 0.3416
+2026/01/13 08:25:23 - mmengine - INFO - Epoch(train) [20][7450/7793]  lr: 1.8583e-06  eta: 0:02:44  time: 0.4967  data_time: 0.0024  memory: 18954  loss: 0.3097  loss_ctc: 0.3097
+2026/01/13 08:25:47 - mmengine - INFO - Epoch(train) [20][7500/7793]  lr: 1.8356e-06  eta: 0:02:20  time: 0.4557  data_time: 0.0024  memory: 18954  loss: 0.3379  loss_ctc: 0.3379
+2026/01/13 08:26:11 - mmengine - INFO - Epoch(train) [20][7550/7793]  lr: 1.8130e-06  eta: 0:01:56  time: 0.4986  data_time: 0.0023  memory: 18954  loss: 0.3494  loss_ctc: 0.3494
+2026/01/13 08:26:35 - mmengine - INFO - Epoch(train) [20][7600/7793]  lr: 1.7906e-06  eta: 0:01:32  time: 0.4760  data_time: 0.0023  memory: 18954  loss: 0.2833  loss_ctc: 0.2833
+2026/01/13 08:26:59 - mmengine - INFO - Epoch(train) [20][7650/7793]  lr: 1.7683e-06  eta: 0:01:08  time: 0.4847  data_time: 0.0023  memory: 18954  loss: 0.3542  loss_ctc: 0.3542
+2026/01/13 08:27:24 - mmengine - INFO - Epoch(train) [20][7700/7793]  lr: 1.7461e-06  eta: 0:00:44  time: 0.4775  data_time: 0.0026  memory: 18954  loss: 0.2515  loss_ctc: 0.2515
+2026/01/13 08:27:48 - mmengine - INFO - Epoch(train) [20][7750/7793]  lr: 1.7241e-06  eta: 0:00:20  time: 0.4780  data_time: 0.0023  memory: 18954  loss: 0.3059  loss_ctc: 0.3059
+2026/01/13 08:28:08 - mmengine - INFO - Exp name: svtr-large_pretrain_cn_scene_tpspp_20260112_112654
+2026/01/13 08:28:08 - mmengine - INFO - Saving checkpoint at 20 epochs
+2026/01/13 08:28:24 - mmengine - INFO - Epoch(val) [20][20/20]    PretrainCN_holdout/recog/word_acc: 0.9244  PretrainCN_holdout/recog/1-N.E.D: 0.9799  data_time: 0.0137  time: 0.3554
