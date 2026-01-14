@@ -2025,3 +2025,76 @@ The value is the same before and after calling `init_weights` of SVTR
 2026/01/15 00:46:01 - mmengine - INFO - Epoch(train)  [9][1650/1989]  lr: 2.1733e-04  eta: 8:19:18  time: 0.5716  data_time: 0.0020  memory: 18101  loss: 1.2147  loss_ctc: 1.2147
 2026/01/15 00:46:34 - mmengine - INFO - Epoch(train)  [9][1700/1989]  lr: 2.1710e-04  eta: 8:18:37  time: 0.6052  data_time: 0.1824  memory: 18101  loss: 1.4013  loss_ctc: 1.4013
 2026/01/15 00:47:09 - mmengine - INFO - Epoch(train)  [9][1750/1989]  lr: 2.1687e-04  eta: 8:18:00  time: 0.7759  data_time: 0.3016  memory: 18101  loss: 1.4559  loss_ctc: 1.4559
+2026/01/15 00:47:44 - mmengine - INFO - Epoch(train)  [9][1800/1989]  lr: 2.1663e-04  eta: 8:17:21  time: 0.9255  data_time: 0.4828  memory: 18101  loss: 1.2902  loss_ctc: 1.2902
+2026/01/15 00:48:23 - mmengine - INFO - Epoch(train)  [9][1850/1989]  lr: 2.1640e-04  eta: 8:16:54  time: 0.6498  data_time: 0.2296  memory: 18101  loss: 1.2282  loss_ctc: 1.2282
+2026/01/15 00:48:58 - mmengine - INFO - Epoch(train)  [9][1900/1989]  lr: 2.1617e-04  eta: 8:16:19  time: 0.6952  data_time: 0.0019  memory: 18101  loss: 1.5092  loss_ctc: 1.5092
+2026/01/15 00:49:35 - mmengine - INFO - Epoch(train)  [9][1950/1989]  lr: 2.1594e-04  eta: 8:15:45  time: 0.6330  data_time: 0.1987  memory: 18101  loss: 1.3158  loss_ctc: 1.3158
+2026/01/15 00:50:00 - mmengine - INFO - Exp name: svtr-large_fudan_scene_finetune_from_pretrain_cn_scene_notps_20260114_210352
+2026/01/15 00:50:00 - mmengine - INFO - Saving checkpoint at 9 epochs
+2026/01/15 00:50:12 - mmengine - INFO - Epoch(val)  [9][ 50/498]    eta: 0:01:18  time: 0.1688  data_time: 0.0005  memory: 18101  
+2026/01/15 00:50:20 - mmengine - INFO - Epoch(val)  [9][100/498]    eta: 0:01:08  time: 0.1693  data_time: 0.0006  memory: 1612  
+2026/01/15 00:50:29 - mmengine - INFO - Epoch(val)  [9][150/498]    eta: 0:00:59  time: 0.1696  data_time: 0.0006  memory: 1612  
+2026/01/15 00:50:37 - mmengine - INFO - Epoch(val)  [9][200/498]    eta: 0:00:51  time: 0.1893  data_time: 0.0006  memory: 1612  
+2026/01/15 00:50:46 - mmengine - INFO - Epoch(val)  [9][250/498]    eta: 0:00:42  time: 0.1684  data_time: 0.0005  memory: 1612  
+2026/01/15 00:50:54 - mmengine - INFO - Epoch(val)  [9][300/498]    eta: 0:00:33  time: 0.1694  data_time: 0.0006  memory: 1612  
+2026/01/15 00:51:03 - mmengine - INFO - Epoch(val)  [9][350/498]    eta: 0:00:25  time: 0.1702  data_time: 0.0007  memory: 1612  
+2026/01/15 00:51:12 - mmengine - INFO - Epoch(val)  [9][400/498]    eta: 0:00:16  time: 0.1711  data_time: 0.0006  memory: 1612  
+2026/01/15 00:51:20 - mmengine - INFO - Epoch(val)  [9][450/498]    eta: 0:00:08  time: 0.1680  data_time: 0.0006  memory: 1612  
+2026/01/15 00:51:29 - mmengine - INFO - Epoch(val) [9][498/498]    Fudan/recog/word_acc: 0.6661  Fudan/recog/1-N.E.D: 0.8308  data_time: 0.0011  time: 0.1707
+2026/01/15 00:51:29 - mmengine - INFO - The previous best checkpoint /root/lanyun-tmp/mmocr/work_dirs/svtr-large_notps_finetune/best_Fudan_recog_word_acc_epoch_8.pth is removed
+2026/01/15 00:51:30 - mmengine - INFO - The best checkpoint with 0.6661 Fudan/recog/word_acc at 9 epoch is saved to best_Fudan_recog_word_acc_epoch_9.pth.
+2026/01/15 00:52:12 - mmengine - INFO - Epoch(train) [10][  50/1989]  lr: 2.1552e-04  eta: 8:14:45  time: 0.7021  data_time: 0.2719  memory: 18101  loss: 1.2837  loss_ctc: 1.2837
+2026/01/15 00:52:46 - mmengine - INFO - Exp name: svtr-large_fudan_scene_finetune_from_pretrain_cn_scene_notps_20260114_210352
+2026/01/15 00:52:46 - mmengine - INFO - Epoch(train) [10][ 100/1989]  lr: 2.1528e-04  eta: 8:14:06  time: 0.5078  data_time: 0.0672  memory: 18101  loss: 1.2663  loss_ctc: 1.2663
+2026/01/15 00:53:21 - mmengine - INFO - Epoch(train) [10][ 150/1989]  lr: 2.1505e-04  eta: 8:13:27  time: 0.6739  data_time: 0.0019  memory: 18101  loss: 1.2918  loss_ctc: 1.2918
+2026/01/15 00:53:55 - mmengine - INFO - Epoch(train) [10][ 200/1989]  lr: 2.1481e-04  eta: 8:12:48  time: 0.8595  data_time: 0.4377  memory: 18101  loss: 1.2444  loss_ctc: 1.2444
+2026/01/15 00:54:29 - mmengine - INFO - Epoch(train) [10][ 250/1989]  lr: 2.1458e-04  eta: 8:12:09  time: 0.9229  data_time: 0.4381  memory: 18101  loss: 1.3443  loss_ctc: 1.3443
+2026/01/15 00:55:04 - mmengine - INFO - Epoch(train) [10][ 300/1989]  lr: 2.1434e-04  eta: 8:11:33  time: 0.5606  data_time: 0.0663  memory: 18101  loss: 1.2691  loss_ctc: 1.2691
+2026/01/15 00:55:38 - mmengine - INFO - Epoch(train) [10][ 350/1989]  lr: 2.1410e-04  eta: 8:10:54  time: 0.6713  data_time: 0.2357  memory: 18101  loss: 1.3833  loss_ctc: 1.3833
+2026/01/15 00:56:18 - mmengine - INFO - Epoch(train) [10][ 400/1989]  lr: 2.1386e-04  eta: 8:10:29  time: 0.9282  data_time: 0.5068  memory: 18101  loss: 1.3152  loss_ctc: 1.3152
+2026/01/15 00:56:53 - mmengine - INFO - Epoch(train) [10][ 450/1989]  lr: 2.1362e-04  eta: 8:09:52  time: 0.6709  data_time: 0.2516  memory: 18101  loss: 1.4205  loss_ctc: 1.4205
+2026/01/15 00:57:26 - mmengine - INFO - Epoch(train) [10][ 500/1989]  lr: 2.1338e-04  eta: 8:09:11  time: 0.6268  data_time: 0.0021  memory: 18101  loss: 1.3075  loss_ctc: 1.3075
+2026/01/15 00:58:00 - mmengine - INFO - Epoch(train) [10][ 550/1989]  lr: 2.1314e-04  eta: 8:08:31  time: 0.6580  data_time: 0.0367  memory: 18101  loss: 1.3235  loss_ctc: 1.3235
+2026/01/15 00:58:35 - mmengine - INFO - Epoch(train) [10][ 600/1989]  lr: 2.1290e-04  eta: 8:07:55  time: 0.6163  data_time: 0.1916  memory: 18101  loss: 1.2136  loss_ctc: 1.2136
+2026/01/15 00:59:07 - mmengine - INFO - Epoch(train) [10][ 650/1989]  lr: 2.1265e-04  eta: 8:07:12  time: 0.4698  data_time: 0.0154  memory: 18101  loss: 1.2946  loss_ctc: 1.2946
+2026/01/15 00:59:44 - mmengine - INFO - Epoch(train) [10][ 700/1989]  lr: 2.1241e-04  eta: 8:06:38  time: 0.7014  data_time: 0.0474  memory: 18101  loss: 1.3211  loss_ctc: 1.3211
+2026/01/15 01:00:21 - mmengine - INFO - Epoch(train) [10][ 750/1989]  lr: 2.1217e-04  eta: 8:06:06  time: 0.6036  data_time: 0.1581  memory: 18101  loss: 1.4082  loss_ctc: 1.4082
+2026/01/15 01:00:57 - mmengine - INFO - Epoch(train) [10][ 800/1989]  lr: 2.1192e-04  eta: 8:05:32  time: 0.6327  data_time: 0.0945  memory: 18101  loss: 1.3114  loss_ctc: 1.3114
+2026/01/15 01:01:38 - mmengine - INFO - Epoch(train) [10][ 850/1989]  lr: 2.1168e-04  eta: 8:05:07  time: 0.5435  data_time: 0.1239  memory: 18101  loss: 1.3298  loss_ctc: 1.3298
+2026/01/15 01:02:16 - mmengine - INFO - Epoch(train) [10][ 900/1989]  lr: 2.1143e-04  eta: 8:04:37  time: 0.9772  data_time: 0.4895  memory: 18101  loss: 1.4154  loss_ctc: 1.4154
+2026/01/15 01:02:53 - mmengine - INFO - Epoch(train) [10][ 950/1989]  lr: 2.1119e-04  eta: 8:04:05  time: 0.6878  data_time: 0.0026  memory: 18101  loss: 1.4487  loss_ctc: 1.4487
+2026/01/15 01:03:29 - mmengine - INFO - Epoch(train) [10][1000/1989]  lr: 2.1094e-04  eta: 8:03:31  time: 0.7916  data_time: 0.3324  memory: 18101  loss: 1.2439  loss_ctc: 1.2439
+2026/01/15 01:04:06 - mmengine - INFO - Epoch(train) [10][1050/1989]  lr: 2.1069e-04  eta: 8:02:58  time: 0.7954  data_time: 0.2652  memory: 18101  loss: 1.3280  loss_ctc: 1.3280
+2026/01/15 01:04:39 - mmengine - INFO - Exp name: svtr-large_fudan_scene_finetune_from_pretrain_cn_scene_notps_20260114_210352
+2026/01/15 01:04:42 - mmengine - INFO - Epoch(train) [10][1100/1989]  lr: 2.1044e-04  eta: 8:02:23  time: 0.7701  data_time: 0.3373  memory: 18101  loss: 1.2701  loss_ctc: 1.2701
+2026/01/15 01:05:11 - mmengine - INFO - Epoch(train) [10][1150/1989]  lr: 2.1020e-04  eta: 8:01:34  time: 0.5148  data_time: 0.0818  memory: 18101  loss: 1.3581  loss_ctc: 1.3581
+2026/01/15 01:05:47 - mmengine - INFO - Epoch(train) [10][1200/1989]  lr: 2.0995e-04  eta: 8:00:58  time: 0.7360  data_time: 0.3204  memory: 18101  loss: 1.4655  loss_ctc: 1.4655
+2026/01/15 01:06:23 - mmengine - INFO - Epoch(train) [10][1250/1989]  lr: 2.0970e-04  eta: 8:00:25  time: 0.4698  data_time: 0.0181  memory: 18101  loss: 1.5553  loss_ctc: 1.5553
+2026/01/15 01:06:59 - mmengine - INFO - Epoch(train) [10][1300/1989]  lr: 2.0945e-04  eta: 7:59:49  time: 0.5609  data_time: 0.0675  memory: 18101  loss: 1.2838  loss_ctc: 1.2838
+2026/01/15 01:07:36 - mmengine - INFO - Epoch(train) [10][1350/1989]  lr: 2.0919e-04  eta: 7:59:16  time: 0.7581  data_time: 0.1503  memory: 18101  loss: 1.2904  loss_ctc: 1.2904
+2026/01/15 01:08:05 - mmengine - INFO - Epoch(train) [10][1400/1989]  lr: 2.0894e-04  eta: 7:58:29  time: 0.5863  data_time: 0.0020  memory: 18101  loss: 1.2704  loss_ctc: 1.2704
+2026/01/15 01:08:51 - mmengine - INFO - Epoch(train) [10][1450/1989]  lr: 2.0869e-04  eta: 7:58:14  time: 0.7395  data_time: 0.0021  memory: 18101  loss: 1.3453  loss_ctc: 1.3453
+2026/01/15 01:09:25 - mmengine - INFO - Epoch(train) [10][1500/1989]  lr: 2.0844e-04  eta: 7:57:36  time: 0.7202  data_time: 0.2898  memory: 18101  loss: 1.3079  loss_ctc: 1.3079
+2026/01/15 01:10:09 - mmengine - INFO - Epoch(train) [10][1550/1989]  lr: 2.0818e-04  eta: 7:57:17  time: 0.9214  data_time: 0.0020  memory: 18101  loss: 1.2617  loss_ctc: 1.2617
+2026/01/15 01:10:48 - mmengine - INFO - Epoch(train) [10][1600/1989]  lr: 2.0793e-04  eta: 7:56:48  time: 1.0071  data_time: 0.0376  memory: 18101  loss: 1.1983  loss_ctc: 1.1983
+2026/01/15 01:11:21 - mmengine - INFO - Epoch(train) [10][1650/1989]  lr: 2.0767e-04  eta: 7:56:07  time: 0.5968  data_time: 0.1325  memory: 18101  loss: 1.1209  loss_ctc: 1.1209
+2026/01/15 01:12:02 - mmengine - INFO - Epoch(train) [10][1700/1989]  lr: 2.0742e-04  eta: 7:55:42  time: 0.6336  data_time: 0.1317  memory: 18101  loss: 1.1410  loss_ctc: 1.1410
+2026/01/15 01:12:33 - mmengine - INFO - Epoch(train) [10][1750/1989]  lr: 2.0716e-04  eta: 7:54:58  time: 0.6694  data_time: 0.2438  memory: 18101  loss: 1.2512  loss_ctc: 1.2512
+2026/01/15 01:13:10 - mmengine - INFO - Epoch(train) [10][1800/1989]  lr: 2.0690e-04  eta: 7:54:25  time: 0.5494  data_time: 0.0670  memory: 18101  loss: 1.3615  loss_ctc: 1.3615
+2026/01/15 01:13:44 - mmengine - INFO - Epoch(train) [10][1850/1989]  lr: 2.0665e-04  eta: 7:53:45  time: 0.6631  data_time: 0.0473  memory: 18101  loss: 1.2801  loss_ctc: 1.2801
+2026/01/15 01:14:19 - mmengine - INFO - Epoch(train) [10][1900/1989]  lr: 2.0639e-04  eta: 7:53:10  time: 0.7129  data_time: 0.0505  memory: 18101  loss: 1.2437  loss_ctc: 1.2437
+2026/01/15 01:14:52 - mmengine - INFO - Epoch(train) [10][1950/1989]  lr: 2.0613e-04  eta: 7:52:29  time: 0.5011  data_time: 0.0031  memory: 18101  loss: 1.3736  loss_ctc: 1.3736
+2026/01/15 01:15:20 - mmengine - INFO - Exp name: svtr-large_fudan_scene_finetune_from_pretrain_cn_scene_notps_20260114_210352
+2026/01/15 01:15:20 - mmengine - INFO - Saving checkpoint at 10 epochs
+2026/01/15 01:15:32 - mmengine - INFO - Epoch(val) [10][ 50/498]    eta: 0:01:17  time: 0.1696  data_time: 0.0006  memory: 18101  
+2026/01/15 01:15:40 - mmengine - INFO - Epoch(val) [10][100/498]    eta: 0:01:09  time: 0.1777  data_time: 0.0007  memory: 1612  
+2026/01/15 01:15:49 - mmengine - INFO - Epoch(val) [10][150/498]    eta: 0:01:00  time: 0.1700  data_time: 0.0006  memory: 1612  
+2026/01/15 01:15:57 - mmengine - INFO - Epoch(val) [10][200/498]    eta: 0:00:51  time: 0.1667  data_time: 0.0005  memory: 1612  
+2026/01/15 01:16:06 - mmengine - INFO - Epoch(val) [10][250/498]    eta: 0:00:42  time: 0.1681  data_time: 0.0006  memory: 1612  
+2026/01/15 01:16:15 - mmengine - INFO - Epoch(val) [10][300/498]    eta: 0:00:34  time: 0.1732  data_time: 0.0005  memory: 1612  
+2026/01/15 01:16:23 - mmengine - INFO - Epoch(val) [10][350/498]    eta: 0:00:25  time: 0.1699  data_time: 0.0006  memory: 1612  
+2026/01/15 01:16:32 - mmengine - INFO - Epoch(val) [10][400/498]    eta: 0:00:16  time: 0.1763  data_time: 0.0005  memory: 1612  
+2026/01/15 01:16:41 - mmengine - INFO - Epoch(val) [10][450/498]    eta: 0:00:08  time: 0.1770  data_time: 0.0006  memory: 1612  
+2026/01/15 01:16:50 - mmengine - INFO - Epoch(val) [10][498/498]    Fudan/recog/word_acc: 0.6669  Fudan/recog/1-N.E.D: 0.8304  data_time: 0.0009  time: 0.1727
+2026/01/15 01:16:50 - mmengine - INFO - The previous best checkpoint /root/lanyun-tmp/mmocr/work_dirs/svtr-large_notps_finetune/best_Fudan_recog_word_acc_epoch_9.pth is removed
+2026/01/15 01:16:51 - mmengine - INFO - The best checkpoint with 0.6669 Fudan/recog/word_acc at 10 epoch is saved to best_Fudan_recog_word_acc_epoch_10.pth.
