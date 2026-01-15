@@ -1,11 +1,11 @@
-2026/01/15 19:23:14 - mmengine - INFO - 
+2026/01/15 19:29:23 - mmengine - INFO - 
 ------------------------------------------------------------
 System environment:
     sys.platform: linux
     Python: 3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
     CUDA available: True
     MUSA available: False
-    numpy_random_seed: 1594071604
+    numpy_random_seed: 841446870
     GPU 0,1: NVIDIA GeForce RTX 3090
     CUDA_HOME: /usr/local/cuda
     NVCC: Cuda compilation tools, release 11.1, V11.1.105
@@ -34,14 +34,14 @@ Runtime environment:
     cudnn_benchmark: True
     mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
     dist_cfg: {'backend': 'nccl'}
-    seed: 1594071604
+    seed: 841446870
     deterministic: False
     Distributed launcher: pytorch
     Distributed training: True
     GPU number: 2
 ------------------------------------------------------------
 
-2026/01/15 19:23:25 - mmengine - INFO - Config:
+2026/01/15 19:29:34 - mmengine - INFO - Config:
 _ds = dict(
     ann_file='pretrain_cn_scene',
     data_root='data',
@@ -5153,7 +5153,7 @@ _t = dict(
         ],
     ],
     type='TestTimeAug')
-auto_scale_lr = dict(base_batch_size=256, enable=True)
+auto_scale_lr = dict(base_batch_size=128, enable=True)
 custom_hooks = [
     dict(
         ema_type='ExponentialMovingAverage',
@@ -15804,7 +15804,7 @@ svtrv2_encoder = dict(
     use_pos_embed=False)
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
-    batch_size=128,
+    batch_size=64,
     dataset=dict(
         datasets=[
             dict(
@@ -20982,7 +20982,7 @@ test_pipeline = [
 ]
 train_cfg = dict(max_epochs=20, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
-    batch_size=128,
+    batch_size=64,
     dataset=dict(
         datasets=[
             dict(
@@ -21396,7 +21396,7 @@ use_sgm = True
 use_svtrv2_backbone = True
 val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
-    batch_size=128,
+    batch_size=64,
     dataset=dict(
         datasets=[
             dict(
@@ -26536,7 +26536,7 @@ visualizer = dict(
     ])
 work_dir = 'work_dirs/ablation_fullchain/pretrain_full_msr_frm_sgm_seed3407'
 
-2026/01/15 19:23:37 - mmengine - INFO - Hooks will be executed in the following order:
+2026/01/15 19:29:46 - mmengine - INFO - Hooks will be executed in the following order:
 before_run:
 (VERY_HIGH   ) RuntimeInfoHook                    
 (NORMAL      ) EMAHook                            
@@ -26635,7 +26635,7 @@ after_test:
 after_run:
 (BELOW_NORMAL) LoggerHook                         
  -------------------- 
-2026/01/15 19:24:11 - mmengine - INFO - LR is set based on batch size of 256 and the current batch size is 256. Scaling the original LR by 1.0.
+2026/01/15 19:30:19 - mmengine - INFO - LR is set based on batch size of 128 and the current batch size is 128. Scaling the original LR by 1.0.
 Name of parameter - Initialization information
 
 encoder.encoder.absolute_pos_embed - torch.Size([1, 1536, 192]): 
@@ -27570,6 +27570,6 @@ The value is the same before and after calling `init_weights` of SVTR
 
 decoder.sgm.ques_head.bias - torch.Size([5885]): 
 The value is the same before and after calling `init_weights` of SVTR  
-2026/01/15 19:24:31 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
-2026/01/15 19:24:31 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
-2026/01/15 19:24:31 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/ablation_fullchain/pretrain_full_msr_frm_sgm_seed3407.
+2026/01/15 19:30:39 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2026/01/15 19:30:39 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2026/01/15 19:30:39 - mmengine - INFO - Checkpoints will be saved to /root/lanyun-tmp/mmocr/work_dirs/ablation_fullchain/pretrain_full_msr_frm_sgm_seed3407.

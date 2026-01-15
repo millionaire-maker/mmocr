@@ -154,7 +154,7 @@ default_hooks = dict(
         interval=1,
         save_best='PretrainCN_holdout/recog/word_acc',
         rule='greater',
-        max_keep_ckpts=3,
+        max_keep_ckpts=2,
     ),
 )
 
